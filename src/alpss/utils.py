@@ -1,5 +1,8 @@
 from scipy.signal import ShortTimeFFT
 import numpy as np
+import io
+import pandas as pd
+
 
 # function to calculate the short time fourier transform (stft) of a signal. ALPSS was originally built with a scipy
 # STFT function that may now be deprecated in the future. This function seeks to roughly replicate the behavior of the
@@ -37,3 +40,25 @@ def stft(voltage, fs, **inputs):
 
     # return the frequency, time, and magnitude arrays
     return f, t_crop, Sx_crop
+
+
+def extract_data(inputs):
+    # import the desired data. Convert the time to skip and turn into number of rows
+    t_step = 1 / inputs["sample_rate"]
+    rows_to_skip = (
+        inputs["header_lines"] + inputs["time_to_skip"] / t_step
+    )  # skip the 5 header lines too
+    nrows = inputs["time_to_take"] / t_step
+
+    fname = inputs["filepath"]
+    if "bytestring" in inputs and isinstance(inputs["bytestring"], bytes):
+        data = pd.read_csv(
+            io.BytesIO(inputs["bytestring"]),
+            skiprows=int(rows_to_skip),
+            nrows=int(nrows),
+        )
+    elif isinstance(fname, str):
+        data = pd.read_csv(fname, skiprows=int(rows_to_skip), nrows=int(nrows))
+    else:
+        raise TypeError(f"Unsupported input type for filepath: {type(fname)}")
+    return data

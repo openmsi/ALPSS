@@ -1,22 +1,12 @@
-import os
-import pandas as pd
 import numpy as np
 import cv2 as cv
-from alpss.utils import stft
+from alpss.utils import stft, extract_data
 
 
 # function to find the specific domain of interest in the larger signal
 def spall_doi_finder(**inputs):
-    # import the desired data. Convert the time to skip and turn into number of rows
-    t_step = 1 / inputs["sample_rate"]
-    rows_to_skip = (
-        inputs["header_lines"] + inputs["time_to_skip"] / t_step
-    )  # skip the 5 header lines too
-    nrows = inputs["time_to_take"] / t_step
 
-    # change directory to where the data is stored
-    fname = inputs["filepath"]
-    data = pd.read_csv(fname, skiprows=int(rows_to_skip), nrows=int(nrows))
+    data = extract_data(inputs)
 
     # rename the columns of the data
     data.columns = ["Time", "Ampl"]

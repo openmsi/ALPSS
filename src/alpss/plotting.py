@@ -3,6 +3,8 @@ import numpy as np
 from matplotlib.patches import Rectangle
 import pandas as pd
 import os
+from alpss.utils import stft, extract_data
+import numpy as np
 
 
 # function to generate the final figure
@@ -406,24 +408,9 @@ def plot_results(
     return fig
 
 
-from alpss.utils import stft
-import numpy as np
-
-
 def plot_voltage(**inputs):
-    # import the desired data. Convert the time to skip and turn into number of rows
-    t_step = 1 / inputs["sample_rate"]
-    rows_to_skip = (
-        inputs["header_lines"] + inputs["time_to_skip"] / t_step
-    )  # skip the header lines too
-    nrows = inputs["time_to_take"] / t_step
 
-    # change directory to where the data is stored
-    data = pd.read_csv(
-        inputs["filepath"],
-        skiprows=int(rows_to_skip),
-        nrows=int(nrows),
-    )
+    data = extract_data(inputs)
 
     # rename the columns of the data
     data.columns = ["Time", "Ampl"]
