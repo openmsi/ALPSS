@@ -2,6 +2,7 @@ from scipy.signal import ShortTimeFFT
 import numpy as np
 import io
 import pandas as pd
+import logging
 
 
 # function to calculate the short time fourier transform (stft) of a signal. ALPSS was originally built with a scipy
@@ -51,7 +52,9 @@ def extract_data(inputs):
     nrows = inputs["time_to_take"] / t_step
 
     fname = inputs["filepath"]
+
     if "bytestring" in inputs and isinstance(inputs["bytestring"], bytes):
+        logging.info("inside bytestring details")
         data = pd.read_csv(
             io.BytesIO(inputs["bytestring"]),
             skiprows=int(rows_to_skip),

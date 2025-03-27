@@ -86,22 +86,21 @@ def alpss_main(**inputs):
 
         # return the figure so it can be saved if desired
         # function to save the output files if desired
-        if inputs["save_data"] == "yes":
-            df = save(
-                sdf_out,
-                cen,
-                vc_out,
-                sa_out,
-                iua_out,
-                fua_out,
-                start_time,
-                end_time,
-                fig,
-                **inputs,
-            )
-            return fig, df
+        items = save(
+            sdf_out,
+            cen,
+            vc_out,
+            sa_out,
+            iua_out,
+            fua_out,
+            start_time,
+            end_time,
+            fig,
+            **inputs,
+        )
+        # return fig, df
 
-        return (fig,)
+        return (fig, items)
 
     # in case the program throws an error
     except Exception as e:
