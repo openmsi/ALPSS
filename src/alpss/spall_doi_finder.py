@@ -1,12 +1,10 @@
 import numpy as np
 import cv2 as cv
-from alpss.utils import stft, extract_data
+from alpss.utils import stft
 
 
 # function to find the specific domain of interest in the larger signal
-def spall_doi_finder(**inputs):
-
-    data = extract_data(inputs)
+def spall_doi_finder(data, **inputs):
 
     # rename the columns of the data
     data.columns = ["Time", "Ampl"]

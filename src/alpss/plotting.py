@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib.patches import Rectangle
 import pandas as pd
 import os
-from alpss.utils import stft, extract_data
+from alpss.utils import stft
 import numpy as np
 
 
@@ -408,9 +408,7 @@ def plot_results(
     return fig
 
 
-def plot_voltage(**inputs):
-
-    data = extract_data(inputs)
+def plot_voltage(data, **inputs):
 
     # rename the columns of the data
     data.columns = ["Time", "Ampl"]

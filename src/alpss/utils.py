@@ -44,24 +44,39 @@ def stft(voltage, fs, **inputs):
 
 
 def extract_data(inputs):
-    # import the desired data. Convert the time to skip and turn into number of rows
+    # Calculate the time interval between samples
     t_step = 1 / inputs["sample_rate"]
+
+    # Calculate how many rows to skip:
+    # - Skip the number of header lines
+    # - Plus the number of rows that correspond to the time to skip
     rows_to_skip = (
         inputs["header_lines"] + inputs["time_to_skip"] / t_step
     )  # skip the 5 header lines too
+
+    # Calculate the number of rows to read based on how much time's worth of data we want
     nrows = inputs["time_to_take"] / t_step
 
+    # Get the file path from the inputs
     fname = inputs["filepath"]
 
+    # If the data is provided as a byte string (e.g., uploaded in memory)
     if "bytestring" in inputs and isinstance(inputs["bytestring"], bytes):
-        logging.info("inside bytestring details")
         data = pd.read_csv(
-            io.BytesIO(inputs["bytestring"]),
-            skiprows=int(rows_to_skip),
-            nrows=int(nrows),
+            io.BytesIO(inputs["bytestring"]),  # Read from the byte string as a file
+            skiprows=int(rows_to_skip),        # Skip calculated number of rows
+            nrows=int(nrows),                  # Read only the desired number of rows
         )
+    # If a file path is provided as a string
     elif isinstance(fname, str):
-        data = pd.read_csv(fname, skiprows=int(rows_to_skip), nrows=int(nrows))
+        data = pd.read_csv(
+            fname,                             # Read from file path
+            skiprows=int(rows_to_skip),        # Skip calculated number of rows
+            nrows=int(nrows),                  # Read only the desired number of rows
+        )
+    # If input type is not supported, raise an error
     else:
-        raise TypeError(f"Unsupported input type for filepath: {type(fname)}")
+        raise TypeError(f"Unsupported input type, which must be 'bytestring' or 'filepath': {type(fname)}")
+
+    # Return the extracted data as a DataFrame
     return data

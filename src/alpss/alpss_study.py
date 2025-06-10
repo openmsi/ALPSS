@@ -18,7 +18,7 @@ def load_csv(file_path):
     return data
 
 
-def extract_data(csv_path):
+def extract_csv_data(csv_path):
     """
     Extract data from CSV files based on their column names.
     """
@@ -183,8 +183,8 @@ def process_folder(folder_path):
         result_path = os.path.join(folder_path, result_file)
 
         if os.path.exists(input_path) and os.path.exists(result_path):
-            input_data = extract_data(input_path)
-            result_data = extract_data(result_path)
+            input_data = extract_csv_data(input_path)
+            result_data = extract_csv_data(result_path)
 
             data_dict[file_prefix]["inputs"] = input_data["inputs"]
             data_dict[file_prefix]["results"] = result_data["results"]

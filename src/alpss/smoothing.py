@@ -13,8 +13,7 @@ def smoothing(velocity_pad, smoothing_window, smoothing_wid, smoothing_amp, smoo
 
     # if the smoothing window is not an odd integer exit the program
     if (smoothing_window % 2 != 1) or (smoothing_window >= len(velocity_pad) / 2):
-        raise Exception('Input variable "smoothing_window" must be an odd integer and less than half the length of '
-                        'the velocity signal')
+        raise Exception(f'Input variable "smoothing_window" ({smoothing_window}) must be an odd integer and less than half the length of the velocity signal ({len(velocity_pad) / 2})')
 
     # number of points to either side of the point of interest
     half_space = int(np.floor(smoothing_window / 2))

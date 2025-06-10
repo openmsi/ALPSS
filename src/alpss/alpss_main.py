@@ -4,9 +4,11 @@ from alpss.plotting import plot_results, plot_voltage
 from alpss.carrier_frequency import carrier_frequency
 from alpss.carrier_filter import carrier_filter
 from alpss.velocity_calculation import velocity_calculation
+from alpss.validation import validate_inputs
 from alpss.spall_analysis import spall_analysis
 from alpss.full_uncertainty_analysis import full_uncertainty_analysis
 from alpss.instantaneous_uncertainty_analysis import instantaneous_uncertainty_analysis
+from alpss.utils import extract_data
 from alpss.saving import save
 from datetime import datetime
 import traceback
@@ -21,12 +23,6 @@ logging.basicConfig(
     ],
 )
 
-
-def validate_inputs(inputs):
-    if inputs["t_after"] > inputs["time_to_take"]:
-        raise ValueError("'t_after' must be less than 'time_to_take'. ")
-
-
 # main function to link together all the sub-functions
 def alpss_main(**inputs):
     # validate the inputs for the run
@@ -38,8 +34,10 @@ def alpss_main(**inputs):
 
         start_time = datetime.now()
 
+        data = extract_data(inputs)
+
         # function to find the spall signal domain of interest
-        sdf_out = spall_doi_finder(**inputs)
+        sdf_out = spall_doi_finder(data, **inputs)
 
         # function to find the carrier frequency
         cen = carrier_frequency(sdf_out, **inputs)
@@ -98,7 +96,6 @@ def alpss_main(**inputs):
             fig,
             **inputs,
         )
-        # return fig, df
 
         return (fig, items)
 
@@ -110,7 +107,7 @@ def alpss_main(**inputs):
         # attempt to plot the voltage signal from the imported data
         try:
             logging.info("Attempting a fallback visualization of the voltage signal...")
-            plot_voltage(**inputs)
+            plot_voltage(data, **inputs)
 
         # if that also fails then log the traceback and stop running the program
         except Exception as e:

@@ -106,4 +106,4 @@ def save(
     results_df.loc[0, "Signal Start Time"] /= 1e-9
 
     display(results_df)
-    return (results_to_save,)
+    return {"--results" : results_to_save, "--voltage": voltage_data, "noisefrac": noise_data}
