@@ -8,41 +8,53 @@ from IPython.display import display
 def save(
     sdf_out, cen, vc_out, sa_out, iua_out, fua_out, start_time, end_time, fig, **inputs
 ):
-    fname = os.path.join(inputs["out_files_dir"], os.path.basename(inputs["filepath"]))
+    filename = os.path.splitext(os.path.basename(inputs["filepath"]))[0]
+    fname = os.path.join(inputs["out_files_dir"], filename)
 
     # save the plots
+    fig_assets = [fig]
     if inputs["save_data"]:
+        fig_path = fname + "--plots.png"
         fig.savefig(
-            fname=fname + "--plots.png",
+            fname=fig_path,
             dpi="figure",
             format="png",
             facecolor="w",
-        )
+            )
+        fig_assets.append(fig_path)
 
     # save the function inputs used for this run
+    inputs.pop("bytestring", None)
     inputs_df = pd.DataFrame.from_dict(inputs, orient="index", columns=["Input"])
+    inputs_assets = [inputs_df]
     if inputs["save_data"]:
-        inputs_df.to_csv(fname + "--inputs" + ".csv", index=True, header=False)
+        inputs_path = fname + "--inputs" + ".csv"
+        inputs_df.to_csv(inputs_path, index=True, header=False)
+        inputs_assets.append(inputs_path)
 
     # save the noisy velocity trace
     velocity_data = np.stack((vc_out["time_f"], vc_out["velocity_f"]), axis=1)
+    velocity_assets = [velocity_data]
     if inputs["save_data"]:
-        np.savetxt(fname + "--velocity" + ".csv", velocity_data, delimiter=",")
+        velocity_path = fname + "--velocity" + ".csv"
+        np.savetxt(velocity_path, velocity_data, delimiter=",")
+        velocity_assets.append(velocity_path)
 
     # save the smoothed velocity trace
     velocity_data_smooth = np.stack(
         (vc_out["time_f"], vc_out["velocity_f_smooth"]), axis=1
     )
-
+    smooth_velocity_assets = [velocity_data_smooth]
     if inputs["save_data"]:
+        smooth_velocity_path = fname + "--velocity--smooth" + ".csv"
         np.savetxt(
-            fname + "--velocity--smooth" + ".csv",
+            smooth_velocity_path,
             velocity_data_smooth,
             delimiter=",",
         )
-
+        smooth_velocity_assets.append(smooth_velocity_path)
+    
     # save the filtered voltage data
-
     voltage_data = np.stack(
         (
             sdf_out["time"],
@@ -51,22 +63,31 @@ def save(
         ),
         axis=1,
     )
+    voltage_assets = [voltage_data]
     if inputs["save_data"]:
-        np.savetxt(fname + "--voltage" + ".csv", voltage_data, delimiter=",")
+        voltage_path = fname + "--voltage" + ".csv"
+        np.savetxt(voltage_path, voltage_data, delimiter=",")
+        voltage_assets.append(voltage_path)
 
     # save the noise fraction
     noise_data = np.stack((vc_out["time_f"], iua_out["inst_noise"]), axis=1)
+    noise_assets = [noise_data]
     if inputs["save_data"]:
-        np.savetxt(fname + "--noisefrac" + ".csv", noise_data, delimiter=",")
+        noise_path = fname + "--noisefrac" + ".csv"
+        np.savetxt(noise_path, noise_data, delimiter=",")
+        noise_assets.append(noise_path)
 
     # save the velocity uncertainty
     vel_uncert_data = np.stack((vc_out["time_f"], iua_out["vel_uncert"]), axis=1)
+    vel_uncert_assets = [vel_uncert_data]
     if inputs["save_data"]:
+        vel_uncert_path = fname + "--veluncert" + ".csv"
         np.savetxt(
-            fname + "--veluncert" + ".csv",
+            vel_uncert_path,
             vel_uncert_data,
             delimiter=",",
         )
+        vel_uncert_assets.append(vel_uncert_path)
 
     results_to_save = {
         "Date": start_time.strftime("%b %d %Y"),
@@ -106,4 +127,4 @@ def save(
     results_df.loc[0, "Signal Start Time"] /= 1e-9
 
     display(results_df)
-    return {"--results" : results_to_save, "--voltage": voltage_data, "noisefrac": noise_data}
+    return {"figure": fig_assets, "inputs": inputs_assets, "velocity": velocity_assets, "smooth_velocity": smooth_velocity_assets,"voltage":voltage_assets, "noise":noise_assets, "vel_uncert":vel_uncert_assets,  "results" : results_df}
