@@ -119,12 +119,14 @@ def save(
     results_df = pd.DataFrame([results_to_save])
 
     # Optional: Convert units to nanoseconds for certain fields
-    results_df.loc[0, "Velocity at Max Compression"] /= 1e-9
-    results_df.loc[0, "Velocity at Max Tension"] /= 1e-9
-    results_df.loc[0, "Velocity at Recompression"] /= 1e-9
-    results_df.loc[0, "Spect Time Res"] /= 1e-9
-    results_df.loc[0, "Spect Velocity Res"] /= 1e-9
-    results_df.loc[0, "Signal Start Time"] /= 1e-9
+    # results_df.loc[0, "Velocity at Max Compression"] /= 1e-9
+    # results_df.loc[0, "Velocity at Max Tension"] /= 1e-9
+    # results_df.loc[0, "Velocity at Recompression"] /= 1e-9
+    # results_df.loc[0, "Spect Time Res"] /= 1e-9
+    # results_df.loc[0, "Spect Velocity Res"] /= 1e-9
+    # results_df.loc[0, "Signal Start Time"] /= 1e-9
 
-    display(results_df)
-    return {"figure": fig_assets, "inputs": inputs_assets, "velocity": velocity_assets, "smooth_velocity": smooth_velocity_assets,"voltage":voltage_assets, "noise":noise_assets, "vel_uncert":vel_uncert_assets,  "results" : results_df}
+    results_dict = results_df.iloc[0].to_dict()
+
+    display(results_dict)
+    return {"figure": fig_assets, "inputs": inputs_assets, "velocity": velocity_assets, "smooth_velocity": smooth_velocity_assets,"voltage":voltage_assets, "noise":noise_assets, "vel_uncert":vel_uncert_assets,  "results" : results_dict}

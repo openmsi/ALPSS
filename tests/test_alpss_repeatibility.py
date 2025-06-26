@@ -11,10 +11,10 @@ def test_alpss_main_output(valid_inputs, expected_values):
 
     # Iterate over the expected values and assert that the results match
     for key, expected_value in expected_values.items():
-        assert key in result_dict, f"Key '{key}' not found in the results."
-        assert result_dict[key] == pytest.approx(
+        assert key in result_dict['results'], f"Key '{key}' not found in the results."
+        assert result_dict['results'][key] == pytest.approx(
             expected_value, rel=1e-9
-        ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict[key]}"
+        ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][key]}"
 
 
 def test_alpss_main_with_config(config_file_path, expected_values):
@@ -31,7 +31,7 @@ def test_alpss_main_with_config(config_file_path, expected_values):
 
     # Iterate over the expected values and assert that the results match
     for key, expected_value in expected_values.items():
-        assert key in result_dict, f"Key '{key}' not found in the results."
-        assert result_dict[key] == pytest.approx(
+        assert key in result_dict['results'], f"Key '{key}' not found in the results."
+        assert result_dict['results'][key] == pytest.approx(
             expected_value, rel=1e-9
-        ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict[key]}"
+        ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][key]}"
