@@ -190,7 +190,15 @@ def spall_doi_finder(data, **inputs):
     ret3, th3 = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
 
     # if not using a user input value for the signal start time
-    if inputs["start_time_user"] == "none":
+    # if inputs["start_time_user"] == "none":
+    def is_floatable(x):
+        try:
+            float(x)
+            return True
+        except (TypeError, ValueError):
+            return False
+
+    if not is_floatable(["start_time_user"]):
         # Find the position/row of the top of the binary spectrogram for each time/column
         col_len = th3.shape[1]  # number of columns
         row_len = th3.shape[0]  # number of columns
@@ -231,11 +239,14 @@ def spall_doi_finder(data, **inputs):
             cidx = highest_idx - check_idx - 1
             if top_line_clean[cidx] <= f_doi_carr_top_idx:
                 break
-
+        
+        # start_time_user: manual OR automated: cusum, iq, otsu (default)
         # add in the user correction for the start time
-        t_start_detected = t[cidx]
-        if inputs('run_iq', 'yes'):
+        if inputs.get('start_time_user') == "iq":
             t_start_detected = t_start_detected_iq
+        elif inputs.get('start_time_user') == "otsu":
+            t_start_detected = t[cidx]
+        
 
         #######
 
