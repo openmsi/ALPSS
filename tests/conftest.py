@@ -59,8 +59,9 @@ def valid_inputs():
         "out_files_dir": out_files_dir,
         "display_plots": "no",
         "spall_calculation": "yes",
-        "plot_figsize": (30, 10),
+        "plot_figsize": (60, 20),
         "plot_dpi": 300,
+        "iq_threshold_factor": 0.4
     }
 
 @pytest.fixture

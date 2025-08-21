@@ -1,7 +1,10 @@
 import numpy as np
 import cv2 as cv
 from alpss.utils import stft
-
+import logging
+from scipy import signal
+import matplotlib.pyplot as plt
+import os
 
 # function to find the specific domain of interest in the larger signal
 def spall_doi_finder(data, **inputs):
@@ -19,6 +22,154 @@ def spall_doi_finder(data, **inputs):
 
     # calculate the short time fourier transform
     f, t, Zxx = stft(voltage, fs, **inputs)
+
+
+
+
+
+
+
+    # Add IQ analysis section after loading time and voltage data
+    def gaussian_window(M, std):
+        n = np.arange(0, M) - (M - 1.0) / 2.0
+        return np.exp(-0.5 * (n / std)**2)
+
+    # Perform IQ analysis
+
+    # Extract carrier frequency from input data
+    N = len(voltage)
+    fft_result = np.fft.fft(voltage)
+    freq = np.fft.fftfreq(N, 1/fs)
+    positive_freq_mask = freq > 0
+    positive_freq = freq[positive_freq_mask]
+    positive_fft = np.abs(fft_result[positive_freq_mask])
+
+    # Find the frequency with maximum amplitude within the specified range
+    freq_range_mask = (positive_freq >= inputs["freq_min"]) & (positive_freq <= inputs["freq_max"])
+    carrier_idx = np.argmax(positive_fft[freq_range_mask])
+    carrier_frequency = positive_freq[freq_range_mask][carrier_idx]
+
+    logging.info(f"Extracted carrier frequency: {carrier_frequency} Hz")
+    
+    # Demodulate signal
+    I = voltage * np.cos(2 * np.pi * carrier_frequency * time)
+    Q = voltage * np.sin(2 * np.pi * carrier_frequency * time)
+
+    # Apply Gaussian smoothing with skip points
+    skip_points = 100 # skipping initial points to avoid IQ analysis induced signal drop
+    window_length = 801
+    window = np.exp(-0.5 * (np.arange(0, window_length) - (window_length - 1.0) / 2.0) / 10**2)
+    I_smooth = signal.convolve(I, window, mode='same')[skip_points:] / sum(window)
+    Q_smooth = signal.convolve(Q, window, mode='same')[skip_points:] / sum(window)
+    
+    # Calculate amplitude and phase
+    amplitude = np.sqrt(I_smooth**2 + Q_smooth**2)
+    phase = np.unwrap(np.arctan2(Q_smooth, I_smooth))
+ 
+    # Find initial stable amplitude
+    initial_amplitude = np.mean(amplitude[:int(len(amplitude)/4.5)])
+
+    # Allow user-defined threshold factor via inputs; default to existing 0.4
+    iq_threshold_factor = inputs['iq_threshold_factor']
+    # iq_threshold_factor = inputs.get('iq_threshold_factor', 0.4)
+    # try:
+    #     iq_threshold_factor = float(iq_threshold_factor)
+    # except Exception:
+    #     iq_threshold_factor = 0.4
+    threshold = iq_threshold_factor * initial_amplitude
+    
+    # Detect start time using 50% amplitude drop
+    start_index = np.where(amplitude < threshold)[0][0]
+    # start_index = np.where(phase < threshold)[0][0]
+    t_start_detected_iq = time[start_index]
+
+    # After calculating amplitude, adjust time array to match
+    time_adjusted = time[skip_points:skip_points+len(amplitude)]
+
+    # Convert amplitude to mV and time to microseconds
+    amplitude_mV = amplitude * 1e3
+    time_us = time_adjusted * 1e6
+
+    ###### Plot with matched array lengths and square aspect ratio
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 8))
+    ax1.plot(time_us, amplitude_mV, label='Complex Amplitude')
+    
+    # Create the actual step function used for detection
+    # Before start time: amplitude is above threshold (normal)
+    # After start time: amplitude drops below threshold (detected)
+    step_function = np.where(time_us < t_start_detected_iq * 1e6, initial_amplitude * 1e3, threshold * 1e3)
+    ax1.plot(time_us, step_function, 'r--', linewidth=2, label='Detection Threshold')
+    ax1.axhline(y=threshold * 1e3, color='orange', linestyle=':', alpha=0.7, label=f'Threshold ({threshold*1e3:.1f} mV)')
+    ax1.axvline(x=t_start_detected_iq * 1e6, color='red', linestyle='-', linewidth=2, 
+                label=f'Start Time (IQ): {t_start_detected_iq*1e6:.1f} μs')
+    ax1.set_ylabel('Amplitude (mV)', fontsize=20)
+    ax1.set_xlabel('Time (μs)', fontsize=20)
+    ax1.legend(fontsize=12)
+    ax1.tick_params(axis='both', labelsize=20)
+
+    # Save IQ amplitude plot as a separate figure (only if plots are enabled)
+    save_all_plots = inputs.get("save_all_plots", "yes")
+    save_in_subfolder = inputs.get("save_plots_in_subfolder", True)
+    save_iq_start_time_plot = inputs.get('save_iq_start_time_plot', True)
+    
+    if save_all_plots == "yes" and save_iq_start_time_plot:
+        if save_in_subfolder:
+            # Create subfolder for this file's plots
+            base_filename = inputs["filepath"][0:-4]  # Remove file extension
+            plots_subfolder = os.path.join(inputs["out_files_dir"], f"{base_filename}_plots")
+            os.makedirs(plots_subfolder, exist_ok=True)
+            plot_dir = plots_subfolder
+        else:
+            # Save plots in main output directory
+            plot_dir = inputs["out_files_dir"]
+        
+        fname_prefix = os.path.splitext(inputs.get('filename', 'ALPSS'))[0]
+        fig_iq, ax_iq = plt.subplots(figsize=(10, 6))
+        ax_iq.plot(time_us, amplitude_mV, label='Complex Amplitude', linewidth=1.5)
+        
+        # Create the actual step function used for detection
+        # Before start time: amplitude is above threshold (normal)
+        # After start time: amplitude drops below threshold (detected)
+        step_function = np.where(time_us < t_start_detected_iq * 1e6, initial_amplitude * 1e3, threshold * 1e3)
+        ax_iq.plot(time_us, step_function, 'r--', linewidth=2, label='Detection Step Function')
+        ax_iq.axhline(y=threshold * 1e3, color='orange', linestyle=':', alpha=0.7, linewidth=2, 
+                    label=f'Detection Threshold ({threshold*1e3:.1f} mV)')
+        ax_iq.axvline(x=t_start_detected_iq * 1e6, color='red', linestyle='-', linewidth=3, 
+                    label=f'Start Time Detected: {t_start_detected_iq*1e6:.1f} μs')
+        
+        ax_iq.set_ylabel('Amplitude (mV)', fontsize=16)
+        ax_iq.set_xlabel('Time (μs)', fontsize=16)
+        ax_iq.set_title('IQ Analysis: Start Time Detection', fontsize=18, fontweight='bold')
+        ax_iq.legend(fontsize=12, loc='upper right')
+        ax_iq.tick_params(axis='both', labelsize=14)
+        ax_iq.grid(True, alpha=0.3)
+        plt.tight_layout()
+        fig_iq.savefig(os.path.join(plot_dir, f"{fname_prefix}--IQ_start_time_detection.png"), dpi=inputs.get('plot_dpi', 300), format='png', facecolor='w')
+        plt.close(fig_iq)
+
+    # Adjust phase plotting similarly
+    ax2.plot(time_us, phase, label='Phase', color='green')
+    ax2.set_xlabel('Time (μs)', fontsize=20)
+    ax2.set_ylabel('Phase (radians)', fontsize=20)
+    ax2.legend(fontsize=12)
+    ax2.tick_params(axis='both', labelsize=20)
+    plt.tight_layout()
+
+    # # Add IQ results to output dictionary
+    # sdf_out = {
+    #     # ... (previous dictionary items)
+    #     "amplitude_iq": amplitude,
+    #     "phase_iq": phase,
+    #     "t_start_detected_iq": t_start_detected_iq,
+    # }
+
+    # Save to a txt file
+    np.savetxt("amplitude.txt", np.atleast_1d(amplitude), fmt="%.6f")
+    np.savetxt("phase.txt", np.atleast_1d(phase), fmt="%.6f")
+    np.savetxt("t_start_detected_iq.txt", np.atleast_1d(t_start_detected_iq), fmt="%.6f")
+
+
+
 
     # calculate magnitude of Zxx
     mag = np.abs(Zxx)
@@ -148,6 +299,9 @@ def spall_doi_finder(data, **inputs):
         "t_doi_start": t_doi_start,
         "t_doi_end": t_doi_end,
         "power_doi": power_doi,
+        "amplitude_iq": amplitude,
+        "phase_iq": phase,
+        "t_start_detected_iq": t_start_detected_iq,
     }
 
     return sdf_out
