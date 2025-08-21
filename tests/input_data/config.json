@@ -48,7 +48,7 @@
     "spall_calculation": "yes",
     "plot_figsize": [
         60,
-        20
+        60
     ],
     "plot_dpi": 300,
     "iq_threshold_factor": 0.4
