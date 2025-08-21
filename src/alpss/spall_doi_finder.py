@@ -155,22 +155,6 @@ def spall_doi_finder(data, **inputs):
     ax2.tick_params(axis='both', labelsize=20)
     plt.tight_layout()
 
-    # # Add IQ results to output dictionary
-    # sdf_out = {
-    #     # ... (previous dictionary items)
-    #     "amplitude_iq": amplitude,
-    #     "phase_iq": phase,
-    #     "t_start_detected_iq": t_start_detected_iq,
-    # }
-
-    # Save to a txt file
-    np.savetxt("amplitude.txt", np.atleast_1d(amplitude), fmt="%.6f")
-    np.savetxt("phase.txt", np.atleast_1d(phase), fmt="%.6f")
-    np.savetxt("t_start_detected_iq.txt", np.atleast_1d(t_start_detected_iq), fmt="%.6f")
-
-
-
-
     # calculate magnitude of Zxx
     mag = np.abs(Zxx)
 
@@ -250,6 +234,11 @@ def spall_doi_finder(data, **inputs):
 
         # add in the user correction for the start time
         t_start_detected = t[cidx]
+        if inputs('run_iq', 'yes'):
+            t_start_detected = t_start_detected_iq
+
+        #######
+
         t_start_corrected = t_start_detected + inputs["start_time_correction"]
         t_doi_start = t_start_corrected - inputs["t_before"]
         t_doi_end = t_start_corrected + inputs["t_after"]
