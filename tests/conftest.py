@@ -17,7 +17,7 @@ def valid_inputs():
     return {
         "filepath": filepath,
         "save_data": "yes",
-        "start_time_user": "none",
+        "start_time_user": "otsu",
         "header_lines": 1,
         "time_to_skip": 2.3e-06,
         "time_to_take": 1.5e-06,

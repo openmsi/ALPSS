@@ -131,7 +131,7 @@ def plot_results(
     )
     ax4.axvline(sdf_out["t_start_detected"] / 1e-9, ls="--", c="r")
     ax4.axvline(sdf_out["t_start_corrected"] / 1e-9, ls="-", c="r")
-    if inputs["start_time_user"] == "none":
+    if inputs["start_time_user"] == "otsu":
         ax4.axhline(sdf_out["f_doi"][sdf_out["f_doi_carr_top_idx"]] / 1e9, c="r")
     ax4.set_ylim([inputs["freq_min"] / 1e9, inputs["freq_max"] / 1e9])
     ax4.set_xlim([sdf_out["t_doi_start"] / 1e-9, sdf_out["t_doi_end"] / 1e-9])
@@ -157,7 +157,7 @@ def plot_results(
     fig.colorbar(plt5, ax=ax5, label="Power (dBm)")
     ax5.axvline(sdf_out["t_start_detected"] / 1e-9, ls="--", c="r")
     ax5.axvline(sdf_out["t_start_corrected"] / 1e-9, ls="-", c="r")
-    if inputs["start_time_user"] == "none":
+    if inputs["start_time_user"] == "otsu":
         ax5.axhline(sdf_out["f_doi"][sdf_out["f_doi_carr_top_idx"]] / 1e9, c="r")
     ax5.set_ylim([inputs["freq_min"] / 1e9, inputs["freq_max"] / 1e9])
     ax5.set_xlim([sdf_out["t_doi_start"] / 1e-9, sdf_out["t_doi_end"] / 1e-9])

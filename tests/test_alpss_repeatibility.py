@@ -2,9 +2,11 @@ import pytest
 from alpss.alpss_main import alpss_main
 from alpss.commands import alpss_main_with_config
 import os 
+import logging
 
-def test_alpss_main_output(valid_inputs, expected_values):
+def test_alpss_main_without_configfile(valid_inputs, expected_values):
     # Call the function with valid inputs
+    logging.info(f'Running test in mode {valid_inputs['start_time_user']}...')
     results = alpss_main(**valid_inputs)
     # Extract the results dictionary (results[1] should be the output dictionary)
     result_dict = results[1]
@@ -15,9 +17,15 @@ def test_alpss_main_output(valid_inputs, expected_values):
         assert result_dict['results'][key] == pytest.approx(
             expected_value, rel=1e-9
         ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][key]}"
+    
+    modes = ["iq", "cusum", 20.0]
+    for mode in modes:
+        logging.info(f'Running test in mode {mode}...')
+        valid_inputs['start_time_user'] = mode
+        results = alpss_main(**valid_inputs)
 
 
-def test_alpss_main_with_config(config_file_path, expected_values):
+def test_alpss_main_with_configfile(config_file_path, expected_values):
     """Test ALPSS using a JSON config file instead of direct dictionary input."""
     
     # Ensure the config file exists
@@ -35,3 +43,5 @@ def test_alpss_main_with_config(config_file_path, expected_values):
         assert result_dict['results'][key] == pytest.approx(
             expected_value, rel=1e-9
         ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][key]}"
+
+
