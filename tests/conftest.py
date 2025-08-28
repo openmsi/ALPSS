@@ -16,8 +16,14 @@ def valid_inputs():
 
     return {
         "filepath": filepath,
+        "out_files_dir": out_files_dir,
         "save_data": "yes",
-        "start_time_user": "none",
+        "start_time_user": "otsu",
+        "carrier_filter_type": "gaussian_notch",
+        "display_plots": "no",
+        "spall_calculation": "yes",
+        "window": "hann",
+        "cmap": "viridis",
         "header_lines": 1,
         "time_to_skip": 2.3e-06,
         "time_to_take": 1.5e-06,
@@ -39,12 +45,10 @@ def valid_inputs():
         "nperseg": 512,
         "noverlap": 435,
         "nfft": 5120,
-        "window": "hann",
         "blur_kernel": (5, 5),
         "blur_sigx": 0,
         "blur_sigy": 0,
         "carrier_band_time": 2.5e-07,
-        "cmap": "viridis",
         "uncert_mult": 100,
         "order": 6,
         "wid": 50000000.0,
@@ -56,11 +60,13 @@ def valid_inputs():
         "delta_lam": 8e-18,
         "theta": 0,
         "delta_theta": 5,
-        "out_files_dir": out_files_dir,
-        "display_plots": "no",
-        "spall_calculation": "yes",
-        "plot_figsize": (30, 10),
+        "plot_figsize": (80, 40),
         "plot_dpi": 300,
+        "iq_threshold_factor": 0.4,
+        "cusum_offset": 5,
+        "cusum_threshold": 1000,
+        "t_fit_begin": 20,
+        "t_fit_end": 300
     }
 
 @pytest.fixture
