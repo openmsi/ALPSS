@@ -2,7 +2,16 @@ import os
 import pandas as pd
 import numpy as np
 from IPython.display import display
+from importlib.metadata import version, PackageNotFoundError
+import random
+import string
 
+try:
+    pkg_version = version("alpss")
+    pkg_version = pkg_version.replace(".", "_")
+    pkg_version = "v" + pkg_version
+except PackageNotFoundError:
+    pkg_version = "unknown"
 
 # function for saving all the final outputs
 def save(
@@ -10,11 +19,12 @@ def save(
 ):
     filename = os.path.splitext(os.path.basename(inputs["filepath"]))[0]
     fname = os.path.join(inputs["out_files_dir"], filename)
+    unique_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3))
 
     # save the plots
     fig_assets = [fig]
     if inputs["save_data"]:
-        fig_path = fname + "--plots.png"
+        fig_path = f"{fname}-plots-{pkg_version}-{unique_id}.png"
         fig.savefig(
             fname=fig_path,
             dpi="figure",
@@ -28,7 +38,7 @@ def save(
     inputs_df = pd.DataFrame.from_dict(inputs, orient="index", columns=["Input"])
     inputs_assets = [inputs_df]
     if inputs["save_data"]:
-        inputs_path = fname + "--inputs" + ".csv"
+        inputs_path = f"{fname}-inputs-{pkg_version}-{unique_id}.csv"
         inputs_df.to_csv(inputs_path, index=True, header=False)
         inputs_assets.append(inputs_path)
 
@@ -36,7 +46,7 @@ def save(
     velocity_data = np.stack((vc_out["time_f"], vc_out["velocity_f"]), axis=1)
     velocity_assets = [velocity_data]
     if inputs["save_data"]:
-        velocity_path = fname + "--velocity" + ".csv"
+        velocity_path = f"{fname}-velocity-{pkg_version}-{unique_id}.csv" 
         np.savetxt(velocity_path, velocity_data, delimiter=",")
         velocity_assets.append(velocity_path)
 
@@ -46,7 +56,7 @@ def save(
     )
     smooth_velocity_assets = [velocity_data_smooth]
     if inputs["save_data"]:
-        smooth_velocity_path = fname + "--velocity--smooth" + ".csv"
+        smooth_velocity_path = f"{fname}-velocity--smooth-{pkg_version}-{unique_id}.csv" 
         np.savetxt(
             smooth_velocity_path,
             velocity_data_smooth,
@@ -65,7 +75,7 @@ def save(
     )
     voltage_assets = [voltage_data]
     if inputs["save_data"]:
-        voltage_path = fname + "--voltage" + ".csv"
+        voltage_path = f"{fname}-voltage-{pkg_version}-{unique_id}.csv"  
         np.savetxt(voltage_path, voltage_data, delimiter=",")
         voltage_assets.append(voltage_path)
 
@@ -73,7 +83,7 @@ def save(
     noise_data = np.stack((vc_out["time_f"], iua_out["inst_noise"]), axis=1)
     noise_assets = [noise_data]
     if inputs["save_data"]:
-        noise_path = fname + "--noisefrac" + ".csv"
+        noise_path = f"{fname}-noisefrac-{pkg_version}-{unique_id}.csv"  
         np.savetxt(noise_path, noise_data, delimiter=",")
         noise_assets.append(noise_path)
 
@@ -81,7 +91,7 @@ def save(
     vel_uncert_data = np.stack((vc_out["time_f"], iua_out["vel_uncert"]), axis=1)
     vel_uncert_assets = [vel_uncert_data]
     if inputs["save_data"]:
-        vel_uncert_path = fname + "--veluncert" + ".csv"
+        vel_uncert_path = f"{fname}-veluncert-{pkg_version}-{unique_id}.csv"
         np.savetxt(
             vel_uncert_path,
             vel_uncert_data,

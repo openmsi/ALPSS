@@ -447,7 +447,7 @@ def plot_voltage(data, **inputs):
     plt.tight_layout()
     if inputs["save_data"] == "yes":
         fname = os.path.join(
-            inputs["out_files_dir"], os.path.basename(inputs["filepath"])
+            inputs["out_files_dir"], os.path.splitext(os.path.basename(inputs["filepath"]))[0]
         )
         fig.savefig(f"{fname}--error_plot.png")
     if inputs["display_plots"] == "yes":

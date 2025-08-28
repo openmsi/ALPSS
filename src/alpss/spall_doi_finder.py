@@ -3,6 +3,7 @@ import cv2 as cv
 from alpss.utils import stft
 import logging
 from scipy import signal
+from scipy.fft import fft
 import matplotlib.pyplot as plt
 import os
 
@@ -338,7 +339,7 @@ def iq_analysis(inputs, voltage, fs, time):
         ax_iq.grid(True, alpha=0.3)
         plt.tight_layout()
         if inputs['save_data'] == "yes":
-            fig_iq.savefig(os.path.join(plot_dir, f"{name_without_ext}--IQ_start_time_detection.png"), dpi=inputs.get('plot_dpi', 300), format='png', facecolor='w')
+            fig_iq.savefig(os.path.join(plot_dir, f"{name_without_ext}-IQ_start_time_detection.png"), dpi=inputs.get('plot_dpi', 300), format='png', facecolor='w')
         plt.close(fig_iq)
 
     # Adjust phase plotting similarly

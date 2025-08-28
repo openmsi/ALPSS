@@ -1,8 +1,9 @@
 {
     "filepath": "input_data/example_file.csv",
-    "save_data": "yes",
-    "start_time_user": "otsu",
     "out_files_dir": "output_data/",
+    "start_time_user": "otsu",
+    "carrier_filter_type": "gaussian_notch",
+    "save_data": "yes",
     "display_plots": "no",
     "spall_calculation": "yes",
     "window": "hann",
@@ -47,9 +48,13 @@
     "theta": 0,
     "delta_theta": 5,
     "plot_figsize": [
-        60,
-        60
+        80,
+        40
     ],
     "plot_dpi": 300,
-    "iq_threshold_factor": 0.4
+    "iq_threshold_factor": 0.4,
+    "cusum_offset": 5,
+    "cusum_threshold": 1000,
+    "t_fit_begin": 20,
+    "t_fit_end": 300
 }
