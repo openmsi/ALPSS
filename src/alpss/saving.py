@@ -2,40 +2,68 @@ import os
 import pandas as pd
 import numpy as np
 from IPython.display import display
+from importlib.metadata import version, PackageNotFoundError
+import random
+import string
 
+try:
+    pkg_version = version("alpss")
+    pkg_version = pkg_version.replace(".", "_")
+    pkg_version = "v" + pkg_version
+except PackageNotFoundError:
+    pkg_version = "unknown"
 
 # function for saving all the final outputs
 def save(
     sdf_out, cen, vc_out, sa_out, iua_out, fua_out, start_time, end_time, fig, **inputs
 ):
-    fname = os.path.join(inputs["out_files_dir"], os.path.basename(inputs["filepath"]))
+    filename = os.path.splitext(os.path.basename(inputs["filepath"]))[0]
+    fname = os.path.join(inputs["out_files_dir"], filename)
+    unique_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3))
 
     # save the plots
-    fig.savefig(
-        fname=fname + "--plots.png",
-        dpi="figure",
-        format="png",
-        facecolor="w",
-    )
+    fig_assets = [fig]
+    if inputs["save_data"]:
+        fig_path = f"{fname}-plots-{pkg_version}-{unique_id}.png"
+        fig.savefig(
+            fname=fig_path,
+            dpi="figure",
+            format="png",
+            facecolor="w",
+            )
+        fig_assets.append(fig_path)
 
     # save the function inputs used for this run
+    inputs.pop("bytestring", None)
     inputs_df = pd.DataFrame.from_dict(inputs, orient="index", columns=["Input"])
-    inputs_df.to_csv(fname + "--inputs" + ".csv", index=True, header=False)
+    inputs_assets = [inputs_df]
+    if inputs["save_data"]:
+        inputs_path = f"{fname}-inputs-{pkg_version}-{unique_id}.csv"
+        inputs_df.to_csv(inputs_path, index=True, header=False)
+        inputs_assets.append(inputs_path)
 
     # save the noisy velocity trace
     velocity_data = np.stack((vc_out["time_f"], vc_out["velocity_f"]), axis=1)
-    np.savetxt(fname + "--velocity" + ".csv", velocity_data, delimiter=",")
+    velocity_assets = [velocity_data]
+    if inputs["save_data"]:
+        velocity_path = f"{fname}-velocity-{pkg_version}-{unique_id}.csv" 
+        np.savetxt(velocity_path, velocity_data, delimiter=",")
+        velocity_assets.append(velocity_path)
 
     # save the smoothed velocity trace
     velocity_data_smooth = np.stack(
         (vc_out["time_f"], vc_out["velocity_f_smooth"]), axis=1
     )
-    np.savetxt(
-        fname + "--velocity--smooth" + ".csv",
-        velocity_data_smooth,
-        delimiter=",",
-    )
-
+    smooth_velocity_assets = [velocity_data_smooth]
+    if inputs["save_data"]:
+        smooth_velocity_path = f"{fname}-velocity--smooth-{pkg_version}-{unique_id}.csv" 
+        np.savetxt(
+            smooth_velocity_path,
+            velocity_data_smooth,
+            delimiter=",",
+        )
+        smooth_velocity_assets.append(smooth_velocity_path)
+    
     # save the filtered voltage data
     voltage_data = np.stack(
         (
@@ -45,80 +73,31 @@ def save(
         ),
         axis=1,
     )
-    np.savetxt(fname + "--voltage" + ".csv", voltage_data, delimiter=",")
+    voltage_assets = [voltage_data]
+    if inputs["save_data"]:
+        voltage_path = f"{fname}-voltage-{pkg_version}-{unique_id}.csv"  
+        np.savetxt(voltage_path, voltage_data, delimiter=",")
+        voltage_assets.append(voltage_path)
 
     # save the noise fraction
     noise_data = np.stack((vc_out["time_f"], iua_out["inst_noise"]), axis=1)
-    np.savetxt(fname + "--noisefrac" + ".csv", noise_data, delimiter=",")
+    noise_assets = [noise_data]
+    if inputs["save_data"]:
+        noise_path = f"{fname}-noisefrac-{pkg_version}-{unique_id}.csv"  
+        np.savetxt(noise_path, noise_data, delimiter=",")
+        noise_assets.append(noise_path)
 
     # save the velocity uncertainty
     vel_uncert_data = np.stack((vc_out["time_f"], iua_out["vel_uncert"]), axis=1)
-    np.savetxt(
-        fname + "--veluncert" + ".csv",
-        vel_uncert_data,
-        delimiter=",",
-    )
-
-    # save the final results
-    # results_to_save = {
-    #     "Name": [
-    #         "Date",
-    #         "Time",
-    #         "File Name",
-    #         "Run Time",
-    #         "Velocity at Max Compression",
-    #         "Time at Max Compression",
-    #         "Velocity at Max Tension",
-    #         "Time at Max Tension",
-    #         "Velocity at Recompression",
-    #         "Time at Recompression",
-    #         "Carrier Frequency",
-    #         "Spall Strength",
-    #         "Spall Strength Uncertainty",
-    #         "Strain Rate",
-    #         "Strain Rate Uncertainty",
-    #         "Peak Shock Stress",
-    #         "Spect Time Res",
-    #         "Spect Freq Res",
-    #         "Spect Velocity Res",
-    #         "Signal Start Time",
-    #         "Smoothing Characteristic Time",
-    #     ],
-    #     "Value": [
-    #         start_time.strftime("%b %d %Y"),
-    #         start_time.strftime("%I:%M %p"),
-    #         os.path.basename(inputs["filepath"]),
-    #         (end_time - start_time),
-    #         sa_out["v_max_comp"],
-    #         sa_out["t_max_comp"],
-    #         sa_out["v_max_ten"],
-    #         sa_out["t_max_ten"],
-    #         sa_out["v_rc"],
-    #         sa_out["t_rc"],
-    #         cen,
-    #         sa_out["spall_strength_est"],
-    #         fua_out["spall_uncert"],
-    #         sa_out["strain_rate_est"],
-    #         fua_out["strain_rate_uncert"],
-    #         (0.5 * inputs["density"] * inputs["C0"] * sa_out["v_max_comp"]),
-    #         sdf_out["t_res"],
-    #         sdf_out["f_res"],
-    #         0.5 * (inputs["lam"] * sdf_out["f_res"]),
-    #         sdf_out["t_start_corrected"],
-    #         iua_out["tau"],
-    #     ],
-    # }
-    # results_df = pd.DataFrame(data=results_to_save)
-    # results_df.to_csv(fname + "--results" + ".csv", index=False, header=False)
-
-    # # display the final results table in nanoseconds to make it more readable
-    # # the data in the saved file is still in seconds
-    # results_df.loc[5, "Value"] /= 1e-9
-    # results_df.loc[7, "Value"] /= 1e-9
-    # results_df.loc[9, "Value"] /= 1e-9
-    # results_df.loc[16, "Value"] /= 1e-9
-    # results_df.loc[19, "Value"] /= 1e-9
-    # results_df.loc[20, "Value"] /= 1e-9
+    vel_uncert_assets = [vel_uncert_data]
+    if inputs["save_data"]:
+        vel_uncert_path = f"{fname}-veluncert-{pkg_version}-{unique_id}.csv"
+        np.savetxt(
+            vel_uncert_path,
+            vel_uncert_data,
+            delimiter=",",
+        )
+        vel_uncert_assets.append(vel_uncert_path)
 
     results_to_save = {
         "Date": start_time.strftime("%b %d %Y"),
@@ -150,12 +129,14 @@ def save(
     results_df = pd.DataFrame([results_to_save])
 
     # Optional: Convert units to nanoseconds for certain fields
-    results_df.loc[0, "Velocity at Max Compression"] /= 1e-9
-    results_df.loc[0, "Velocity at Max Tension"] /= 1e-9
-    results_df.loc[0, "Velocity at Recompression"] /= 1e-9
-    results_df.loc[0, "Spect Time Res"] /= 1e-9
-    results_df.loc[0, "Spect Velocity Res"] /= 1e-9
-    results_df.loc[0, "Signal Start Time"] /= 1e-9
+    # results_df.loc[0, "Velocity at Max Compression"] /= 1e-9
+    # results_df.loc[0, "Velocity at Max Tension"] /= 1e-9
+    # results_df.loc[0, "Velocity at Recompression"] /= 1e-9
+    # results_df.loc[0, "Spect Time Res"] /= 1e-9
+    # results_df.loc[0, "Spect Velocity Res"] /= 1e-9
+    # results_df.loc[0, "Signal Start Time"] /= 1e-9
 
-    display(results_df)
-    return results_to_save
+    results_dict = results_df.iloc[0].to_dict()
+
+    display(results_dict)
+    return {"figure": fig_assets, "inputs": inputs_assets, "velocity": velocity_assets, "smooth_velocity": smooth_velocity_assets,"voltage":voltage_assets, "noise":noise_assets, "vel_uncert":vel_uncert_assets,  "results" : results_dict}

@@ -1,5 +1,9 @@
 from scipy.signal import ShortTimeFFT
 import numpy as np
+import io
+import pandas as pd
+import logging
+
 
 # function to calculate the short time fourier transform (stft) of a signal. ALPSS was originally built with a scipy
 # STFT function that may now be deprecated in the future. This function seeks to roughly replicate the behavior of the
@@ -37,3 +41,42 @@ def stft(voltage, fs, **inputs):
 
     # return the frequency, time, and magnitude arrays
     return f, t_crop, Sx_crop
+
+
+def extract_data(inputs):
+    # Calculate the time interval between samples
+    t_step = 1 / inputs["sample_rate"]
+
+    # Calculate how many rows to skip:
+    # - Skip the number of header lines
+    # - Plus the number of rows that correspond to the time to skip
+    rows_to_skip = (
+        inputs["header_lines"] + inputs["time_to_skip"] / t_step
+    )  # skip the 5 header lines too
+
+    # Calculate the number of rows to read based on how much time's worth of data we want
+    nrows = inputs["time_to_take"] / t_step
+
+    # Get the file path from the inputs
+    fname = inputs["filepath"]
+
+    # If the data is provided as a byte string (e.g., uploaded in memory)
+    if "bytestring" in inputs and isinstance(inputs["bytestring"], bytes):
+        data = pd.read_csv(
+            io.BytesIO(inputs["bytestring"]),  # Read from the byte string as a file
+            skiprows=int(rows_to_skip),        # Skip calculated number of rows
+            nrows=int(nrows),                  # Read only the desired number of rows
+        )
+    # If a file path is provided as a string
+    elif isinstance(fname, str):
+        data = pd.read_csv(
+            fname,                             # Read from file path
+            skiprows=int(rows_to_skip),        # Skip calculated number of rows
+            nrows=int(nrows),                  # Read only the desired number of rows
+        )
+    # If input type is not supported, raise an error
+    else:
+        raise TypeError(f"Unsupported input type, which must be 'bytestring' or 'filepath': {type(fname)}")
+
+    # Return the extracted data as a DataFrame
+    return data

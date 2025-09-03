@@ -3,6 +3,8 @@ import numpy as np
 from matplotlib.patches import Rectangle
 import pandas as pd
 import os
+from alpss.utils import stft
+import numpy as np
 
 
 # function to generate the final figure
@@ -129,7 +131,7 @@ def plot_results(
     )
     ax4.axvline(sdf_out["t_start_detected"] / 1e-9, ls="--", c="r")
     ax4.axvline(sdf_out["t_start_corrected"] / 1e-9, ls="-", c="r")
-    if inputs["start_time_user"] == "none":
+    if inputs["start_time_user"] == "otsu":
         ax4.axhline(sdf_out["f_doi"][sdf_out["f_doi_carr_top_idx"]] / 1e9, c="r")
     ax4.set_ylim([inputs["freq_min"] / 1e9, inputs["freq_max"] / 1e9])
     ax4.set_xlim([sdf_out["t_doi_start"] / 1e-9, sdf_out["t_doi_end"] / 1e-9])
@@ -155,7 +157,7 @@ def plot_results(
     fig.colorbar(plt5, ax=ax5, label="Power (dBm)")
     ax5.axvline(sdf_out["t_start_detected"] / 1e-9, ls="--", c="r")
     ax5.axvline(sdf_out["t_start_corrected"] / 1e-9, ls="-", c="r")
-    if inputs["start_time_user"] == "none":
+    if inputs["start_time_user"] == "otsu":
         ax5.axhline(sdf_out["f_doi"][sdf_out["f_doi_carr_top_idx"]] / 1e9, c="r")
     ax5.set_ylim([inputs["freq_min"] / 1e9, inputs["freq_max"] / 1e9])
     ax5.set_xlim([sdf_out["t_doi_start"] / 1e-9, sdf_out["t_doi_end"] / 1e-9])
@@ -406,24 +408,7 @@ def plot_results(
     return fig
 
 
-from alpss.utils import stft
-import numpy as np
-
-
-def plot_voltage(**inputs):
-    # import the desired data. Convert the time to skip and turn into number of rows
-    t_step = 1 / inputs["sample_rate"]
-    rows_to_skip = (
-        inputs["header_lines"] + inputs["time_to_skip"] / t_step
-    )  # skip the header lines too
-    nrows = inputs["time_to_take"] / t_step
-
-    # change directory to where the data is stored
-    data = pd.read_csv(
-        inputs["filepath"],
-        skiprows=int(rows_to_skip),
-        nrows=int(nrows),
-    )
+def plot_voltage(data, **inputs):
 
     # rename the columns of the data
     data.columns = ["Time", "Ampl"]
@@ -462,7 +447,7 @@ def plot_voltage(**inputs):
     plt.tight_layout()
     if inputs["save_data"] == "yes":
         fname = os.path.join(
-            inputs["out_files_dir"], os.path.basename(inputs["filepath"])
+            inputs["out_files_dir"], os.path.splitext(os.path.basename(inputs["filepath"]))[0]
         )
         fig.savefig(f"{fname}--error_plot.png")
     if inputs["display_plots"] == "yes":
