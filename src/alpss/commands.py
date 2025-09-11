@@ -31,28 +31,27 @@ def load_json_config(config):
     )
 
 
-def alpss_main_with_config(config=None):
+def alpss_main_with_config(config):
     """
-    Run ALPSS with a given YAML configuration.
+    Run ALPSS with a given JSON configuration.
 
     Args:
-        config (str or dict, optional): Path to a YAML config file, either given through CLI or directly as a string, or a dictionary containing config parameters.
+        config (str or dict, optional): Path to a JSON config file, either given through CLI or directly as a string, or a dictionary containing config parameters.
     """
     if config is None:  # expects an argument to be passed from CLI
         # If called from CLI, parse arguments
         parser = argparse.ArgumentParser(
-            description="Run ALPSS using a YAML config file"
+            description="Run ALPSS using a JSON config file"
         )
         parser.add_argument(
-            "config_path", type=str, help="Path to the YAML configuration file"
+            "config_path", type=str, help="Path to the JSON configuration file"
         )
         args = parser.parse_args()
-        config = load_json_config(config)
+        config = load_json_config(args.config_path)
 
-    # Load the YAML config
+    # Load the dictionary or YAML config
     else:
-        if type(config) == str:  # expects a path to a config file to be passed from CLI
-            config = load_json_config(config)
+        config = load_json_config(config)
 
     # Run ALPSS with the loaded config
     return alpss_main(**config)

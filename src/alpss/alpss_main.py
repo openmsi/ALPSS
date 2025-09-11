@@ -14,26 +14,32 @@ from datetime import datetime
 import traceback
 import logging
 
-logging.basicConfig(
-    level=logging.ERROR,  # Minimum level of messages to log (can be DEBUG, INFO, WARNING, ERROR, CRITICAL)
-    format="%(asctime)s - %(levelname)s - %(message)s",  # Log format (include timestamp, level, message)
-    handlers=[
-        logging.FileHandler("error_log.txt"),  # Log to a file
-        logging.StreamHandler(),  # Also log to console
-    ],
-)
+def setup_alpss_logger():
+    logger = logging.getLogger("alpss")
+
+    if not logger.handlers:  # no handlers = nothing configured yet
+        # Standalone mode → set up a default
+        handler = logging.StreamHandler()
+        handler.setLevel(logging.INFO)
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
+
+    # Otherwise (if processor already set things up) → just use its config
+    return logger
+
+logger = setup_alpss_logger()
 
 # main function to link together all the sub-functions
 def alpss_main(**inputs):
     # validate the inputs for the run
     validate_inputs(inputs)
-
     # attempt to run the program in full
     try:
         # begin the program timer
 
         start_time = datetime.now()
-
         data = extract_data(inputs)
 
         # function to find the spall signal domain of interest
@@ -78,7 +84,7 @@ def alpss_main(**inputs):
         # MOVED to plotting
         # end final timer and display full runtime
         end_time2 = datetime.now()
-        logging.info(
+        logger.info(
             f"\nFull program runtime (including plotting and saving):\n{end_time2 - start_time}\n"
         )
 
@@ -101,17 +107,17 @@ def alpss_main(**inputs):
 
     # in case the program throws an error
     except Exception as e:
-        logging.error("Error in the execution of the main program:: %s", str(e))
-        logging.error("Traceback: %s", traceback.format_exc())
+        logger.error("Error in the execution of the main program:: %s", str(e))
+        logger.error("Traceback: %s", traceback.format_exc())
 
         # attempt to plot the voltage signal from the imported data
         try:
-            logging.info("Attempting a fallback visualization of the voltage signal...")
+            logger.info("Attempting a fallback visualization of the voltage signal...")
             plot_voltage(data, **inputs)
 
         # if that also fails then log the traceback and stop running the program
         except Exception as e:
-            logging.error(
+            logger.error(
                 "Error in the fallback visualization of the voltage signal: %s", str(e)
             )
-            logging.error("Traceback: %s", traceback.format_exc())
+            logger.error("Traceback: %s", traceback.format_exc())
