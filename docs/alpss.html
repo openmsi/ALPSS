@@ -328,7 +328,8 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scientific-background">Scientific Background</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#software-usage">Software Usage</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">📦 Installation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-package-pip">📦 Python Package (Pip)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#docker-container">🐳 Docker Container</a></li>
 </ul>
 </li>
 </ul>
@@ -344,7 +345,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="alpss-automated-analysis-of-pdv-spall-signals">
 <h1>ALPSS: Automated Analysis of PDV Spall Signals<a class="headerlink" href="#alpss-automated-analysis-of-pdv-spall-signals" title="Link to this heading">#</a></h1>
-<p><strong>ALPSS</strong> (A naL ysis of P hotonic Doppler velocimetry S ignals of S pall) automates the analysis of PDV traces generated in laser shock experiments.</p>
+<p><strong>ALPSS</strong> (Analysis of Photonic Doppler velocimetry Signals of Spall) automates the analysis of PDV traces generated in laser shock experiments.</p>
 <hr class="docutils" />
 <section id="scientific-background">
 <h2>Scientific Background<a class="headerlink" href="#scientific-background" title="Link to this heading">#</a></h2>
@@ -384,41 +385,59 @@ document.write(`
 <hr class="docutils" />
 <section id="software-usage">
 <h2>Software Usage<a class="headerlink" href="#software-usage" title="Link to this heading">#</a></h2>
-<p>ALPSS is distributed as a <strong>Python package</strong> and <strong>Docker container</strong>. It can be run in multiple ways:</p>
-<section id="installation">
-<h3>📦 Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h3>
+<p>ALPSS is distributed as both a <strong>Python package</strong> and a <strong>Docker container</strong>. You can run it in several ways depending on your workflow.</p>
+<hr class="docutils" />
+<section id="python-package-pip">
+<h3>📦 Python Package (Pip)<a class="headerlink" href="#python-package-pip" title="Link to this heading">#</a></h3>
+<p>Install via pip:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>alpss
 </pre></div>
 </div>
-<p>or pull the container:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>openmsi/alpss:latest
-</pre></div>
-</div>
-<p>once install, to run the code, you can use a CLI entrypoint that comes with the package/docker image:</p>
+<p>Run from the command line using the provided CLI entrypoint:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>alpss<span class="w"> </span>path/to/config.json
 </pre></div>
 </div>
-<p>Or run from python:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>alpss<span class="w"> </span>import<span class="w"> </span>alpss_main
+<p>Or, call it directly from a Python script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alpss</span><span class="w"> </span><span class="kn">import</span> <span class="n">alpss_main</span>
 
-<span class="nv">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;out_files_dir&quot;</span>:<span class="w"> </span><span class="s2">&quot;output_data/&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;start_time_user&quot;</span>:<span class="w"> </span><span class="s2">&quot;otsu&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;carrier_filter_type&quot;</span>:<span class="w"> </span><span class="s2">&quot;gaussian_notch&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;save_data&quot;</span>:<span class="w"> </span><span class="s2">&quot;yes&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;display_plots&quot;</span>:<span class="w"> </span><span class="s2">&quot;no&quot;</span>
-<span class="w">    </span><span class="c1"># ... other parameters ...</span>
-<span class="o">}</span>
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;filepath&quot;</span> <span class="p">:</span> <span class="s2">&quot;path/to/file&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;out_files_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;path/to/output/folder&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;start_time_user&quot;</span><span class="p">:</span> <span class="s2">&quot;otsu&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;carrier_filter_type&quot;</span><span class="p">:</span> <span class="s2">&quot;gaussian_notch&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;save_data&quot;</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;display_plots&quot;</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span>
+    <span class="c1"># ... other parameters ...</span>
+<span class="p">}</span>
 
-fig,<span class="w"> </span><span class="nv">items</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>alpss_main<span class="o">(</span>**config<span class="o">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">items</span> <span class="o">=</span> <span class="n">alpss_main</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>⚙️ Example Config File</p>
-<p>Outputs</p>
+</section>
+<hr class="docutils" />
+<section id="docker-container">
+<h3>🐳 Docker Container<a class="headerlink" href="#docker-container" title="Link to this heading">#</a></h3>
+<p>Pull the container image:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>openmsi/alpss:latest
+</pre></div>
+</div>
+<p>To run, mount your input directory and configuration file.<br />
+The config must specify a <code class="docutils literal notranslate"><span class="pre">filepath</span></code> pointing to your input data, e.g., <code class="docutils literal notranslate"><span class="pre">input_data/[FILENAME].csv</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="o">[</span>path/to/input/folder<span class="o">]</span>:/workspace/input_data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="o">[</span>path/to/config/file<span class="o">]</span>:/workspace/config.json:ro<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-w<span class="w"> </span>/workspace<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>openmsi/alpss:latest<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>alpss<span class="w"> </span>config.json
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>⚙️ <a class="reference download internal" download="" href="../_downloads/81b18d6e588fedabe58a6024606381d8/config.json"><span class="xref download myst">Example Config File</span></a></p>
+<p>Outputs generated by ALPSS include:</p>
 <ul class="simple">
-<li><p>Figures: processed PDV traces and spall annotations</p></li>
-<li><p>Data files: velocity, uncertainty, and derived quantities</p></li>
-<li><p>Logs: full runtime and step-by-step diagnostics</p></li>
+<li><p><strong>Figures</strong>: processed PDV traces and spall annotations</p></li>
+<li><p><strong>Data files</strong>: velocity, uncertainty, and derived quantities</p></li>
+<li><p><strong>Logs</strong>: full runtime details and step-by-step diagnostics</p></li>
 </ul>
 </section>
 </section>
@@ -490,7 +509,8 @@ fig,<span class="w"> </span><span class="nv">items</span><span class="w"> </span
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scientific-background">Scientific Background</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#software-usage">Software Usage</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">📦 Installation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-package-pip">📦 Python Package (Pip)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#docker-container">🐳 Docker Container</a></li>
 </ul>
 </li>
 </ul>

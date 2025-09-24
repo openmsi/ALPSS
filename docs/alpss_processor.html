@@ -342,15 +342,14 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="alpss-processor-streaming-analysis">
 <h1>ALPSS Processor: Streaming Analysis<a class="headerlink" href="#alpss-processor-streaming-analysis" title="Link to this heading">#</a></h1>
-<p>The <strong>ALPSS Processor</strong> extends ALPSS to a streaming environment.<br />
-It integrates with <strong>OpenMSIStream</strong> and Kafka to analyze PDV traces <em>as they are generated</em>.</p>
+<p>The <strong>ALPSS Processor</strong> extends ALPSS to a streaming environment. It integrates with <a class="reference external" href="https://openmsistream.readthedocs.io/en/latest/"><strong>openmsistream</strong></a> and Kafka to analyze PDV traces <em>as they are generated</em>.</p>
 <hr class="docutils" />
 <section id="how-it-works">
 <h2>How It Works<a class="headerlink" href="#how-it-works" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p><strong>Input</strong>: PDV traces are streamed from the laser shock setup onto a Kafka topic.</p></li>
-<li><p><strong>Processing</strong>: ALPSS Processor consumes the PDV files and runs <code class="docutils literal notranslate"><span class="pre">alpss_main_with_config</span></code> automatically.</p></li>
-<li><p><strong>Outputs</strong>: Results (figures, data files) are uploaded to the platform’s data repository.</p></li>
+<li><p><strong>Processing</strong>: ALPSS Processor consumes the PDV files and runs automatically using a config file.</p></li>
+<li><p><strong>Outputs</strong>: Results (figures, data files) are uploaded to <a class="reference external" href="https://data.htmdec.org/">https://data.htmdec.org/</a>, either in the AIMD-L or Malone Labc collection.</p></li>
 </ol>
 </section>
 <hr class="docutils" />
@@ -358,9 +357,9 @@ It integrates with <strong>OpenMSIStream</strong> and Kafka to analyze PDV trace
 <h2>Metadata Enrichment<a class="headerlink" href="#metadata-enrichment" title="Link to this heading">#</a></h2>
 <p>Each uploaded output file is enriched with metadata, making results fully <strong>queryable</strong> and <strong>traceable</strong>:</p>
 <ul class="simple">
+<li><p>All key/value pairs from the ALPSS config file</p></li>
 <li><p>ALPSS config file checksum (SHA-256)</p></li>
-<li><p>All key/value pairs from the ALPSS config (flattened)</p></li>
-<li><p>Output identifiers (linking results back to input PDV trace)</p></li>
+<li><p>Output identifiers, linking results back to input PDV trace (e.g., –volt, –velocity, etc)</p></li>
 </ul>
 <p>This ensures that every result is tied back to:</p>
 <ul class="simple">

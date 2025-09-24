@@ -361,7 +361,7 @@ The IGSN acts as the backbone for linking:</p>
 <section id="parameters-metadata">
 <h2>Parameters (Metadata)<a class="headerlink" href="#parameters-metadata" title="Link to this heading">#</a></h2>
 <p>Each experiment is described and stored using a <strong>JSON Schema</strong> that defines all the required metadata fields.
-This schema is rendered as a form on <a class="reference external" href="http://www.data.htmdec.org">www.data.htmdec.org</a>, allowing researchers to fill in parameters such as:</p>
+This schema is rendered as a form on <a class="reference external" href="https://data.htmdec.org/">https://data.htmdec.org/</a>, allowing researchers to fill in parameters such as:</p>
 <ul class="simple">
 <li><p>Experiment ID and Timestamp</p></li>
 <li><p>Flyer ID, material, and thickness</p></li>
@@ -369,9 +369,9 @@ This schema is rendered as a form on <a class="reference external" href="http://
 <li><p>Laser parameters (energy, waveplate angle)</p></li>
 <li><p>PDV file name and measurement parameters</p></li>
 </ul>
-<p><img alt="Laser Shock Experiment Form on Data Portal" src="../_images/experiments.png" />
-<img alt="Laser Shock Experiment Record on Data Portal" src="../_images/experiment_record.png" /></p>
-<p>The ingest can be done manually by entering and saving the details on the platform, or in automated fashion, like in the AIMD-L lab, where an experiment run via the central controller ensure an IGSN is provided, and all the metadata is sent to the portal via a POST call, which links everything together.</p>
+<p>The ingest can be done manually, by entering and saving details on the platform, or automatically. For example, in the AIMD-L lab, experiments run through the central controller automatically link to an IGSN, and all metadata is sent to the portal via a POST call, ensuring everything is linked together.</p>
+<p><img alt="Laser Shock Experiment Form on Data Portal" src="../_images/experiments.png" /></p>
+<p><img alt="Laser Shock Experiment Record on Data Portal" src="../_images/experiment_record.png" /></p>
 <section id="json-schema-and-data-accessibility">
 <h3>JSON Schema and Data Accessibility<a class="headerlink" href="#json-schema-and-data-accessibility" title="Link to this heading">#</a></h3>
 <ul class="simple">
@@ -383,7 +383,7 @@ This schema is rendered as a form on <a class="reference external" href="http://
 </section>
 <section id="data-artefacts-data">
 <h2>Data artefacts (“Data”)<a class="headerlink" href="#data-artefacts-data" title="Link to this heading">#</a></h2>
-<p>Output files, like PDV traces, Beam Profile images (.bmg), or camera images, are also all tracked and linked to the IGSN. They come from different sources, most streamed to <a class="reference external" href="http://data.htmdec.org">data.htmdec.org</a>, and using naming convention, linked to the apprpriate IGSN. They can be found in the <strong>AIMD-L</strong> or <strong>Malone Lab</strong> Collections, depending on the origin.</p>
+<p>Output files—such as PDV traces, beam profile images (.bmg), or camera images—are also tracked and linked to their IGSN. These files originate from different sources, most of which stream directly to <a class="reference external" href="https://data.htmdec.org/">https://data.htmdec.org/</a>. Using standardized naming conventions, they are automatically associated with the correct IGSN and can be found in the AIMD-L or Malone Lab collections, depending on their origin.</p>
 <hr class="docutils" />
 </section>
 </section>
