@@ -36,7 +36,7 @@ def alpss_main_with_config(config):
     Run ALPSS with a given JSON configuration.
 
     Args:
-        config (str or dict, optional): Path to a JSON config file, either given through CLI or directly as a string, or a dictionary containing config parameters.
+        config (str or dict, optional): JSON config file, either given as parsable argument through CLI or directly as a string, or a dictionary containing config parameters.
     """
     if config is None:  # expects an argument to be passed from CLI
         # If called from CLI, parse arguments
