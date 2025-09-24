@@ -5,17 +5,11 @@ from alpss.alpss_main import alpss_main
 import os
 import json
 import logging
-
-"""
-Credit to Michael Cho
-https://michaelcho.me/article/using-pythons-watchdog-to-monitor-changes-to-a-directory
-"""
-
+import sys
 
 def start_watcher():
     w = Watcher()
     w.run()
-
 
 def load_json_config(config):
     """Load configuration from a JSON file or return directly if it's already a dictionary."""
@@ -30,15 +24,15 @@ def load_json_config(config):
         "Invalid config input: Provide a dictionary or a valid JSON file path."
     )
 
-
-def alpss_main_with_config(config):
+def alpss_main_with_config(config=None):
     """
     Run ALPSS with a given JSON configuration.
 
     Args:
-        config (str or dict, optional): Path to a JSON config file, either given through CLI or directly as a string, or a dictionary containing config parameters.
+        config (str or dict, optional): JSON config file, either given as parsable argument through CLI or directly as a string, or a dictionary containing config parameters.
     """
-    if config is None:  # expects an argument to be passed from CLI
+
+    if config is None: 
         # If called from CLI, parse arguments
         parser = argparse.ArgumentParser(
             description="Run ALPSS using a JSON config file"
@@ -55,3 +49,14 @@ def alpss_main_with_config(config):
 
     # Run ALPSS with the loaded config
     return alpss_main(**config)
+
+def alpss_cli():
+    """
+    Entry point for console_scripts.
+    Always uses sys.argv so `alpss /path/to/config.json` works.
+    """
+    try:
+        sys.exit(alpss_main_with_config())
+    except Exception as e:
+        print(f"[ALPSS ERROR] {e}", file=sys.stderr)
+        sys.exit(1)

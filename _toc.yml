@@ -1,0 +1,12 @@
+format: jb-book
+root: docs/introduction
+
+chapters:
+- file: docs/laser_shock_experiment
+  title: Laser Shock Experiment
+- file: docs/alpss
+  title: ALPSS
+- file: docs/alpss_processor
+  title: ALPSS Processor
+- file: docs/platform_integration
+  title: Platform Integration
