@@ -1,0 +1,666 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>&lt;no title&gt; &#8212; Laser Shock Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'src/alpss/alpss_run';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../docs/introduction.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Laser Shock Documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../docs/introduction.html">
+                    Introduction
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../docs/laser_shock_experiment.html">Laser Shock Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docs/alpss.html">ALPSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docs/alpss_processor.html">ALPSS Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../docs/platform_integration.html">Platform Integration</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/src/alpss/alpss_run.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1><no title></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="simple visible nav section-nav flex-column">
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alpss_main</span><span class="w"> </span><span class="kn">import</span> <span class="n">alpss_main</span>
+
+<span class="c1"># matplotlib.use(&#39;agg&#39;)</span>
+
+<span class="n">alpss_main</span><span class="p">(</span>
+    <span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;/srv/hemi01-j01/ALPSS/tests/input_data/example_file.csv&quot;</span><span class="p">,</span>
+    <span class="n">save_data</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span>
+    <span class="n">start_time_user</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span>
+    <span class="n">header_lines</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">time_to_skip</span><span class="o">=</span><span class="mf">0e-6</span><span class="p">,</span>
+    <span class="n">time_to_take</span><span class="o">=</span><span class="mf">10e-6</span><span class="p">,</span>
+    <span class="n">t_before</span><span class="o">=</span><span class="mf">10e-9</span><span class="p">,</span>
+    <span class="n">t_after</span><span class="o">=</span><span class="mf">200e-9</span><span class="p">,</span>
+    <span class="n">start_time_correction</span><span class="o">=</span><span class="mf">0e-9</span><span class="p">,</span>
+    <span class="n">freq_min</span><span class="o">=</span><span class="mf">1e9</span><span class="p">,</span>
+    <span class="n">freq_max</span><span class="o">=</span><span class="mf">5e9</span><span class="p">,</span>
+    <span class="n">smoothing_window</span><span class="o">=</span><span class="mi">1001</span><span class="p">,</span>
+    <span class="n">smoothing_wid</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">smoothing_amp</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">smoothing_sigma</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">smoothing_mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">pb_neighbors</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+    <span class="n">pb_idx_correction</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">rc_neighbors</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+    <span class="n">rc_idx_correction</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="o">=</span><span class="mf">128e9</span><span class="p">,</span>
+    <span class="n">nperseg</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+    <span class="n">noverlap</span><span class="o">=</span><span class="mi">435</span><span class="p">,</span>
+    <span class="n">nfft</span><span class="o">=</span><span class="mi">5120</span><span class="p">,</span>
+    <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+    <span class="n">blur_kernel</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">blur_sigx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">blur_sigy</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">carrier_band_time</span><span class="o">=</span><span class="mf">250e-9</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
+    <span class="n">uncert_mult</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">wid</span><span class="o">=</span><span class="mf">15e7</span><span class="p">,</span>
+    <span class="n">lam</span><span class="o">=</span><span class="mf">1550.016e-9</span><span class="p">,</span>
+    <span class="n">C0</span><span class="o">=</span><span class="mi">4540</span><span class="p">,</span>
+    <span class="n">density</span><span class="o">=</span><span class="mi">1730</span><span class="p">,</span>
+    <span class="n">delta_rho</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+    <span class="n">delta_C0</span><span class="o">=</span><span class="mi">23</span><span class="p">,</span>
+    <span class="n">delta_lam</span><span class="o">=</span><span class="mf">8e-18</span><span class="p">,</span>
+    <span class="n">theta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">delta_theta</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">out_files_dir</span><span class="o">=</span><span class="s2">&quot;/srv/hemi01-j01/ALPSS/tests/output_data&quot;</span><span class="p">,</span>
+    <span class="n">display_plots</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span>
+    <span class="n">spall_calculation</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span>
+    <span class="n">plot_figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+    <span class="n">plot_dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/7d00deb4b9999fc853f9bcb3e3ea4245c246bc67166ac13b49ac05ffaeb8ed65.png" src="../../_images/7d00deb4b9999fc853f9bcb3e3ea4245c246bc67166ac13b49ac05ffaeb8ed65.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Name</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Date</td>
+      <td>Jan 16 2025</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Time</td>
+      <td>10:38 AM</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>File Name</td>
+      <td>example_file.csv</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Run Time</td>
+      <td>0:00:05.423252</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Velocity at Max Compression</td>
+      <td>873.545099</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Time at Max Compression</td>
+      <td>3041.92525</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Velocity at Max Tension</td>
+      <td>359.744964</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Time at Max Tension</td>
+      <td>3073.31276</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Velocity at Recompression</td>
+      <td>364.31683</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Time at Recompression</td>
+      <td>3076.41276</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Carrier Frequency</td>
+      <td>2233199812.41015</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Spall Strength</td>
+      <td>2017744509.729549</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Spall Strength Uncertainty</td>
+      <td>23609426.814541</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Strain Rate</td>
+      <td>1802816.404935</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Strain Rate Uncertainty</td>
+      <td>396836.143379</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>Peak Shock Stress</td>
+      <td>3430498956.449497</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>Spect Time Res</td>
+      <td>0.9625</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>Spect Freq Res</td>
+      <td>15624998.687493</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>Spect Velocity Res</td>
+      <td>12.109499</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>Signal Start Time</td>
+      <td>2915.412745</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>Smoothing Characteristic Time</td>
+      <td>4.879875</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&lt;Figure size 9000x3000 with 16 Axes&gt;,
+ {&#39;Name&#39;: [&#39;Date&#39;,
+   &#39;Time&#39;,
+   &#39;File Name&#39;,
+   &#39;Run Time&#39;,
+   &#39;Velocity at Max Compression&#39;,
+   &#39;Time at Max Compression&#39;,
+   &#39;Velocity at Max Tension&#39;,
+   &#39;Time at Max Tension&#39;,
+   &#39;Velocity at Recompression&#39;,
+   &#39;Time at Recompression&#39;,
+   &#39;Carrier Frequency&#39;,
+   &#39;Spall Strength&#39;,
+   &#39;Spall Strength Uncertainty&#39;,
+   &#39;Strain Rate&#39;,
+   &#39;Strain Rate Uncertainty&#39;,
+   &#39;Peak Shock Stress&#39;,
+   &#39;Spect Time Res&#39;,
+   &#39;Spect Freq Res&#39;,
+   &#39;Spect Velocity Res&#39;,
+   &#39;Signal Start Time&#39;,
+   &#39;Smoothing Characteristic Time&#39;],
+  &#39;Value&#39;: [&#39;Jan 16 2025&#39;,
+   &#39;10:38 AM&#39;,
+   &#39;example_file.csv&#39;,
+   datetime.timedelta(seconds=5, microseconds=423252),
+   873.5450985331408,
+   3.041925250003852e-06,
+   359.74496364236944,
+   3.073312760004665e-06,
+   364.3168301692125,
+   3.076412760004421e-06,
+   2233199812.41015,
+   2017744509.7295487,
+   23609426.814541273,
+   1802816.4049345185,
+   396836.143378536,
+   3430498956.449497,
+   9.625000808504594e-10,
+   15624998.687492654,
+   12.109498982796307,
+   2.9154127448960416e-06,
+   4.879875409911828e-09]})
+</pre></div>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./src/alpss"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="simple visible nav section-nav flex-column">
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Laser Shock Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
