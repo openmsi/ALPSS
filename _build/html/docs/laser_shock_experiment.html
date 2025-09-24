@@ -312,8 +312,12 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#json-schema-and-data-accessibility">JSON Schema and Data Accessibility</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#igsn-integration">IGSN Integration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters-metadata">Parameters (Metadata)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#json-schema-and-data-accessibility">JSON Schema and Data Accessibility</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-artefacts-data">Data artefacts (“Data”)</a></li>
 </ul>
             </nav>
         </div>
@@ -327,9 +331,23 @@
                   
   <section class="tex2jax_ignore mathjax_ignore" id="laser-shock-experiment">
 <h1>Laser Shock Experiment<a class="headerlink" href="#laser-shock-experiment" title="Link to this heading">#</a></h1>
-<p>The Laser Shock team performs experiments where flyers impact samples to study spallation behavior.<br />
-Each experiment is described and stored using a <strong>JSON Schema</strong> that defines all the required metadata fields.</p>
-<p>This schema is rendered as a form in our platform, allowing researchers to fill in parameters such as:</p>
+<p>The Laser Shock team performs experiments where flyers impact samples to study spallation behavior.</p>
+<section id="igsn-integration">
+<h2>IGSN Integration<a class="headerlink" href="#igsn-integration" title="Link to this heading">#</a></h2>
+<p>Each <strong>sample</strong> and is registered with an <strong>International Geo Sample Number (IGSN)</strong>.<br />
+The IGSN acts as the backbone for linking:</p>
+<ul class="simple">
+<li><p>Sample identity and activity</p></li>
+<li><p>Laser shock experimental metadata</p></li>
+<li><p>Data artefacts, like PDV trace files</p></li>
+<li><p>Subsequent analysis results</p></li>
+</ul>
+<p>This guarantees that all data products — from raw experiment setup to processed analysis — can always be tied back to the correct sample.</p>
+</section>
+<section id="parameters-metadata">
+<h2>Parameters (Metadata)<a class="headerlink" href="#parameters-metadata" title="Link to this heading">#</a></h2>
+<p>Each experiment is described and stored using a <strong>JSON Schema</strong> that defines all the required metadata fields.
+This schema is rendered as a form on <a class="reference external" href="https://data.htmdec.org/">https://data.htmdec.org/</a>, allowing researchers to fill in parameters such as:</p>
 <ul class="simple">
 <li><p>Experiment ID and Timestamp</p></li>
 <li><p>Flyer ID, material, and thickness</p></li>
@@ -337,29 +355,22 @@ Each experiment is described and stored using a <strong>JSON Schema</strong> tha
 <li><p>Laser parameters (energy, waveplate angle)</p></li>
 <li><p>PDV file name and measurement parameters</p></li>
 </ul>
-<p><img alt="Laser Shock Experiment Form on Data Portal" src="../_images/experiments.png" />
-<img alt="Laser Shock Experiment Record on Data Portal" src="../_images/experiment_record.png" /></p>
-<hr class="docutils" />
+<p>The ingest can be done manually, by entering and saving details on the platform, or automatically. For example, in the AIMD-L lab, experiments run through the central controller automatically link to an IGSN, and all metadata is sent to the portal via a POST call, ensuring everything is linked together.</p>
+<p><img alt="Laser Shock Experiment Form on Data Portal" src="../_images/experiments.png" /></p>
+<p><img alt="Laser Shock Experiment Record on Data Portal" src="../_images/experiment_record.png" /></p>
 <section id="json-schema-and-data-accessibility">
-<h2>JSON Schema and Data Accessibility<a class="headerlink" href="#json-schema-and-data-accessibility" title="Link to this heading">#</a></h2>
+<h3>JSON Schema and Data Accessibility<a class="headerlink" href="#json-schema-and-data-accessibility" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>The schema ensures <strong>standardized metadata</strong> across all experiments.</p></li>
 <li><p>Data is <strong>queryable and parseable</strong> directly through the platform.</p></li>
 <li><p>Metadata can be <strong>downloaded as Excel or CSV files</strong> for further offline analysis.</p></li>
 </ul>
 </section>
+</section>
+<section id="data-artefacts-data">
+<h2>Data artefacts (“Data”)<a class="headerlink" href="#data-artefacts-data" title="Link to this heading">#</a></h2>
+<p>Output files—such as PDV traces, beam profile images (.bmg), or camera images—are also tracked and linked to their IGSN. These files originate from different sources, most of which stream directly to <a class="reference external" href="https://data.htmdec.org/">https://data.htmdec.org/</a>. Using standardized naming conventions, they are automatically associated with the correct IGSN and can be found in the AIMD-L or Malone Lab collections, depending on their origin.</p>
 <hr class="docutils" />
-<section id="igsn-integration">
-<h2>IGSN Integration<a class="headerlink" href="#igsn-integration" title="Link to this heading">#</a></h2>
-<p>Each <strong>sample</strong> is registered with an <strong>International Geo Sample Number (IGSN)</strong>.<br />
-The IGSN acts as the backbone for linking:</p>
-<ul class="simple">
-<li><p>Sample identity</p></li>
-<li><p>Laser shock experimental metadata</p></li>
-<li><p>PDV trace files</p></li>
-<li><p>Subsequent ALPSS analysis results</p></li>
-</ul>
-<p>This guarantees that all data products — from raw experiment setup to processed analysis — can always be tied back to the correct sample.</p>
 </section>
 </section>
 
@@ -428,8 +439,12 @@ The IGSN acts as the backbone for linking:</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#json-schema-and-data-accessibility">JSON Schema and Data Accessibility</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#igsn-integration">IGSN Integration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters-metadata">Parameters (Metadata)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#json-schema-and-data-accessibility">JSON Schema and Data Accessibility</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-artefacts-data">Data artefacts (“Data”)</a></li>
 </ul>
   </nav></div>
 

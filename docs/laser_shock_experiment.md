@@ -16,7 +16,7 @@ This guarantees that all data products — from raw experiment setup to processe
 
 ## Parameters (Metadata)
 Each experiment is described and stored using a **JSON Schema** that defines all the required metadata fields. 
-This schema is rendered as a form on www.data.htmdec.org, allowing researchers to fill in parameters such as:
+This schema is rendered as a form on https://data.htmdec.org/, allowing researchers to fill in parameters such as:
 
 - Experiment ID and Timestamp  
 - Flyer ID, material, and thickness  
@@ -24,12 +24,13 @@ This schema is rendered as a form on www.data.htmdec.org, allowing researchers t
 - Laser parameters (energy, waveplate angle)  
 - PDV file name and measurement parameters  
 
+The ingest can be done manually, by entering and saving details on the platform, or automatically. For example, in the AIMD-L lab, experiments run through the central controller automatically link to an IGSN, and all metadata is sent to the portal via a POST call, ensuring everything is linked together.
+
 ![Laser Shock Experiment Form on Data Portal](images/experiments.png)
+
 ![Laser Shock Experiment Record on Data Portal](images/experiment_record.png)
 
-The ingest can be done manually by entering and saving the details on the platform, or in automated fashion, like in the AIMD-L lab, where an experiment run via the central controller ensure an IGSN is provided, and all the metadata is sent to the portal via a POST call, which links everything together.
-
-### JSON Schema and Data Accessibility
+#### JSON Schema and Data Accessibility
 
 - The schema ensures **standardized metadata** across all experiments.  
 - Data is **queryable and parseable** directly through the platform.  
@@ -37,6 +38,6 @@ The ingest can be done manually by entering and saving the details on the platfo
 
 ## Data artefacts ("Data")
 
-Output files, like PDV traces, Beam Profile images (.bmg), or camera images, are also all tracked and linked to the IGSN. They come from different sources, most streamed to data.htmdec.org, and using naming convention, linked to the apprpriate IGSN. They can be found in the **AIMD-L** or **Malone Lab** Collections, depending on the origin. 
+Output files—such as PDV traces, beam profile images (.bmg), or camera images—are also tracked and linked to their IGSN. These files originate from different sources, most of which stream directly to https://data.htmdec.org/. Using standardized naming conventions, they are automatically associated with the correct IGSN and can be found in the AIMD-L or Malone Lab collections, depending on their origin.
 
 ---

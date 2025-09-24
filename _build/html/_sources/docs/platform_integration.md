@@ -10,17 +10,17 @@ It serves as the central identifier linking all layers of data:
 1. **Sample Registration**  
    - Each physical sample receives an IGSN.  
 
-2. **Experiment Metadata**  
-   - Laser shock experiments are logged using the JSON Schema.  
+2. **Experiment Run + Metadata**  
+   - Laser shock experiments are logged using the JSON Schema, either manually or automatically. 
    - Metadata is tied to the IGSN and can be queried/exported.  
 
 3. **PDV Trace Ingestion**  
-   - The laser shock controller streams PDV traces to Kafka.  
-   - Alternatively, metadata can be entered manually in the portal.  
+   - The laser shock systems produces raw PDV traces and other data artefacts, all streamed instantly using [**openmsistream**](https://openmsistream.readthedocs.io/en/latest/)
+ to the portal.  
 
 4. **ALPSS Processing**  
-   - ALPSS Processor consumes PDV traces in real-time.  
-   - Outputs and configs are uploaded and automatically linked back to the IGSN.  
+   - In parallel, ALPSS Processor consumes PDV traces from a stream using [**openmsistream**](https://openmsistream.readthedocs.io/en/latest/) in real-time.  
+   - Outputs and configs are uploaded to the portal and automatically linked back to the IGSN.  
 
 5. **Data Accessibility**  
    - Results can be searched by sample, experiment conditions, or ALPSS parameters.  
@@ -30,7 +30,7 @@ It serves as the central identifier linking all layers of data:
 
 ## Integration Diagram
 
-> 📊 *[Placeholder for diagram: IGSN at center connecting Sample ↔ Experiment Metadata ↔ PDV Trace ↔ ALPSS Processor ↔ Results]*
+![Diagram](images/ls_workflow.png)
 
 This integration ensures that from a single IGSN, one can navigate:  
 - The raw sample and flyer details  

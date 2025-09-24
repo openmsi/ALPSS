@@ -337,22 +337,22 @@ It serves as the central identifier linking all layers of data:</p>
 <li><p>Each physical sample receives an IGSN.</p></li>
 </ul>
 </li>
-<li><p><strong>Experiment Metadata</strong></p>
+<li><p><strong>Experiment Run + Metadata</strong></p>
 <ul class="simple">
-<li><p>Laser shock experiments are logged using the JSON Schema.</p></li>
+<li><p>Laser shock experiments are logged using the JSON Schema, either manually or automatically.</p></li>
 <li><p>Metadata is tied to the IGSN and can be queried/exported.</p></li>
 </ul>
 </li>
 <li><p><strong>PDV Trace Ingestion</strong></p>
 <ul class="simple">
-<li><p>The laser shock controller streams PDV traces to Kafka.</p></li>
-<li><p>Alternatively, metadata can be entered manually in the portal.</p></li>
+<li><p>The laser shock systems produces raw PDV traces and other data artefacts, all streamed instantly using <a class="reference external" href="https://openmsistream.readthedocs.io/en/latest/"><strong>openmsistream</strong></a>
+to the portal.</p></li>
 </ul>
 </li>
 <li><p><strong>ALPSS Processing</strong></p>
 <ul class="simple">
-<li><p>ALPSS Processor consumes PDV traces in real-time.</p></li>
-<li><p>Outputs and configs are uploaded and automatically linked back to the IGSN.</p></li>
+<li><p>In parallel, ALPSS Processor consumes PDV traces from a stream using <a class="reference external" href="https://openmsistream.readthedocs.io/en/latest/"><strong>openmsistream</strong></a> in real-time.</p></li>
+<li><p>Outputs and configs are uploaded to the portal and automatically linked back to the IGSN.</p></li>
 </ul>
 </li>
 <li><p><strong>Data Accessibility</strong></p>
@@ -366,9 +366,7 @@ It serves as the central identifier linking all layers of data:</p>
 <hr class="docutils" />
 <section id="integration-diagram">
 <h2>Integration Diagram<a class="headerlink" href="#integration-diagram" title="Link to this heading">#</a></h2>
-<blockquote>
-<div><p>📊 <em>[Placeholder for diagram: IGSN at center connecting Sample ↔ Experiment Metadata ↔ PDV Trace ↔ ALPSS Processor ↔ Results]</em></p>
-</div></blockquote>
+<p><img alt="Diagram" src="../_images/ls_workflow.png" /></p>
 <p>This integration ensures that from a single IGSN, one can navigate:</p>
 <ul class="simple">
 <li><p>The raw sample and flyer details</p></li>

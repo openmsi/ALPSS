@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "alpss"
-version = "1.3.2.dev1"
+version = "1.3.2.dev2"
 description = "Automated analysis of photonic Doppler velocimetry spall signals with uncertainty"
 authors = ["Jake Diamond <jdiamo15@jhu.edu>", "K. T. Ramesh <ramesh@jhu.edu>"]
 maintainers = ["Jake Diamond <jdiamo15@jhu.edu>", "Kacper Kowalik <xarthisius.kk@gmail.com>", "Ali Rachidi <arachid1@jhu.edu>", "All the contributors"]
