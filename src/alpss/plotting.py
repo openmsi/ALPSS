@@ -1,11 +1,19 @@
 import matplotlib.pyplot as plt
-import numpy as np
 from matplotlib.patches import Rectangle
 import pandas as pd
 import os
 from alpss.utils import stft
 import numpy as np
+import random
+import string
+from importlib.metadata import version, PackageNotFoundError
 
+try:
+    pkg_version = version("alpss")
+    pkg_version = pkg_version.replace(".", "_")
+    pkg_version = "v" + pkg_version
+except PackageNotFoundError:
+    pkg_version = "unknown"
 
 # function to generate the final figure
 def plot_results(
@@ -444,11 +452,16 @@ def plot_voltage(data, **inputs):
     ax2.set_ylabel("Frequency (GHz)")
     fig.suptitle("ERROR: Program Failed", c="r", fontsize=16)
 
+    
     plt.tight_layout()
     if inputs["save_data"] == "yes":
         fname = os.path.join(
             inputs["out_files_dir"], os.path.splitext(os.path.basename(inputs["filepath"]))[0]
         )
-        fig.savefig(f"{fname}--error_plot.png")
+        unique_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3))
+        dest = f"{fname}--error_plot-{pkg_version}-{unique_id}.png"
+        fig.savefig(dest)
     if inputs["display_plots"] == "yes":
         plt.show()
+    
+    return fig, {'error': [mag, dest if inputs["save_data"] == "yes" else None]}

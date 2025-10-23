@@ -11,6 +11,8 @@ def gauss(x, amp, sigma, mu):
 # a smooth velocity over the full domain of interest without running in to issues with the boundaries
 def smoothing(velocity_pad, smoothing_window, smoothing_wid, smoothing_amp, smoothing_sigma, smoothing_mu):
 
+    if len(velocity_pad) == 0:
+        raise Exception(f'length of velocity pad is {len(velocity_pad)}')
     # if the smoothing window is not an odd integer exit the program
     if (smoothing_window % 2 != 1) or (smoothing_window >= len(velocity_pad) / 2):
         raise Exception(f'Input variable "smoothing_window" ({smoothing_window}) must be an odd integer and less than half the length of the velocity signal ({len(velocity_pad) / 2})')

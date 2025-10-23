@@ -113,7 +113,9 @@ def alpss_main(**inputs):
         # attempt to plot the voltage signal from the imported data
         try:
             logger.info("Attempting a fallback visualization of the voltage signal...")
-            plot_voltage(data, **inputs)
+            fig, items = plot_voltage(data, **inputs)
+            logger.info("Fallback visualization was succexssful.")
+            return (fig, items)
 
         # if that also fails then log the traceback and stop running the program
         except Exception as e:

@@ -52,7 +52,7 @@ alpss path/to/config.json
 Or, call it directly from a Python script:
 
 ```python
-from alpss import alpss_main
+from alpss.alpss_main import alpss_main
 
 config = {
     "filepath" : "path/to/file",
