@@ -39,11 +39,11 @@ def velocity_calculation(
     )
 
     # convert the derivative in to velocity
-    # PDV Free-Surface Velocity Formula (matching HELIX):
-    # v(t) = λ · (dφ/dt − f_center)
-    # Note: This differs from standard backscatter PDV formula (λ/2); likely due to homodyne detection setup
-    velocity_pad = lam * (dpdt_pad - cen)
-    velocity_f = lam * (dpdt - cen)
+    # PDV Free-Surface Velocity Formula :
+    # v(t) = (λ/2) · (dφ/dt − f_center)
+    # The formula for backscatter PDV measurements
+    velocity_pad = (lam / 2) * (dpdt_pad - cen)
+    velocity_f = (lam / 2) * (dpdt - cen)
 
     # crop the time array
     time_f = time[time_start_idx:time_end_idx]
