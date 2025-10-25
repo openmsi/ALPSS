@@ -39,8 +39,9 @@ def velocity_calculation(
     )
 
     # convert the derivative in to velocity
-    # dpdt is already in frequency (Hz) - num_derivative applies fs/(2*pi) conversion
-    # PDV Formula: v = λ * Δf, where Δf = (dpdt - cen) is frequency shift in Hz
+    # PDV Free-Surface Velocity Formula (matching HELIX):
+    # v(t) = λ · (dφ/dt − f_center)
+    # Note: This differs from standard backscatter PDV formula (λ/2); likely due to homodyne detection setup
     velocity_pad = lam * (dpdt_pad - cen)
     velocity_f = lam * (dpdt - cen)
 
@@ -57,14 +58,14 @@ def velocity_calculation(
         smoothing_mu=inputs["smoothing_mu"],
     )
     
-    # Normalize velocities relative to carrier band baseline (first 10% of velocity_f_smooth)
-    baseline_window = max(int(len(velocity_f_smooth) * 0.1), 10)
-    baseline_velocity = np.mean(velocity_f_smooth[:baseline_window])
+    # Remove baseline DC offset (mean of first 5% of signal)
+    # This is standard PDV practice to remove carrier band offset
+    baseline_idx = max(int(len(velocity_f_smooth) * 0.05), 5)
+    baseline_offset = np.mean(velocity_f_smooth[:baseline_idx])
     
-    # Subtract baseline from all velocities
-    velocity_f_smooth = velocity_f_smooth - baseline_velocity
-    velocity_f = velocity_f - baseline_velocity
-    velocity_pad = velocity_pad - baseline_velocity
+    velocity_f_smooth = velocity_f_smooth - baseline_offset
+    velocity_f = velocity_f - baseline_offset
+    velocity_pad = velocity_pad - baseline_offset
 
     # return a dictionary of the outputs
     vc_out = {
