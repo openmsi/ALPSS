@@ -1,0 +1,145 @@
+╔═══════════════════════════════════════════════════════════════════════╗
+║           ALPSS QUICK REFERENCE CARD                                  ║
+╚═══════════════════════════════════════════════════════════════════════╝
+
+═════════════════════════════════════════════════════════════════════════
+ 1️⃣  ACTIVATE VIRTUAL ENVIRONMENT
+═════════════════════════════════════════════════════════════════════════
+
+    source venv/bin/activate
+
+═════════════════════════════════════════════════════════════════════════
+ 2️⃣  CONFIGURE YOUR ANALYSIS
+═════════════════════════════════════════════════════════════════════════
+
+    Edit: config.json
+
+    Essential parameters:
+    ┌─────────────────────────────────────────────────────────────┐
+    │ "filepath": "path/to/your/data.csv"                         │
+    │ "start_time_user": "otsu"      # or "iq" or "cusum"        │
+    │ "freq_min": 1e9                 # Hz                        │
+    │ "freq_max": 5e9                 # Hz                        │
+    │ "out_files_dir": "output_data/"                             │
+    │ "save_data": "yes"                                          │
+    └─────────────────────────────────────────────────────────────┘
+
+    For complete parameters: see CONFIG_USAGE.md
+
+═════════════════════════════════════════════════════════════════════════
+ 3️⃣  RUN ANALYSIS
+═════════════════════════════════════════════════════════════════════════
+
+    python src/alpss/alpss_run.py
+
+    Or with custom config:
+    python src/alpss/alpss_run.py path/to/custom_config.json
+
+═════════════════════════════════════════════════════════════════════════
+ 4️⃣  CHECK RESULTS
+═════════════════════════════════════════════════════════════════════════
+
+    Output directory:
+    └── output_data/
+        ├── plots/
+        │   ├── spectrogram.png
+        │   ├── velocity_trace.png
+        │   └── ...
+        └── data/
+            ├── velocity.csv
+            ├── uncertainty.csv
+            └── spall_analysis.csv
+
+═════════════════════════════════════════════════════════════════════════
+
+DETECTION METHODS:
+
+  "otsu"        Variance-based (RECOMMENDED)
+  "iq"          IQ demodulation (weak signals)
+  "cusum"       Change-point detection (sharp transitions)
+  2.5e-07       Manual time value (seconds)
+
+═════════════════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING:
+
+  Issue: "No module named 'alpss'"
+  Fix:   python -m pip install -e .
+
+  Issue: "Config file not found"
+  Fix:   Create config.json or use full path
+
+  Issue: "Invalid mode: start_time_user"
+  Fix:   Use "otsu", "iq", "cusum", or a float
+
+═════════════════════════════════════════════════════════════════════════
+
+DOCUMENTATION:
+
+  📘 CONFIG_USAGE.md ......... All parameters explained
+  📘 SETUP_SUMMARY.md ....... Installation details
+  📘 docs/alpss.md .......... Algorithm overview
+  📘 docs/alpss_processor.md  Data pipeline
+
+═════════════════════════════════════════════════════════════════════════
+
+USEFUL COMMANDS:
+
+  Activate venv:        source venv/bin/activate
+  Run analysis:         python src/alpss/alpss_run.py
+  Jupyter notebook:     jupyter notebook alpss_run.ipynb
+  Run tests:            pytest tests/
+  Install editable:     pip install -e .
+
+═════════════════════════════════════════════════════════════════════════
+
+EXAMPLE MATERIAL PROPERTIES:
+
+  Aluminum:
+    "C0": 6420           # Sound speed (m/s)
+    "density": 2700      # (kg/m³)
+    "lam": 1550.016e-9   # Laser wavelength (m)
+
+  Steel:
+    "C0": 5960           # Sound speed (m/s)
+    "density": 7850      # (kg/m³)
+
+═════════════════════════════════════════════════════════════════════════
+
+FREQUENCY RANGES (typical):
+
+  Low-frequency:        100 MHz  - 2 GHz
+  Mid-frequency:        1 GHz   - 4 GHz
+  High-frequency:       3 GHz   - 10 GHz
+
+═════════════════════════════════════════════════════════════════════════
+
+SIGNAL DETECTION TIPS:
+
+  Otsu (default):
+    - Works well for most signals
+    - Set "carrier_band_time" to ~10% of data duration
+
+  IQ Analysis:
+    - Better for weak or noisy signals
+    - Adjust "iq_threshold_factor" (0.3-0.6 typical)
+
+  CUSUM:
+    - Best for sharp transitions
+    - Tune "cusum_offset" and "cusum_threshold"
+
+═════════════════════════════════════════════════════════════════════════
+
+QUICK TIPS:
+
+  ✓ Keep config.json in root directory for easy access
+  ✓ Use relative paths for data: "input_data/file.csv"
+  ✓ Start with default parameters, then adjust
+  ✓ Save multiple configs for different experiments
+  ✓ Use display_plots: "no" for batch processing
+  ✓ Check plot_dpi and plot_figsize for output quality
+
+═════════════════════════════════════════════════════════════════════════
+
+Last updated: October 24, 2025
+ALPSS Version: 1.3.2

@@ -39,8 +39,10 @@ def velocity_calculation(
     )
 
     # convert the derivative in to velocity
-    velocity_pad = (lam / 2) * (dpdt_pad - cen)
-    velocity_f = (lam / 2) * (dpdt - cen)
+    # dpdt is already in frequency (Hz) - num_derivative applies fs/(2*pi) conversion
+    # PDV Formula: v = λ * Δf, where Δf = (dpdt - cen) is frequency shift in Hz
+    velocity_pad = lam * (dpdt_pad - cen)
+    velocity_f = lam * (dpdt - cen)
 
     # crop the time array
     time_f = time[time_start_idx:time_end_idx]
@@ -54,6 +56,15 @@ def velocity_calculation(
         smoothing_sigma=inputs["smoothing_sigma"],
         smoothing_mu=inputs["smoothing_mu"],
     )
+    
+    # Normalize velocities relative to carrier band baseline (first 10% of velocity_f_smooth)
+    baseline_window = max(int(len(velocity_f_smooth) * 0.1), 10)
+    baseline_velocity = np.mean(velocity_f_smooth[:baseline_window])
+    
+    # Subtract baseline from all velocities
+    velocity_f_smooth = velocity_f_smooth - baseline_velocity
+    velocity_f = velocity_f - baseline_velocity
+    velocity_pad = velocity_pad - baseline_velocity
 
     # return a dictionary of the outputs
     vc_out = {
