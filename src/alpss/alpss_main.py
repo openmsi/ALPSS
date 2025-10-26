@@ -33,6 +33,12 @@ logger = setup_alpss_logger()
 
 # main function to link together all the sub-functions
 def alpss_main(**inputs):
+    # Convert filename + exp_data_dir to filepath if needed
+    if "filename" in inputs and "filepath" not in inputs:
+        filename = inputs["filename"]
+        exp_data_dir = inputs.get("exp_data_dir", "")
+        inputs["filepath"] = os.path.join(exp_data_dir, filename)
+    
     # validate the inputs for the run
     validate_inputs(inputs)
     # attempt to run the program in full

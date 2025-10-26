@@ -39,6 +39,9 @@ def velocity_calculation(
     )
 
     # convert the derivative in to velocity
+    # PDV Free-Surface Velocity Formula :
+    # v(t) = (λ/2) · (dφ/dt − f_center)
+    # The formula for backscatter PDV measurements
     velocity_pad = (lam / 2) * (dpdt_pad - cen)
     velocity_f = (lam / 2) * (dpdt - cen)
 
@@ -54,6 +57,15 @@ def velocity_calculation(
         smoothing_sigma=inputs["smoothing_sigma"],
         smoothing_mu=inputs["smoothing_mu"],
     )
+    
+    # Remove baseline DC offset (mean of first 5% of signal)
+    # This is standard PDV practice to remove carrier band offset
+    baseline_idx = max(int(len(velocity_f_smooth) * 0.05), 5)
+    baseline_offset = np.mean(velocity_f_smooth[:baseline_idx])
+    
+    velocity_f_smooth = velocity_f_smooth - baseline_offset
+    velocity_f = velocity_f - baseline_offset
+    velocity_pad = velocity_pad - baseline_offset
 
     # return a dictionary of the outputs
     vc_out = {
