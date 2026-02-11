@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -U pip
-          pip install jupyter-book ghp-import
+          pip install "jupyter-book<2" ghp-import
 
       - name: Inject version into docs config
         run: |
