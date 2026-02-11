@@ -1,18 +1,19 @@
 import os
-from alpss.spall_doi_finder import spall_doi_finder
-from alpss.plotting import plot_results, plot_voltage
-from alpss.carrier_frequency import carrier_frequency
-from alpss.carrier_filter import carrier_filter
-from alpss.velocity_calculation import velocity_calculation
+from alpss.detection.spall_doi_finder import spall_doi_finder
+from alpss.plotting.plots import plot_results, plot_voltage
+from alpss.carrier.frequency import carrier_frequency
+from alpss.carrier.filter import carrier_filter
+from alpss.velocity.calculation import velocity_calculation
 from alpss.validation import validate_inputs
-from alpss.spall_analysis import spall_analysis
-from alpss.full_uncertainty_analysis import full_uncertainty_analysis
-from alpss.instantaneous_uncertainty_analysis import instantaneous_uncertainty_analysis
+from alpss.analysis.spall import spall_analysis
+from alpss.analysis.full_uncertainty import full_uncertainty_analysis
+from alpss.analysis.instantaneous_uncertainty import instantaneous_uncertainty_analysis
 from alpss.utils import extract_data
-from alpss.saving import save
+from alpss.io.saving import save
 from datetime import datetime
 import traceback
 import logging
+import numpy as np
 
 def setup_alpss_logger():
     logger = logging.getLogger("alpss")
@@ -31,14 +32,31 @@ def setup_alpss_logger():
 
 logger = setup_alpss_logger()
 
+
+def _default_spall_output():
+    """Return NaN-filled spall analysis output for graceful degradation."""
+    return {
+        "t_max_comp": np.nan, "t_max_ten": np.nan, "t_rc": np.nan,
+        "v_max_comp": np.nan, "v_max_ten": np.nan, "v_rc": np.nan,
+        "spall_strength_est": np.nan, "strain_rate_est": np.nan,
+        "peak_velocity_freq_uncert": np.nan, "peak_velocity_vel_uncert": np.nan,
+        "max_ten_freq_uncert": np.nan, "max_ten_vel_uncert": np.nan,
+    }
+
+
+def _default_uncertainty_output():
+    """Return NaN-filled uncertainty output for graceful degradation."""
+    return {"spall_uncert": np.nan, "strain_rate_uncert": np.nan}
+
+
 # main function to link together all the sub-functions
 def alpss_main(**inputs):
     # validate the inputs for the run
     validate_inputs(inputs)
-    # attempt to run the program in full
+
+    # --- Phase 1: Velocity Processing ---
     try:
         # begin the program timer
-
         start_time = datetime.now()
         data = extract_data(inputs)
 
@@ -57,69 +75,65 @@ def alpss_main(**inputs):
         # function to estimate the instantaneous uncertainty for all points in time
         iua_out = instantaneous_uncertainty_analysis(sdf_out, vc_out, cen, **inputs)
 
-        # function to find points of interest on the velocity trace
-        sa_out = spall_analysis(vc_out, iua_out, **inputs)
-
-        # function to calculate uncertainties in the spall strength and strain rate due to external uncertainties
-        fua_out = full_uncertainty_analysis(cen, sa_out, iua_out, **inputs)
-
-        # end the program timer
+        # end the velocity processing timer
         end_time = datetime.now()
 
-        # function to generate the final figure
-        fig = plot_results(
-            sdf_out,
-            cen,
-            cf_out,
-            vc_out,
-            sa_out,
-            iua_out,
-            fua_out,
-            start_time,
-            end_time,
-            **inputs,
-        )
-
-        # function to save the output files if desired
-        # MOVED to plotting
-        # end final timer and display full runtime
-        end_time2 = datetime.now()
-        logger.info(
-            f"\nFull program runtime (including plotting and saving):\n{end_time2 - start_time}\n"
-        )
-
-        # return the figure so it can be saved if desired
-        # function to save the output files if desired
-        items = save(
-            sdf_out,
-            cen,
-            vc_out,
-            sa_out,
-            iua_out,
-            fua_out,
-            start_time,
-            end_time,
-            fig,
-            **inputs,
-        )
-
-        return (fig, items)
-
-    # in case the program throws an error
     except Exception as e:
-        logger.error("Error in the execution of the main program:: %s", str(e))
+        logger.error("Error in velocity processing: %s", str(e))
         logger.error("Traceback: %s", traceback.format_exc())
-
-        # attempt to plot the voltage signal from the imported data
         try:
             logger.info("Attempting a fallback visualization of the voltage signal...")
             fig, items = plot_voltage(data, **inputs)
-            logger.info("Fallback visualization was succexssful.")
+            logger.info("Fallback visualization was successful.")
             return (fig, items)
+        except Exception as e2:
+            logger.error("Fallback visualization also failed: %s", str(e2))
+        return None
 
-        # if that also fails then log the traceback and stop running the program
-        except Exception as e:
-            logger.error(
-                "Error in the fallback visualization of the voltage signal: %s", str(e)
-            )
-            logger.error("Traceback: %s", traceback.format_exc())
+    # --- Phase 2: Analysis (spall points + uncertainties) ---
+    try:
+        sa_out = spall_analysis(vc_out, iua_out, **inputs)
+        fua_out = full_uncertainty_analysis(cen, sa_out, iua_out, **inputs)
+    except Exception as e:
+        logger.error("Error in analysis phase: %s", str(e))
+        logger.error("Traceback: %s", traceback.format_exc())
+        logger.info("Continuing with velocity results only (no spall analysis).")
+        sa_out = _default_spall_output()
+        fua_out = _default_uncertainty_output()
+
+    # --- Phase 3: Output (plotting + saving) ---
+    end_time_final = datetime.now()
+
+    # function to generate the final figure
+    fig = plot_results(
+        sdf_out,
+        cen,
+        cf_out,
+        vc_out,
+        sa_out,
+        iua_out,
+        fua_out,
+        start_time,
+        end_time,
+        **inputs,
+    )
+
+    logger.info(
+        f"\nFull runtime: {end_time_final - start_time}\n"
+    )
+
+    # function to save the output files if desired
+    items = save(
+        sdf_out,
+        cen,
+        vc_out,
+        sa_out,
+        iua_out,
+        fua_out,
+        start_time,
+        end_time,
+        fig,
+        **inputs,
+    )
+
+    return (fig, items)

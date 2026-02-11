@@ -25,6 +25,11 @@ jobs:
           pip install -U pip
           pip install jupyter-book ghp-import
 
+      - name: Inject version into docs config
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          sed -i "s/^title:.*/title: Laser Shock Documentation (v${VERSION})/" _config.yml
+
       - name: Build Jupyter Book
         run: jupyter-book build .
 

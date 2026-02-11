@@ -13,6 +13,7 @@ def valid_inputs():
     base_dir = os.path.dirname(__file__)  # Get the directory of conftest.py
     filepath = os.path.join(base_dir, "input_data", "example_file.csv")
     out_files_dir = os.path.join(base_dir, "output_data")
+    os.makedirs(out_files_dir, exist_ok=True)
 
     return {
         "filepath": filepath,
@@ -91,3 +92,74 @@ def expected_values():
         "Signal Start Time": 6.140750532205402e-07,
         "Smoothing Characteristic Time": 2.9298752539258723e-09,
     }
+
+
+# Expected values per (start_time_user, carrier_filter_type) configuration.
+# Configs that produce NaN spall values or fail entirely are excluded.
+EXPECTED_VALUES_MAP = {
+    ("otsu", "gaussian_notch"): {
+        "Velocity at Max Compression": 828.0849443007512,
+        "Time at Max Compression": 6.300750500023988e-07,
+        "Velocity at Max Tension": 464.46467142515036,
+        "Time at Max Tension": 6.476500600052781e-07,
+        "Velocity at Recompression": 574.0505816377753,
+        "Time at Recompression": 6.557375600013682e-07,
+        "Carrier Frequency": 2232111412.128054,
+        "Spall Strength": 1427973173.609772,
+        "Spall Strength Uncertainty": 10692214.866814513,
+        "Strain Rate": 2278592.4760455955,
+        "Strain Rate Uncertainty": 537339.1422056587,
+        "Peak Shock Stress": 3251972384.76348,
+        "Spect Time Res": 9.625000834177745e-10,
+        "Spect Freq Res": 15624998.645815466,
+        "Spect Velocity Res": 12.089538014726124,
+        "Signal Start Time": 6.140750532205402e-07,
+        "Smoothing Characteristic Time": 2.9298752539258723e-09,
+    },
+    ("iq", "gaussian_notch"): {
+        "Carrier Frequency": 2232111412.128054,
+        "Spect Time Res": 9.625000834177745e-10,
+        "Spect Freq Res": 15624998.645815466,
+        "Spect Velocity Res": 12.089538014726124,
+        "Signal Start Time": 5.491375500016327e-07,
+        "Smoothing Characteristic Time": 2.9298752539258723e-09,
+    },
+    (7.5e-07, "gaussian_notch"): {
+        "Velocity at Max Compression": 370.87498646489956,
+        "Time at Max Compression": 7.764375700020087e-07,
+        "Velocity at Max Tension": 349.1322320253391,
+        "Time at Max Tension": 7.814750700024797e-07,
+        "Velocity at Recompression": 357.67960343266185,
+        "Time at Recompression": 7.926625700052647e-07,
+        "Carrier Frequency": 2232111412.128054,
+        "Spall Strength": 85385970.95959799,
+        "Spall Strength Uncertainty": 41690593.07354747,
+        "Strain Rate": 475350.169707975,
+        "Strain Rate Uncertainty": 454678.9510147054,
+        "Peak Shock Stress": 1456463159.346307,
+        "Spect Time Res": 9.625000834177745e-10,
+        "Spect Freq Res": 15624998.645815466,
+        "Spect Velocity Res": 12.089538014726124,
+        "Signal Start Time": 7.497875649824463e-07,
+        "Smoothing Characteristic Time": 2.9298752539258723e-09,
+    },
+    ("otsu", "none"): {
+        "Velocity at Max Compression": 828.3958998105065,
+        "Time at Max Compression": 6.301375500006312e-07,
+        "Velocity at Max Tension": 2.5169905105239074,
+        "Time at Max Tension": 6.499375600002577e-07,
+        "Velocity at Recompression": 572.6800635718317,
+        "Time at Recompression": 6.561750600028726e-07,
+        "Carrier Frequency": 2232111412.128054,
+        "Spall Strength": 3243309064.7119617,
+        "Spall Strength Uncertainty": 23599274.85110015,
+        "Strain Rate": 4593726.317165109,
+        "Strain Rate Uncertainty": 961594.8472264492,
+        "Peak Shock Stress": 3253193538.14584,
+        "Spect Time Res": 9.625000834177745e-10,
+        "Spect Freq Res": 15624998.645815466,
+        "Spect Velocity Res": 12.089538014726124,
+        "Signal Start Time": 6.140750532205402e-07,
+        "Smoothing Characteristic Time": 2.9298752539258723e-09,
+    },
+}

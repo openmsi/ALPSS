@@ -10,3 +10,5 @@ chapters:
   title: ALPSS Processor
 - file: docs/platform_integration
   title: Platform Integration
+- file: docs/changelog
+  title: Changelog
