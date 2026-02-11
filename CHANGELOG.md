@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.4.0] - 2025-06-01
+## [1.5.0] - 2026-02-11
+
+### Added
+- Hugoniot Elastic Limit (HEL) detection module (`alpss.analysis.hel`)
+  - `hel_detection()` — gradient-based plateau detection with configurable thresholds
+  - `elastic_shock_strain_rate()` — elastic strain rate calculation
+  - `HELResult` dataclass with typed fields for all detection outputs
+- HEL diagnostic plotting (`alpss.plotting.hel.plot_hel_detection`)
+  - 3-panel figure: full trace, zoomed plateau, gradient analysis
+- HEL integrated into `alpss_main` pipeline as optional Phase 2b
+  - Enabled via `hel_detection_enabled=True` in inputs
+  - HEL results included in saved output CSV when detected
+- Unit tests for HEL detection and strain rate calculation
+
+## [1.4.0] - 2026-02-11
 
 ### Changed
 - Reorganized codebase from flat layout to modular package structure under `src/alpss/`
@@ -47,7 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated spall signal analysis pipeline
 - Initial PyPI and Docker publishing workflows
 
-[Unreleased]: https://github.com/openmsi/ALPSS/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/openmsi/ALPSS/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/openmsi/ALPSS/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/openmsi/ALPSS/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/openmsi/ALPSS/compare/v1.2.4...v1.3.2
 [1.2.4]: https://github.com/openmsi/ALPSS/releases/tag/v1.2.4

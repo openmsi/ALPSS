@@ -8,6 +8,7 @@ from alpss.validation import validate_inputs
 from alpss.analysis.spall import spall_analysis
 from alpss.analysis.full_uncertainty import full_uncertainty_analysis
 from alpss.analysis.instantaneous_uncertainty import instantaneous_uncertainty_analysis
+from alpss.analysis.hel import hel_detection
 from alpss.utils import extract_data
 from alpss.io.saving import save
 from datetime import datetime
@@ -47,6 +48,12 @@ def _default_spall_output():
 def _default_uncertainty_output():
     """Return NaN-filled uncertainty output for graceful degradation."""
     return {"spall_uncert": np.nan, "strain_rate_uncert": np.nan}
+
+
+def _default_hel_output():
+    """Return a failed HEL result for graceful degradation."""
+    from alpss.analysis.hel import HELResult
+    return HELResult(ok=False)
 
 
 # main function to link together all the sub-functions
@@ -101,6 +108,31 @@ def alpss_main(**inputs):
         sa_out = _default_spall_output()
         fua_out = _default_uncertainty_output()
 
+    # --- Phase 2b: HEL detection (optional) ---
+    hel_out = _default_hel_output()
+    hel_enabled = inputs.get("hel_detection_enabled", False)
+    if hel_enabled:
+        try:
+            # Convert velocity time from seconds to nanoseconds for HEL
+            time_ns = vc_out["time_f"] / 1e-9
+            hel_out = hel_detection(
+                time_ns,
+                vc_out["velocity_f_smooth"],
+                iua_out["vel_uncert"],
+                hel_start_ns=inputs.get("hel_start_time_ns", 0.0),
+                hel_end_ns=inputs.get("hel_end_time_ns", None),
+                angle_threshold_deg=inputs.get("hel_angle_threshold_deg", 45.0),
+                min_points=inputs.get("hel_detection_min_points", 3),
+                min_velocity=inputs.get("minimum_HEL_velocity_expected", 10.0),
+                density=inputs.get("density", None),
+                acoustic_velocity=inputs.get("C0", None),
+                C_L=inputs.get("C_L", None),
+            )
+        except Exception as e:
+            logger.error("Error in HEL detection: %s", str(e))
+            logger.error("Traceback: %s", traceback.format_exc())
+            logger.info("Continuing without HEL results.")
+
     # --- Phase 3: Output (plotting + saving) ---
     end_time_final = datetime.now()
 
@@ -133,6 +165,7 @@ def alpss_main(**inputs):
         start_time,
         end_time,
         fig,
+        hel_out=hel_out,
         **inputs,
     )
 

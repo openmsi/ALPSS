@@ -15,7 +15,7 @@ except PackageNotFoundError:
 
 # function for saving all the final outputs
 def save(
-    sdf_out, cen, vc_out, sa_out, iua_out, fua_out, start_time, end_time, fig, **inputs
+    sdf_out, cen, vc_out, sa_out, iua_out, fua_out, start_time, end_time, fig, hel_out=None, **inputs
 ):
     filename = os.path.splitext(os.path.basename(inputs["filepath"]))[0]
     fname = os.path.join(inputs["out_files_dir"], filename)
@@ -124,6 +124,18 @@ def save(
         "Signal Start Time": sdf_out["t_start_corrected"],
         "Smoothing Characteristic Time": iua_out["tau"],
     }
+
+    # Add HEL results if available
+    if hel_out is not None and hel_out.ok:
+        results_to_save.update({
+            "HEL Strength (GPa)": hel_out.strength_gpa,
+            "HEL Uncertainty (GPa)": hel_out.uncertainty_gpa,
+            "HEL Free Surface Velocity (m/s)": hel_out.free_surface_velocity,
+            "HEL Time Detection (ns)": hel_out.time_detection_ns,
+            "HEL Consecutive Points": hel_out.consecutive_points,
+            "HEL Segment Duration (ns)": hel_out.segment_duration_ns,
+            "HEL Strain Rate": hel_out.strain_rate,
+        })
 
     # Convert the dictionary to a DataFrame
     results_df = pd.DataFrame([results_to_save])
