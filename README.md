@@ -1,5 +1,9 @@
 # <div align="center">ALPSS: A program for the automated analysis of photonic Doppler velocimetry spall signals</div>
-#### <div align="center">***v1.2.4***</div>
+#### <div align="center">
+
+[![GitHub Release](https://img.shields.io/github/v/release/openmsi/ALPSS)](https://github.com/openmsi/ALPSS/releases/latest)
+
+</div>
 
 #### <div align="center">Jacob M. Diamond<sup>1,2*</sup>, K. T. Ramesh<sup>1,2</sup></div>
 <div align="center"><sup>1</sup> Department of Mechanical Engineering, Johns Hopkins University, Baltimore, MD, USA </div>
@@ -9,7 +13,7 @@
  
 <div align="center">
 
-[![DOI](https://zenodo.org/badge/592923543.svg)](https://zenodo.org/badge/latestdoi/592923543) ![GitHub](https://img.shields.io/github/license/Jake-Diamond-9/ALPSS?color=green) ![GitHub Release Date](https://img.shields.io/github/release-date/Jake-Diamond-9/ALPSS?color=red) ![GitHub](https://img.shields.io/github/repo-size/Jake-Diamond-9/ALPSS?color=yellow)
+[![DOI](https://zenodo.org/badge/592923543.svg)](https://zenodo.org/badge/latestdoi/592923543) ![GitHub](https://img.shields.io/github/license/openmsi/ALPSS?color=green) ![GitHub Release Date](https://img.shields.io/github/release-date/openmsi/ALPSS?color=red) ![GitHub](https://img.shields.io/github/repo-size/openmsi/ALPSS?color=yellow)
 
 </div>
 
@@ -40,8 +44,8 @@ ALPSS will not work well for your application if:
 
 If ALPSS is not suited for your application you can try [SIRHEN](https://github.com/SMASHtoolbox/release/tree/master/programs/SIRHEN2), [HiFiPDV](https://github.com/sandialabs/HiFiPDV2), or [QVPRO](https://gitlab.osti.gov/doecode/dc-31683) to name a few other programs.
 
-## What's new in v1.2?
-Time-resolved uncertainty estimates have been added in v1.2.x. E.g. for any given point in time on the final velocity trace, the program will output the estimated velocity uncertainty. All other functions are essentially the same. 
+## What's New
+See the [CHANGELOG](CHANGELOG.md) for a full list of changes in each release.
 
 ## Citing ALPSS
 For use in published works, ALPSS can be cited from its original paper _Automated Analysis of Photonic Doppler Velocimetry Spall Signals_. J. dynamic behavior mater. (2024). <https://doi.org/10.1007/s40870-024-00427-9> or with the following bibtex
@@ -127,12 +131,3 @@ GNU General Public License v3.0
 
 ## Acknowledgements and Funding
 The authors would like to acknowledge the following people for their many helpful conversations and advice, Chris DiMarco, Velat Killic, Debjoy Mallcik, Maggie Eminizer, David Elbert, Mark Foster, and Samuel Salander. Research was sponsored by the Army Research Laboratory and was accomplished under Cooperative Agreement Number W911NF-22-2-0014. The views and conclusions contained in this document are those of the authors and should not be interpreted as representing the official policies, either expressed or implied, of the Army Research Office or the U.S. Government. The U.S. Government is authorized to reproduce and distribute reprints for Government purposes notwithstanding any copyright notation herein.
-
-
-update requirements.txt if necessary
-run tests
-update readme, pyproject.toml and setup.py
-- version
-update doi of the github repo on the readme and the wiki
-push to pypi
-tag the github repo with the version of the package

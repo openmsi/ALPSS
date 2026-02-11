@@ -1,3 +1,10 @@
+from importlib.metadata import version as _get_version, PackageNotFoundError
+
+try:
+    __version__ = _get_version("alpss")
+except PackageNotFoundError:
+    __version__ = "unknown"
+
 # Backward-compatible re-exports (pre-1.4.0 flat layout)
 from alpss.detection.spall_doi_finder import spall_doi_finder
 from alpss.carrier.frequency import carrier_frequency

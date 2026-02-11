@@ -1,6 +1,8 @@
 # Use a lightweight base image
 FROM python:3.10-slim
 
+ARG PACKAGE_VERSION
+
 # Set up a working directory
 WORKDIR /app
 
@@ -13,7 +15,7 @@ RUN apt-get update -o Acquire::Retries=3 \
 
 # Install the package from PyPI
 RUN python -m pip install --upgrade pip \
- && pip install --pre alpss
+ && pip install alpss==${PACKAGE_VERSION}
 
 # Set a default command (optional)
 CMD ["/bin/bash"]
