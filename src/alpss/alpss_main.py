@@ -86,6 +86,9 @@ def alpss_main(**inputs):
             fig, items = plot_voltage(data, **inputs)
             logger.info("Fallback visualization was successful.")
             return (fig, items)
+        except Exception as e2:
+            logger.error("Fallback visualization also failed: %s", str(e2))
+        return None
 
     # --- Phase 2: Analysis (spall points + uncertainties) ---
     try:
