@@ -55,8 +55,8 @@ Or, call it directly from a Python script:
 from alpss import alpss_main
 
 config = {
-    "filepath" : "path/to/file",
-    "out_files_dir": "path/to/output/folder",
+    "filepath" : "input_data/example.csv",
+    "out_files_dir": "output_data/",
     "start_time_user": "otsu",
     "carrier_filter_type": "gaussian_notch",
     "save_data": "yes",
@@ -82,11 +82,10 @@ The config must specify a `filepath` pointing to your input data, e.g., `input_d
 
 ```bash
 docker run --rm \
-  -v [path/to/input/folder]:/workspace/input_data \
-  -v [path/to/config/file]:/workspace/config.json:ro \
-  -w /workspace \
+  -v [INPUT_FOLDER]:/input_data \
+  -v [CONFIG_FILE]:/config.json:ro \
   openmsi/alpss:latest \
-  alpss config.json
+  alpss /config.json
 
 ```
 

@@ -1,5 +1,5 @@
 {
-    "filepath": "input_data/example_file.csv",
+    "filepath": "/input_data/example_file.csv",
     "out_files_dir": "output_data/",
     "start_time_user": "otsu",
     "carrier_filter_type": "gaussian_notch",
