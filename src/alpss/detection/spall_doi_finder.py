@@ -3,7 +3,7 @@ import cv2 as cv
 from alpss.utils import stft
 import logging
 from scipy import signal
-from scipy.fft import fft
+from scipy.fft import fft, fftfreq
 import matplotlib.pyplot as plt
 import os
 
@@ -143,8 +143,10 @@ def spall_doi_finder(data, **inputs):
             mu1 =  0  # Expected post-change signal level
             sigma0 = np.var(signal[mask4])
 
+            print('signal shape: ', signal.shape)
             detection_indices, change_indices, G, s = cusum(signal, mu0, mu1, sigma0, h, k)
 
+            print("change _indices shape: ", change_indices.shape)
             detection_time = t[change_indices]
 
             # these params become nan because they are only needed if the program
