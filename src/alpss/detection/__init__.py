@@ -1,0 +1,1 @@
+from alpss.detection.spall_doi_finder import spall_doi_finder
