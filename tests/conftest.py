@@ -13,6 +13,7 @@ def valid_inputs():
     base_dir = os.path.dirname(__file__)  # Get the directory of conftest.py
     filepath = os.path.join(base_dir, "input_data", "example_file.csv")
     out_files_dir = os.path.join(base_dir, "output_data")
+    os.makedirs(out_files_dir, exist_ok=True)
 
     return {
         "filepath": filepath,
