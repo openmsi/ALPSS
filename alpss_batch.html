@@ -1,0 +1,1706 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>&lt;no title&gt; &#8212; Laser Shock Documentation (v1.4.0)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=1ae7504c"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'alpss_batch';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="docs/introduction.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Laser Shock Documentation (v1.4.0)</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="docs/introduction.html">
+                    Introduction
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="docs/laser_shock_experiment.html">Laser Shock Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs/alpss.html">ALPSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs/alpss_processor.html">ALPSS Processor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs/platform_integration.html">Platform Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs/changelog.html">Changelog</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/alpss_batch.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1><no title></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="simple visible nav section-nav flex-column">
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alpss.alpss_main</span><span class="w"> </span><span class="kn">import</span> <span class="n">alpss_main</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span> <span class="s1">&#39;/home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader&#39;</span><span class="p">)</span>
+<span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folder</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.csv&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/medium_file_test.csv
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/arachid1/ALPSS/tests/input_data/config.json&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="n">config</span><span class="p">[</span><span class="s1">&#39;out_files_dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/home/arachid1/output_data&#39;</span>
+<span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing file </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;filepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">file</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">items</span> <span class="o">=</span> <span class="n">alpss_main</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">continue</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/medium_file_test.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:06:34,454 - ERROR - alpss - Error in the execution of the main program:: length of velocity pad is 0
+2025-10-17 13:06:34,458 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 55, in alpss_main
+    vc_out = velocity_calculation(sdf_out, cen, cf_out, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/velocity_calculation.py&quot;, line 49, in velocity_calculation
+    velocity_f_smooth = smoothing(
+  File &quot;/home/arachid1/ALPSS/src/alpss/smoothing.py&quot;, line 15, in smoothing
+    raise Exception(f&#39;length of velocity pad is {len(velocity_pad)}&#39;)
+Exception: length of velocity pad is 0
+
+2025-10-17 13:06:34,458 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:06:37,822 - INFO - alpss - Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/medium_file_test--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241029-00022.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:06:38,802 - ERROR - alpss - Error in the execution of the main program:: length of velocity pad is 0
+2025-10-17 13:06:38,804 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 55, in alpss_main
+    vc_out = velocity_calculation(sdf_out, cen, cf_out, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/velocity_calculation.py&quot;, line 49, in velocity_calculation
+    velocity_f_smooth = smoothing(
+  File &quot;/home/arachid1/ALPSS/src/alpss/smoothing.py&quot;, line 15, in smoothing
+    raise Exception(f&#39;length of velocity pad is {len(velocity_pad)}&#39;)
+Exception: length of velocity pad is 0
+
+2025-10-17 13:06:38,805 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:06:41,141 - INFO - alpss - Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/C2-20241029-00022--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241029-00025.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:06:41,554 - ERROR - alpss - Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+2025-10-17 13:06:41,555 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+2025-10-17 13:06:41,556 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:06:43,981 - INFO - alpss - Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/C2-20241029-00025--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241029-00019.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:06:47,704 - INFO - alpss - 
+Full program runtime (including plotting and saving):
+0:00:03.720287
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241029-00010.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ERROR:root:Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/instantaneous_uncertainty_analysis.py&quot;, line 110, in instantaneous_uncertainty_analysis
+    popt, pcov = curve_fit(
+  File &quot;/srv/hemi01-j01/anaconda3/envs/default/lib/python3.9/site-packages/scipy/optimize/_minpack_py.py&quot;, line 1005, in curve_fit
+    raise RuntimeError(&quot;Optimal parameters not found: &quot; + errmsg)
+RuntimeError: Optimal parameters not found: Number of calls to function has reached maxfev = 1000.
+
+ERROR:root:Could not locate the recompression velocity
+ERROR:root:Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_analysis.py&quot;, line 89, in spall_analysis
+    rc_idx = extrema_max[
+IndexError: index 8 is out of bounds for axis 0 with size 8
+
+2025-10-17 13:07:33,656 - INFO - alpss - 
+Full program runtime (including plotting and saving):
+0:00:03.969578
+
+INFO:alpss:
+Full program runtime (including plotting and saving):
+0:00:03.969578
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Date&#39;: &#39;Oct 17 2025&#39;,
+ &#39;Time&#39;: &#39;01:07 PM&#39;,
+ &#39;File Name&#39;: &#39;C2-20241029-00010.csv&#39;,
+ &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:02.161844&#39;),
+ &#39;Velocity at Max Compression&#39;: 1300.8341542440555,
+ &#39;Time at Max Compression&#39;: 7.686718800000004e-08,
+ &#39;Velocity at Max Tension&#39;: 459.5086799974253,
+ &#39;Time at Max Tension&#39;: 8.233593799999975e-08,
+ &#39;Velocity at Recompression&#39;: nan,
+ &#39;Time at Recompression&#39;: nan,
+ &#39;Carrier Frequency&#39;: 1735999999.0741255,
+ &#39;Spall Strength&#39;: 3303969269.9139414,
+ &#39;Spall Strength Uncertainty&#39;: 391130357.2842945,
+ &#39;Strain Rate&#39;: 16942992.55877508,
+ &#39;Strain Rate Uncertainty&#39;: 8269615.929231743,
+ &#39;Peak Shock Stress&#39;: 5108505807.13183,
+ &#39;Spect Time Res&#39;: 6.01562500320836e-10,
+ &#39;Spect Freq Res&#39;: 24999999.98666656,
+ &#39;Spect Velocity Res&#39;: 19.34326248968351,
+ &#39;Signal Start Time&#39;: 3.2484375017325144e-08,
+ &#39;Smoothing Characteristic Time&#39;: 1.831171875976633e-09}
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(24000x12000)
+{&#39;figure&#39;: [&lt;Figure size 24000x12000 with 16 Axes&gt;, &#39;/home/arachid1/output_data/C2-20241029-00010-plots-v1_3_1-J5Q.png&#39;], &#39;inputs&#39;: [                                                                   Input
+filepath               /home/arachid1/EZOpenMSIStream/amdee_pdv_data_...
+out_files_dir                                 /home/arachid1/output_data
+start_time_user                                                     otsu
+carrier_filter_type                                       gaussian_notch
+save_data                                                            yes
+display_plots                                                         no
+spall_calculation                                                    yes
+window                                                              hann
+cmap                                                             viridis
+header_lines                                                           1
+time_to_skip                                                    0.000002
+time_to_take                                                    0.000002
+t_before                                                             0.0
+t_after                                                              0.0
+start_time_correction                                                0.0
+freq_min                                                    1500000000.0
+freq_max                                                    4000000000.0
+smoothing_window                                                     601
+smoothing_wid                                                          3
+smoothing_amp                                                          1
+smoothing_sigma                                                        1
+smoothing_mu                                                           0
+pb_neighbors                                                         400
+pb_idx_correction                                                      0
+rc_neighbors                                                         400
+rc_idx_correction                                                      0
+sample_rate                                                  80000000000
+nperseg                                                              512
+noverlap                                                             435
+nfft                                                                5120
+blur_kernel                                                       [5, 5]
+blur_sigx                                                              0
+blur_sigy                                                              0
+carrier_band_time                                                    0.0
+uncert_mult                                                          100
+order                                                                  6
+wid                                                           50000000.0
+lam                                                             0.000002
+C0                                                                  4540
+density                                                             1730
+delta_rho                                                              9
+delta_C0                                                              23
+delta_lam                                                            0.0
+theta                                                                  0
+delta_theta                                                            5
+plot_figsize                                                    [80, 40]
+plot_dpi                                                             300
+iq_threshold_factor                                                  0.4
+cusum_offset                                                           5
+cusum_threshold                                                     1000
+t_fit_begin                                                           20
+t_fit_end                                                            300, &#39;/home/arachid1/output_data/C2-20241029-00010-inputs-v1_3_1-J5Q.csv&#39;], &#39;velocity&#39;: [array([[ 2.74843750e-08, -2.03246291e+01],
+       [ 2.74921880e-08, -2.85374232e+01],
+       [ 2.75000000e-08, -3.62373089e+01],
+       ...,
+       [ 8.24609380e-08,  1.29424036e+02],
+       [ 8.24687500e-08,  8.88841604e+01],
+       [ 8.24765630e-08,  5.28395351e+01]]), &#39;/home/arachid1/output_data/C2-20241029-00010-velocity-v1_3_1-J5Q.csv&#39;], &#39;smooth_velocity&#39;: [array([[2.74843750e-08, 3.89320981e+00],
+       [2.74921880e-08, 3.85480988e+00],
+       [2.75000000e-08, 3.81633023e+00],
+       ...,
+       [8.24609380e-08, 4.62051559e+02],
+       [8.24687500e-08, 4.62285822e+02],
+       [8.24765630e-08, 4.62526543e+02]]), &#39;/home/arachid1/output_data/C2-20241029-00010-velocity--smooth-v1_3_1-J5Q.csv&#39;], &#39;voltage&#39;: [array([[ 0.00000000e+00, -2.58450983e-03, -4.41508938e-03],
+       [ 7.81300000e-12, -2.10021863e-03, -4.66967419e-03],
+       [ 1.56250000e-11, -1.59189487e-03, -4.86739735e-03],
+       ...,
+       [ 9.37476563e-07, -3.82577447e-03, -3.34433769e-03],
+       [ 9.37484375e-07, -3.45359549e-03, -3.74809142e-03],
+       [ 9.37492188e-07, -3.03782400e-03, -4.10659876e-03]]), &#39;/home/arachid1/output_data/C2-20241029-00010-voltage-v1_3_1-J5Q.csv&#39;], &#39;noise&#39;: [array([[2.74843750e-08, 2.75215362e-01],
+       [2.74921880e-08, 2.75215362e-01],
+       [2.75000000e-08, 2.75215362e-01],
+       ...,
+       [8.24609380e-08, 3.59730356e+00],
+       [8.24687500e-08, 3.59730356e+00],
+       [8.24765630e-08, 3.59730356e+00]]), &#39;/home/arachid1/output_data/C2-20241029-00010-noisefrac-v1_3_1-J5Q.csv&#39;], &#39;vel_uncert&#39;: [array([[2.74843750e-08, 5.92228758e+00],
+       [2.74921880e-08, 5.92228758e+00],
+       [2.75000000e-08, 5.92228758e+00],
+       ...,
+       [8.24609380e-08, 7.74094367e+01],
+       [8.24687500e-08, 7.74094367e+01],
+       [8.24765630e-08, 7.74094367e+01]]), &#39;/home/arachid1/output_data/C2-20241029-00010-veluncert-v1_3_1-J5Q.csv&#39;], &#39;results&#39;: {&#39;Date&#39;: &#39;Oct 17 2025&#39;, &#39;Time&#39;: &#39;01:07 PM&#39;, &#39;File Name&#39;: &#39;C2-20241029-00010.csv&#39;, &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:02.161844&#39;), &#39;Velocity at Max Compression&#39;: 1300.8341542440555, &#39;Time at Max Compression&#39;: 7.686718800000004e-08, &#39;Velocity at Max Tension&#39;: 459.5086799974253, &#39;Time at Max Tension&#39;: 8.233593799999975e-08, &#39;Velocity at Recompression&#39;: nan, &#39;Time at Recompression&#39;: nan, &#39;Carrier Frequency&#39;: 1735999999.0741255, &#39;Spall Strength&#39;: 3303969269.9139414, &#39;Spall Strength Uncertainty&#39;: 391130357.2842945, &#39;Strain Rate&#39;: 16942992.55877508, &#39;Strain Rate Uncertainty&#39;: 8269615.929231743, &#39;Peak Shock Stress&#39;: 5108505807.13183, &#39;Spect Time Res&#39;: 6.01562500320836e-10, &#39;Spect Freq Res&#39;: 24999999.98666656, &#39;Spect Velocity Res&#39;: 19.34326248968351, &#39;Signal Start Time&#39;: 3.2484375017325144e-08, &#39;Smoothing Characteristic Time&#39;: 1.831171875976633e-09}}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241101-SP-00001.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:08:29,101 - ERROR - alpss - Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+ERROR:alpss:Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+2025-10-17 13:08:29,103 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+ERROR:alpss:Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+2025-10-17 13:08:29,104 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+INFO:alpss:Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:08:31,472 - INFO - alpss - Fallback visualization was successful.
+INFO:alpss:Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/C2-20241101-SP-00001--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/large_file_test.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:08:31,837 - ERROR - alpss - Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+ERROR:alpss:Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+2025-10-17 13:08:31,839 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+ERROR:alpss:Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+2025-10-17 13:08:31,840 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+INFO:alpss:Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:08:34,324 - INFO - alpss - Fallback visualization was successful.
+INFO:alpss:Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/large_file_test--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241101-00002.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:08:36,877 - INFO - alpss - 
+Full program runtime (including plotting and saving):
+0:00:02.551210
+
+INFO:alpss:
+Full program runtime (including plotting and saving):
+0:00:02.551210
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Date&#39;: &#39;Oct 17 2025&#39;,
+ &#39;Time&#39;: &#39;01:08 PM&#39;,
+ &#39;File Name&#39;: &#39;C2-20241101-00002.csv&#39;,
+ &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:00.893775&#39;),
+ &#39;Velocity at Max Compression&#39;: 1164.9779115660515,
+ &#39;Time at Max Compression&#39;: 4.603749999999998e-07,
+ &#39;Velocity at Max Tension&#39;: 467.15214552597524,
+ &#39;Time at Max Tension&#39;: 4.6232812500000007e-07,
+ &#39;Velocity at Recompression&#39;: 663.1297758511142,
+ &#39;Time at Recompression&#39;: 4.6535156299999997e-07,
+ &#39;Carrier Frequency&#39;: 1779999999.0506587,
+ &#39;Spall Strength&#39;: 2740431565.8159833,
+ &#39;Spall Strength Uncertainty&#39;: 112982141.49538691,
+ &#39;Strain Rate&#39;: 39348765.662166476,
+ &#39;Strain Rate Uncertainty&#39;: 52197738.449810915,
+ &#39;Peak Shock Stress&#39;: 4574984756.511041,
+ &#39;Spect Time Res&#39;: 6.01562500320836e-10,
+ &#39;Spect Freq Res&#39;: 24999999.98666656,
+ &#39;Spect Velocity Res&#39;: 19.34326248968351,
+ &#39;Signal Start Time&#39;: 4.4876562523934364e-07,
+ &#39;Smoothing Characteristic Time&#39;: 1.831171875976633e-09}
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(24000x12000)
+{&#39;figure&#39;: [&lt;Figure size 24000x12000 with 16 Axes&gt;, &#39;/home/arachid1/output_data/C2-20241101-00002-plots-v1_3_1-7M7.png&#39;], &#39;inputs&#39;: [                                                                   Input
+filepath               /home/arachid1/EZOpenMSIStream/amdee_pdv_data_...
+out_files_dir                                 /home/arachid1/output_data
+start_time_user                                                     otsu
+carrier_filter_type                                       gaussian_notch
+save_data                                                            yes
+display_plots                                                         no
+spall_calculation                                                    yes
+window                                                              hann
+cmap                                                             viridis
+header_lines                                                           1
+time_to_skip                                                    0.000002
+time_to_take                                                    0.000002
+t_before                                                             0.0
+t_after                                                              0.0
+start_time_correction                                                0.0
+freq_min                                                    1500000000.0
+freq_max                                                    4000000000.0
+smoothing_window                                                     601
+smoothing_wid                                                          3
+smoothing_amp                                                          1
+smoothing_sigma                                                        1
+smoothing_mu                                                           0
+pb_neighbors                                                         400
+pb_idx_correction                                                      0
+rc_neighbors                                                         400
+rc_idx_correction                                                      0
+sample_rate                                                  80000000000
+nperseg                                                              512
+noverlap                                                             435
+nfft                                                                5120
+blur_kernel                                                       [5, 5]
+blur_sigx                                                              0
+blur_sigy                                                              0
+carrier_band_time                                                    0.0
+uncert_mult                                                          100
+order                                                                  6
+wid                                                           50000000.0
+lam                                                             0.000002
+C0                                                                  4540
+density                                                             1730
+delta_rho                                                              9
+delta_C0                                                              23
+delta_lam                                                            0.0
+theta                                                                  0
+delta_theta                                                            5
+plot_figsize                                                    [80, 40]
+plot_dpi                                                             300
+iq_threshold_factor                                                  0.4
+cusum_offset                                                           5
+cusum_threshold                                                     1000
+t_fit_begin                                                           20
+t_fit_end                                                            300, &#39;/home/arachid1/output_data/C2-20241101-00002-inputs-v1_3_1-7M7.csv&#39;], &#39;velocity&#39;: [array([[ 4.43765625e-07, -2.83692315e+02],
+       [ 4.43773438e-07, -2.91294659e+02],
+       [ 4.43781250e-07, -2.98170848e+02],
+       ...,
+       [ 4.98742188e-07,  3.37397276e+02],
+       [ 4.98750000e-07,  3.18397616e+02],
+       [ 4.98757813e-07,  2.97866230e+02]]), &#39;/home/arachid1/output_data/C2-20241101-00002-velocity-v1_3_1-7M7.csv&#39;], &#39;smooth_velocity&#39;: [array([[ 4.43765625e-07, -3.95539978e+01],
+       [ 4.43773438e-07, -3.83935119e+01],
+       [ 4.43781250e-07, -3.72151246e+01],
+       ...,
+       [ 4.98742188e-07,  3.93400514e+02],
+       [ 4.98750000e-07,  3.91511887e+02],
+       [ 4.98757813e-07,  3.89625614e+02]]), &#39;/home/arachid1/output_data/C2-20241101-00002-velocity--smooth-v1_3_1-7M7.csv&#39;], &#39;voltage&#39;: [array([[ 0.00000000e+00,  2.32436018e-04,  4.26221688e-06],
+       [ 7.81300000e-12,  2.49279040e-04,  4.35644817e-05],
+       [ 1.56250000e-11,  2.58654725e-04,  8.69268367e-05],
+       ...,
+       [ 9.37476563e-07,  1.48209612e-04, -7.71810957e-05],
+       [ 9.37484375e-07,  1.80571136e-04, -5.70867798e-05],
+       [ 9.37492188e-07,  2.09122024e-04, -2.96568851e-05]]), &#39;/home/arachid1/output_data/C2-20241101-00002-voltage-v1_3_1-7M7.csv&#39;], &#39;noise&#39;: [array([[4.43765625e-07, 8.54047160e-01],
+       [4.43773438e-07, 8.54047160e-01],
+       [4.43781250e-07, 8.54047160e-01],
+       ...,
+       [4.98742188e-07, 1.03567247e+00],
+       [4.98750000e-07, 1.03567247e+00],
+       [4.98757813e-07, 1.03567247e+00]]), &#39;/home/arachid1/output_data/C2-20241101-00002-noisefrac-v1_3_1-7M7.csv&#39;], &#39;vel_uncert&#39;: [array([[4.43765625e-07, 1.83780180e+01],
+       [4.43773438e-07, 1.83780180e+01],
+       [4.43781250e-07, 1.83780180e+01],
+       ...,
+       [4.98742188e-07, 2.22863657e+01],
+       [4.98750000e-07, 2.22863657e+01],
+       [4.98757813e-07, 2.22863657e+01]]), &#39;/home/arachid1/output_data/C2-20241101-00002-veluncert-v1_3_1-7M7.csv&#39;], &#39;results&#39;: {&#39;Date&#39;: &#39;Oct 17 2025&#39;, &#39;Time&#39;: &#39;01:08 PM&#39;, &#39;File Name&#39;: &#39;C2-20241101-00002.csv&#39;, &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:00.893775&#39;), &#39;Velocity at Max Compression&#39;: 1164.9779115660515, &#39;Time at Max Compression&#39;: 4.603749999999998e-07, &#39;Velocity at Max Tension&#39;: 467.15214552597524, &#39;Time at Max Tension&#39;: 4.6232812500000007e-07, &#39;Velocity at Recompression&#39;: 663.1297758511142, &#39;Time at Recompression&#39;: 4.6535156299999997e-07, &#39;Carrier Frequency&#39;: 1779999999.0506587, &#39;Spall Strength&#39;: 2740431565.8159833, &#39;Spall Strength Uncertainty&#39;: 112982141.49538691, &#39;Strain Rate&#39;: 39348765.662166476, &#39;Strain Rate Uncertainty&#39;: 52197738.449810915, &#39;Peak Shock Stress&#39;: 4574984756.511041, &#39;Spect Time Res&#39;: 6.01562500320836e-10, &#39;Spect Freq Res&#39;: 24999999.98666656, &#39;Spect Velocity Res&#39;: 19.34326248968351, &#39;Signal Start Time&#39;: 4.4876562523934364e-07, &#39;Smoothing Characteristic Time&#39;: 1.831171875976633e-09}}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/20240703_0001.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:09:35,684 - ERROR - alpss - Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+ERROR:alpss:Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+2025-10-17 13:09:35,686 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+ERROR:alpss:Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+2025-10-17 13:09:35,687 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+INFO:alpss:Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:09:38,320 - INFO - alpss - Fallback visualization was successful.
+INFO:alpss:Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/20240703_0001--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241101-00005.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:09:41,627 - INFO - alpss - 
+Full program runtime (including plotting and saving):
+0:00:03.304225
+
+INFO:alpss:
+Full program runtime (including plotting and saving):
+0:00:03.304225
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Date&#39;: &#39;Oct 17 2025&#39;,
+ &#39;Time&#39;: &#39;01:09 PM&#39;,
+ &#39;File Name&#39;: &#39;C2-20241101-00005.csv&#39;,
+ &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:01.273190&#39;),
+ &#39;Velocity at Max Compression&#39;: 1275.338662908126,
+ &#39;Time at Max Compression&#39;: 4.1603906199999994e-07,
+ &#39;Velocity at Max Tension&#39;: 349.72619936677904,
+ &#39;Time at Max Tension&#39;: 4.193281249999998e-07,
+ &#39;Velocity at Recompression&#39;: 899.7804221805806,
+ &#39;Time at Recompression&#39;: 4.2134374999999977e-07,
+ &#39;Carrier Frequency&#39;: 1784055752.6937463,
+ &#39;Spall Strength&#39;: 3634972705.5732236,
+ &#39;Spall Strength Uncertainty&#39;: 125448316.05187815,
+ &#39;Strain Rate&#39;: 30993537.864098724,
+ &#39;Strain Rate Uncertainty&#39;: 24425890.14371457,
+ &#39;Peak Shock Stress&#39;: 5008382463.106502,
+ &#39;Spect Time Res&#39;: 6.01562499679164e-10,
+ &#39;Spect Freq Res&#39;: 25000000.01333344,
+ &#39;Spect Velocity Res&#39;: 19.34326251031649,
+ &#39;Signal Start Time&#39;: 3.9883593728728575e-07,
+ &#39;Smoothing Characteristic Time&#39;: 1.8311718740233668e-09}
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(24000x12000)
+{&#39;figure&#39;: [&lt;Figure size 24000x12000 with 16 Axes&gt;, &#39;/home/arachid1/output_data/C2-20241101-00005-plots-v1_3_1-VCF.png&#39;], &#39;inputs&#39;: [                                                                   Input
+filepath               /home/arachid1/EZOpenMSIStream/amdee_pdv_data_...
+out_files_dir                                 /home/arachid1/output_data
+start_time_user                                                     otsu
+carrier_filter_type                                       gaussian_notch
+save_data                                                            yes
+display_plots                                                         no
+spall_calculation                                                    yes
+window                                                              hann
+cmap                                                             viridis
+header_lines                                                           1
+time_to_skip                                                    0.000002
+time_to_take                                                    0.000002
+t_before                                                             0.0
+t_after                                                              0.0
+start_time_correction                                                0.0
+freq_min                                                    1500000000.0
+freq_max                                                    4000000000.0
+smoothing_window                                                     601
+smoothing_wid                                                          3
+smoothing_amp                                                          1
+smoothing_sigma                                                        1
+smoothing_mu                                                           0
+pb_neighbors                                                         400
+pb_idx_correction                                                      0
+rc_neighbors                                                         400
+rc_idx_correction                                                      0
+sample_rate                                                  80000000000
+nperseg                                                              512
+noverlap                                                             435
+nfft                                                                5120
+blur_kernel                                                       [5, 5]
+blur_sigx                                                              0
+blur_sigy                                                              0
+carrier_band_time                                                    0.0
+uncert_mult                                                          100
+order                                                                  6
+wid                                                           50000000.0
+lam                                                             0.000002
+C0                                                                  4540
+density                                                             1730
+delta_rho                                                              9
+delta_C0                                                              23
+delta_lam                                                            0.0
+theta                                                                  0
+delta_theta                                                            5
+plot_figsize                                                    [80, 40]
+plot_dpi                                                             300
+iq_threshold_factor                                                  0.4
+cusum_offset                                                           5
+cusum_threshold                                                     1000
+t_fit_begin                                                           20
+t_fit_end                                                            300, &#39;/home/arachid1/output_data/C2-20241101-00005-inputs-v1_3_1-VCF.csv&#39;], &#39;velocity&#39;: [array([[ 3.93835937e-07, -5.44358295e+01],
+       [ 3.93843750e-07, -6.49648577e+01],
+       [ 3.93851562e-07, -7.51889309e+01],
+       ...,
+       [ 4.48812500e-07,  2.81095093e+03],
+       [ 4.48820312e-07,  4.28161156e+03],
+       [ 4.48828125e-07,  7.74091554e+03]]), &#39;/home/arachid1/output_data/C2-20241101-00005-velocity-v1_3_1-VCF.csv&#39;], &#39;smooth_velocity&#39;: [array([[3.93835937e-07, 1.30095901e+00],
+       [3.93843750e-07, 1.33025820e+00],
+       [3.93851562e-07, 1.35982107e+00],
+       ...,
+       [4.48812500e-07, 8.62905968e+02],
+       [4.48820312e-07, 8.65028559e+02],
+       [4.48828125e-07, 8.67118214e+02]]), &#39;/home/arachid1/output_data/C2-20241101-00005-velocity--smooth-v1_3_1-VCF.csv&#39;], &#39;voltage&#39;: [array([[ 0.00000000e+00, -1.03071431e-03,  2.25211373e-03],
+       [ 7.81200000e-12, -1.14841423e-03,  2.25981958e-03],
+       [ 1.56250000e-11, -1.28181888e-03,  2.26627579e-03],
+       ...,
+       [ 9.37476562e-07, -7.52783452e-04,  2.25355616e-03],
+       [ 9.37484375e-07, -8.35363120e-04,  2.24625166e-03],
+       [ 9.37492187e-07, -9.27101330e-04,  2.24659222e-03]]), &#39;/home/arachid1/output_data/C2-20241101-00005-voltage-v1_3_1-VCF.csv&#39;], &#39;noise&#39;: [array([[3.93835937e-07, 9.34247473e-02],
+       [3.93843750e-07, 9.34247473e-02],
+       [3.93851562e-07, 9.34247473e-02],
+       ...,
+       [4.48812500e-07, 8.56948698e+00],
+       [4.48820312e-07, 8.66752475e+00],
+       [4.48828125e-07, 8.66752475e+00]]), &#39;/home/arachid1/output_data/C2-20241101-00005-noisefrac-v1_3_1-VCF.csv&#39;], &#39;vel_uncert&#39;: [array([[3.93835937e-07, 2.01038277e+00],
+       [3.93843750e-07, 2.01038277e+00],
+       [3.93851562e-07, 2.01038277e+00],
+       ...,
+       [4.48812500e-07, 1.84404555e+02],
+       [4.48820312e-07, 1.86514204e+02],
+       [4.48828125e-07, 1.86514204e+02]]), &#39;/home/arachid1/output_data/C2-20241101-00005-veluncert-v1_3_1-VCF.csv&#39;], &#39;results&#39;: {&#39;Date&#39;: &#39;Oct 17 2025&#39;, &#39;Time&#39;: &#39;01:09 PM&#39;, &#39;File Name&#39;: &#39;C2-20241101-00005.csv&#39;, &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:01.273190&#39;), &#39;Velocity at Max Compression&#39;: 1275.338662908126, &#39;Time at Max Compression&#39;: 4.1603906199999994e-07, &#39;Velocity at Max Tension&#39;: 349.72619936677904, &#39;Time at Max Tension&#39;: 4.193281249999998e-07, &#39;Velocity at Recompression&#39;: 899.7804221805806, &#39;Time at Recompression&#39;: 4.2134374999999977e-07, &#39;Carrier Frequency&#39;: 1784055752.6937463, &#39;Spall Strength&#39;: 3634972705.5732236, &#39;Spall Strength Uncertainty&#39;: 125448316.05187815, &#39;Strain Rate&#39;: 30993537.864098724, &#39;Strain Rate Uncertainty&#39;: 24425890.14371457, &#39;Peak Shock Stress&#39;: 5008382463.106502, &#39;Spect Time Res&#39;: 6.01562499679164e-10, &#39;Spect Freq Res&#39;: 25000000.01333344, &#39;Spect Velocity Res&#39;: 19.34326251031649, &#39;Signal Start Time&#39;: 3.9883593728728575e-07, &#39;Smoothing Characteristic Time&#39;: 1.8311718740233668e-09}}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241104-SP-00010.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:10:47,204 - INFO - alpss - 
+Full program runtime (including plotting and saving):
+0:00:05.245305
+
+INFO:alpss:
+Full program runtime (including plotting and saving):
+0:00:05.245305
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Date&#39;: &#39;Oct 17 2025&#39;,
+ &#39;Time&#39;: &#39;01:10 PM&#39;,
+ &#39;File Name&#39;: &#39;C2-20241104-SP-00010.csv&#39;,
+ &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:03.432211&#39;),
+ &#39;Velocity at Max Compression&#39;: 963.0939645420186,
+ &#39;Time at Max Compression&#39;: 1.6069531300000026e-07,
+ &#39;Velocity at Max Tension&#39;: 228.84888314345224,
+ &#39;Time at Max Tension&#39;: 1.682656250000003e-07,
+ &#39;Velocity at Recompression&#39;: 804.8714565700783,
+ &#39;Time at Recompression&#39;: 1.7046093800000028e-07,
+ &#39;Carrier Frequency&#39;: 1783999999.0485244,
+ &#39;Spall Strength&#39;: 2883453859.1603103,
+ &#39;Spall Strength Uncertainty&#39;: 1052522746.8382369,
+ &#39;Strain Rate&#39;: 10681725.634127168,
+ &#39;Strain Rate Uncertainty&#39;: 5343359.69658513,
+ &#39;Peak Shock Stress&#39;: 3782166308.1529613,
+ &#39;Spect Time Res&#39;: 6.015625003208363e-10,
+ &#39;Spect Freq Res&#39;: 24999999.98666654,
+ &#39;Spect Velocity Res&#39;: 19.343262489683497,
+ &#39;Signal Start Time&#39;: 1.3835937507379233e-07,
+ &#39;Smoothing Characteristic Time&#39;: 1.8311718759766337e-09}
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(24000x12000)
+{&#39;figure&#39;: [&lt;Figure size 24000x12000 with 16 Axes&gt;, &#39;/home/arachid1/output_data/C2-20241104-SP-00010-plots-v1_3_1-ZJT.png&#39;], &#39;inputs&#39;: [                                                                   Input
+filepath               /home/arachid1/EZOpenMSIStream/amdee_pdv_data_...
+out_files_dir                                 /home/arachid1/output_data
+start_time_user                                                     otsu
+carrier_filter_type                                       gaussian_notch
+save_data                                                            yes
+display_plots                                                         no
+spall_calculation                                                    yes
+window                                                              hann
+cmap                                                             viridis
+header_lines                                                           1
+time_to_skip                                                    0.000002
+time_to_take                                                    0.000002
+t_before                                                             0.0
+t_after                                                              0.0
+start_time_correction                                                0.0
+freq_min                                                    1500000000.0
+freq_max                                                    4000000000.0
+smoothing_window                                                     601
+smoothing_wid                                                          3
+smoothing_amp                                                          1
+smoothing_sigma                                                        1
+smoothing_mu                                                           0
+pb_neighbors                                                         400
+pb_idx_correction                                                      0
+rc_neighbors                                                         400
+rc_idx_correction                                                      0
+sample_rate                                                  80000000000
+nperseg                                                              512
+noverlap                                                             435
+nfft                                                                5120
+blur_kernel                                                       [5, 5]
+blur_sigx                                                              0
+blur_sigy                                                              0
+carrier_band_time                                                    0.0
+uncert_mult                                                          100
+order                                                                  6
+wid                                                           50000000.0
+lam                                                             0.000002
+C0                                                                  4540
+density                                                             1730
+delta_rho                                                              9
+delta_C0                                                              23
+delta_lam                                                            0.0
+theta                                                                  0
+delta_theta                                                            5
+plot_figsize                                                    [80, 40]
+plot_dpi                                                             300
+iq_threshold_factor                                                  0.4
+cusum_offset                                                           5
+cusum_threshold                                                     1000
+t_fit_begin                                                           20
+t_fit_end                                                            300, &#39;/home/arachid1/output_data/C2-20241104-SP-00010-inputs-v1_3_1-ZJT.csv&#39;], &#39;velocity&#39;: [array([[1.33359375e-07, 4.25832357e+01],
+       [1.33367188e-07, 4.05679452e+01],
+       [1.33375000e-07, 3.81554425e+01],
+       ...,
+       [1.88335938e-07, 6.95447652e+02],
+       [1.88343750e-07, 6.56353425e+02],
+       [1.88351563e-07, 6.08813611e+02]]), &#39;/home/arachid1/output_data/C2-20241104-SP-00010-velocity-v1_3_1-ZJT.csv&#39;], &#39;smooth_velocity&#39;: [array([[1.33359375e-07, 4.32712894e+00],
+       [1.33367188e-07, 4.26398203e+00],
+       [1.33375000e-07, 4.19989035e+00],
+       ...,
+       [1.88335938e-07, 4.11417391e+02],
+       [1.88343750e-07, 4.12658333e+02],
+       [1.88351563e-07, 4.13987903e+02]]), &#39;/home/arachid1/output_data/C2-20241104-SP-00010-velocity--smooth-v1_3_1-ZJT.csv&#39;], &#39;voltage&#39;: [array([[ 0.00000000e+00, -1.29194551e-03, -4.51001374e-03],
+       [ 7.81300000e-12, -6.33405443e-04, -4.66935347e-03],
+       [ 1.56250000e-11,  3.91196568e-05, -4.73441636e-03],
+       ...,
+       [ 9.37476563e-07, -3.05113969e-03, -3.49947315e-03],
+       [ 9.37484375e-07, -2.51357382e-03, -3.91979359e-03],
+       [ 9.37492188e-07, -1.92303433e-03, -4.25872212e-03]]), &#39;/home/arachid1/output_data/C2-20241104-SP-00010-voltage-v1_3_1-ZJT.csv&#39;], &#39;noise&#39;: [array([[1.33359375e-07, 3.38922668e-01],
+       [1.33367188e-07, 3.38922668e-01],
+       [1.33375000e-07, 3.38922668e-01],
+       ...,
+       [1.88335938e-07, 4.56203515e+00],
+       [1.88343750e-07, 4.56203515e+00],
+       [1.88351563e-07, 4.56203515e+00]]), &#39;/home/arachid1/output_data/C2-20241104-SP-00010-noisefrac-v1_3_1-ZJT.csv&#39;], &#39;vel_uncert&#39;: [array([[1.33359375e-07, 7.29318848e+00],
+       [1.33367188e-07, 7.29318848e+00],
+       [1.33375000e-07, 7.29318848e+00],
+       ...,
+       [1.88335938e-07, 9.81692442e+01],
+       [1.88343750e-07, 9.81692442e+01],
+       [1.88351563e-07, 9.81692442e+01]]), &#39;/home/arachid1/output_data/C2-20241104-SP-00010-veluncert-v1_3_1-ZJT.csv&#39;], &#39;results&#39;: {&#39;Date&#39;: &#39;Oct 17 2025&#39;, &#39;Time&#39;: &#39;01:10 PM&#39;, &#39;File Name&#39;: &#39;C2-20241104-SP-00010.csv&#39;, &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:03.432211&#39;), &#39;Velocity at Max Compression&#39;: 963.0939645420186, &#39;Time at Max Compression&#39;: 1.6069531300000026e-07, &#39;Velocity at Max Tension&#39;: 228.84888314345224, &#39;Time at Max Tension&#39;: 1.682656250000003e-07, &#39;Velocity at Recompression&#39;: 804.8714565700783, &#39;Time at Recompression&#39;: 1.7046093800000028e-07, &#39;Carrier Frequency&#39;: 1783999999.0485244, &#39;Spall Strength&#39;: 2883453859.1603103, &#39;Spall Strength Uncertainty&#39;: 1052522746.8382369, &#39;Strain Rate&#39;: 10681725.634127168, &#39;Strain Rate Uncertainty&#39;: 5343359.69658513, &#39;Peak Shock Stress&#39;: 3782166308.1529613, &#39;Spect Time Res&#39;: 6.015625003208363e-10, &#39;Spect Freq Res&#39;: 24999999.98666654, &#39;Spect Velocity Res&#39;: 19.343262489683497, &#39;Signal Start Time&#39;: 1.3835937507379233e-07, &#39;Smoothing Characteristic Time&#39;: 1.8311718759766337e-09}}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241029-00017.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:11:53,524 - ERROR - alpss - Error in the execution of the main program:: length of velocity pad is 0
+ERROR:alpss:Error in the execution of the main program:: length of velocity pad is 0
+2025-10-17 13:11:53,526 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 55, in alpss_main
+    vc_out = velocity_calculation(sdf_out, cen, cf_out, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/velocity_calculation.py&quot;, line 49, in velocity_calculation
+    velocity_f_smooth = smoothing(
+  File &quot;/home/arachid1/ALPSS/src/alpss/smoothing.py&quot;, line 15, in smoothing
+    raise Exception(f&#39;length of velocity pad is {len(velocity_pad)}&#39;)
+Exception: length of velocity pad is 0
+
+ERROR:alpss:Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 55, in alpss_main
+    vc_out = velocity_calculation(sdf_out, cen, cf_out, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/velocity_calculation.py&quot;, line 49, in velocity_calculation
+    velocity_f_smooth = smoothing(
+  File &quot;/home/arachid1/ALPSS/src/alpss/smoothing.py&quot;, line 15, in smoothing
+    raise Exception(f&#39;length of velocity pad is {len(velocity_pad)}&#39;)
+Exception: length of velocity pad is 0
+
+2025-10-17 13:11:53,527 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+INFO:alpss:Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:11:55,577 - INFO - alpss - Fallback visualization was successful.
+INFO:alpss:Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/C2-20241029-00017--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241101-SP-00006.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:12:00,141 - INFO - alpss - 
+Full program runtime (including plotting and saving):
+0:00:04.563044
+
+INFO:alpss:
+Full program runtime (including plotting and saving):
+0:00:04.563044
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Date&#39;: &#39;Oct 17 2025&#39;,
+ &#39;Time&#39;: &#39;01:11 PM&#39;,
+ &#39;File Name&#39;: &#39;C2-20241101-SP-00006.csv&#39;,
+ &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:02.598515&#39;),
+ &#39;Velocity at Max Compression&#39;: 1054.9329609555386,
+ &#39;Time at Max Compression&#39;: 1.0944531200000022e-07,
+ &#39;Velocity at Max Tension&#39;: 596.120048520493,
+ &#39;Time at Max Tension&#39;: 1.1403906200000013e-07,
+ &#39;Velocity at Recompression&#39;: 883.58454920722,
+ &#39;Time at Recompression&#39;: 1.155937500000002e-07,
+ &#39;Carrier Frequency&#39;: 1804056377.7239451,
+ &#39;Spall Strength&#39;: 1801804188.4236677,
+ &#39;Spall Strength Uncertainty&#39;: 1723607717.9192502,
+ &#39;Strain Rate&#39;: 10999740.176452512,
+ &#39;Strain Rate Uncertainty&#39;: 12213467.5471682,
+ &#39;Peak Shock Stress&#39;: 4142827230.968496,
+ &#39;Spect Time Res&#39;: 6.01562499679164e-10,
+ &#39;Spect Freq Res&#39;: 25000000.01333344,
+ &#39;Spect Velocity Res&#39;: 19.34326251031649,
+ &#39;Signal Start Time&#39;: 7.579687495957467e-08,
+ &#39;Smoothing Characteristic Time&#39;: 1.8311718740233668e-09}
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(24000x12000)
+{&#39;figure&#39;: [&lt;Figure size 24000x12000 with 16 Axes&gt;, &#39;/home/arachid1/output_data/C2-20241101-SP-00006-plots-v1_3_1-ZP2.png&#39;], &#39;inputs&#39;: [                                                                   Input
+filepath               /home/arachid1/EZOpenMSIStream/amdee_pdv_data_...
+out_files_dir                                 /home/arachid1/output_data
+start_time_user                                                     otsu
+carrier_filter_type                                       gaussian_notch
+save_data                                                            yes
+display_plots                                                         no
+spall_calculation                                                    yes
+window                                                              hann
+cmap                                                             viridis
+header_lines                                                           1
+time_to_skip                                                    0.000002
+time_to_take                                                    0.000002
+t_before                                                             0.0
+t_after                                                              0.0
+start_time_correction                                                0.0
+freq_min                                                    1500000000.0
+freq_max                                                    4000000000.0
+smoothing_window                                                     601
+smoothing_wid                                                          3
+smoothing_amp                                                          1
+smoothing_sigma                                                        1
+smoothing_mu                                                           0
+pb_neighbors                                                         400
+pb_idx_correction                                                      0
+rc_neighbors                                                         400
+rc_idx_correction                                                      0
+sample_rate                                                  80000000000
+nperseg                                                              512
+noverlap                                                             435
+nfft                                                                5120
+blur_kernel                                                       [5, 5]
+blur_sigx                                                              0
+blur_sigy                                                              0
+carrier_band_time                                                    0.0
+uncert_mult                                                          100
+order                                                                  6
+wid                                                           50000000.0
+lam                                                             0.000002
+C0                                                                  4540
+density                                                             1730
+delta_rho                                                              9
+delta_C0                                                              23
+delta_lam                                                            0.0
+theta                                                                  0
+delta_theta                                                            5
+plot_figsize                                                    [80, 40]
+plot_dpi                                                             300
+iq_threshold_factor                                                  0.4
+cusum_offset                                                           5
+cusum_threshold                                                     1000
+t_fit_begin                                                           20
+t_fit_end                                                            300, &#39;/home/arachid1/output_data/C2-20241101-SP-00006-inputs-v1_3_1-ZP2.csv&#39;], &#39;velocity&#39;: [array([[ 7.07968750e-08,  1.33700810e+01],
+       [ 7.08046870e-08,  1.90390582e+01],
+       [ 7.08125000e-08,  2.50261523e+01],
+       ...,
+       [ 1.25773437e-07,  1.16721234e+02],
+       [ 1.25781250e-07,  2.87308219e+01],
+       [ 1.25789062e-07, -6.48120016e+01]]), &#39;/home/arachid1/output_data/C2-20241101-SP-00006-velocity-v1_3_1-ZP2.csv&#39;], &#39;smooth_velocity&#39;: [array([[7.07968750e-08, 1.57128953e+00],
+       [7.08046870e-08, 1.56356379e+00],
+       [7.08125000e-08, 1.55542664e+00],
+       ...,
+       [1.25773437e-07, 8.28307719e+02],
+       [1.25781250e-07, 8.30255332e+02],
+       [1.25789062e-07, 8.32183217e+02]]), &#39;/home/arachid1/output_data/C2-20241101-SP-00006-velocity--smooth-v1_3_1-ZP2.csv&#39;], &#39;voltage&#39;: [array([[ 0.00000000e+00,  1.01103591e-03, -1.99347774e-03],
+       [ 7.81200000e-12,  1.35740046e-03, -1.95427684e-03],
+       [ 1.56250000e-11,  1.70497596e-03, -1.86015982e-03],
+       ...,
+       [ 9.37476562e-07,  5.93462034e-05, -1.80504893e-03],
+       [ 9.37484375e-07,  3.54509776e-04, -1.91532317e-03],
+       [ 9.37492187e-07,  6.74135027e-04, -1.97950295e-03]]), &#39;/home/arachid1/output_data/C2-20241101-SP-00006-voltage-v1_3_1-ZP2.csv&#39;], &#39;noise&#39;: [array([[7.07968750e-08, 3.39427664e-01],
+       [7.08046870e-08, 3.39427664e-01],
+       [7.08125000e-08, 3.39427664e-01],
+       ...,
+       [1.25773437e-07, 1.34839266e+01],
+       [1.25781250e-07, 1.34839266e+01],
+       [1.25789062e-07, 1.34839266e+01]]), &#39;/home/arachid1/output_data/C2-20241101-SP-00006-noisefrac-v1_3_1-ZP2.csv&#39;], &#39;vel_uncert&#39;: [array([[7.07968750e-08, 7.30405535e+00],
+       [7.08046870e-08, 7.30405535e+00],
+       [7.08125000e-08, 7.30405535e+00],
+       ...,
+       [1.25773437e-07, 2.90157098e+02],
+       [1.25781250e-07, 2.90157098e+02],
+       [1.25789062e-07, 2.90157098e+02]]), &#39;/home/arachid1/output_data/C2-20241101-SP-00006-veluncert-v1_3_1-ZP2.csv&#39;], &#39;results&#39;: {&#39;Date&#39;: &#39;Oct 17 2025&#39;, &#39;Time&#39;: &#39;01:11 PM&#39;, &#39;File Name&#39;: &#39;C2-20241101-SP-00006.csv&#39;, &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:02.598515&#39;), &#39;Velocity at Max Compression&#39;: 1054.9329609555386, &#39;Time at Max Compression&#39;: 1.0944531200000022e-07, &#39;Velocity at Max Tension&#39;: 596.120048520493, &#39;Time at Max Tension&#39;: 1.1403906200000013e-07, &#39;Velocity at Recompression&#39;: 883.58454920722, &#39;Time at Recompression&#39;: 1.155937500000002e-07, &#39;Carrier Frequency&#39;: 1804056377.7239451, &#39;Spall Strength&#39;: 1801804188.4236677, &#39;Spall Strength Uncertainty&#39;: 1723607717.9192502, &#39;Strain Rate&#39;: 10999740.176452512, &#39;Strain Rate Uncertainty&#39;: 12213467.5471682, &#39;Peak Shock Stress&#39;: 4142827230.968496, &#39;Spect Time Res&#39;: 6.01562499679164e-10, &#39;Spect Freq Res&#39;: 25000000.01333344, &#39;Spect Velocity Res&#39;: 19.34326251031649, &#39;Signal Start Time&#39;: 7.579687495957467e-08, &#39;Smoothing Characteristic Time&#39;: 1.8311718740233668e-09}}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241101-00014.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:13:04,924 - ERROR - alpss - Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+ERROR:alpss:Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+2025-10-17 13:13:04,926 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+ERROR:alpss:Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+2025-10-17 13:13:04,926 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+INFO:alpss:Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:13:07,497 - INFO - alpss - Fallback visualization was successful.
+INFO:alpss:Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/C2-20241101-00014--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241029-00006.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:13:11,774 - INFO - alpss - 
+Full program runtime (including plotting and saving):
+0:00:04.273493
+
+INFO:alpss:
+Full program runtime (including plotting and saving):
+0:00:04.273493
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Date&#39;: &#39;Oct 17 2025&#39;,
+ &#39;Time&#39;: &#39;01:13 PM&#39;,
+ &#39;File Name&#39;: &#39;C2-20241029-00006.csv&#39;,
+ &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:02.330949&#39;),
+ &#39;Velocity at Max Compression&#39;: 1219.0143853545164,
+ &#39;Time at Max Compression&#39;: 2.2666406299999964e-07,
+ &#39;Velocity at Max Tension&#39;: 411.006771158308,
+ &#39;Time at Max Tension&#39;: 2.3456249999999976e-07,
+ &#39;Velocity at Recompression&#39;: 980.3342701418769,
+ &#39;Time at Recompression&#39;: 2.325859379999997e-07,
+ &#39;Carrier Frequency&#39;: 1719999999.082659,
+ &#39;Spall Strength&#39;: 3173126701.70993,
+ &#39;Spall Strength Uncertainty&#39;: 243642936.93462005,
+ &#39;Strain Rate&#39;: 11266485.09177604,
+ &#39;Strain Rate Uncertainty&#39;: 3793443.5340695996,
+ &#39;Peak Shock Stress&#39;: 4787191392.725721,
+ &#39;Spect Time Res&#39;: 6.01562500320836e-10,
+ &#39;Spect Freq Res&#39;: 24999999.98666656,
+ &#39;Spect Velocity Res&#39;: 19.34326248968351,
+ &#39;Signal Start Time&#39;: 2.2197656261838848e-07,
+ &#39;Smoothing Characteristic Time&#39;: 1.831171875976633e-09}
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(24000x12000)
+{&#39;figure&#39;: [&lt;Figure size 24000x12000 with 16 Axes&gt;, &#39;/home/arachid1/output_data/C2-20241029-00006-plots-v1_3_1-KXP.png&#39;], &#39;inputs&#39;: [                                                                   Input
+filepath               /home/arachid1/EZOpenMSIStream/amdee_pdv_data_...
+out_files_dir                                 /home/arachid1/output_data
+start_time_user                                                     otsu
+carrier_filter_type                                       gaussian_notch
+save_data                                                            yes
+display_plots                                                         no
+spall_calculation                                                    yes
+window                                                              hann
+cmap                                                             viridis
+header_lines                                                           1
+time_to_skip                                                    0.000002
+time_to_take                                                    0.000002
+t_before                                                             0.0
+t_after                                                              0.0
+start_time_correction                                                0.0
+freq_min                                                    1500000000.0
+freq_max                                                    4000000000.0
+smoothing_window                                                     601
+smoothing_wid                                                          3
+smoothing_amp                                                          1
+smoothing_sigma                                                        1
+smoothing_mu                                                           0
+pb_neighbors                                                         400
+pb_idx_correction                                                      0
+rc_neighbors                                                         400
+rc_idx_correction                                                      0
+sample_rate                                                  80000000000
+nperseg                                                              512
+noverlap                                                             435
+nfft                                                                5120
+blur_kernel                                                       [5, 5]
+blur_sigx                                                              0
+blur_sigy                                                              0
+carrier_band_time                                                    0.0
+uncert_mult                                                          100
+order                                                                  6
+wid                                                           50000000.0
+lam                                                             0.000002
+C0                                                                  4540
+density                                                             1730
+delta_rho                                                              9
+delta_C0                                                              23
+delta_lam                                                            0.0
+theta                                                                  0
+delta_theta                                                            5
+plot_figsize                                                    [80, 40]
+plot_dpi                                                             300
+iq_threshold_factor                                                  0.4
+cusum_offset                                                           5
+cusum_threshold                                                     1000
+t_fit_begin                                                           20
+t_fit_end                                                            300, &#39;/home/arachid1/output_data/C2-20241029-00006-inputs-v1_3_1-KXP.csv&#39;], &#39;velocity&#39;: [array([[2.16976563e-07, 9.57129474e+01],
+       [2.16984375e-07, 9.72472753e+01],
+       [2.16992188e-07, 9.82617156e+01],
+       ...,
+       [2.71953125e-07, 7.91541283e+02],
+       [2.71960938e-07, 7.83419954e+02],
+       [2.71968750e-07, 7.75575329e+02]]), &#39;/home/arachid1/output_data/C2-20241029-00006-velocity-v1_3_1-KXP.csv&#39;], &#39;smooth_velocity&#39;: [array([[2.16976563e-07, 2.24512651e+00],
+       [2.16984375e-07, 2.18454829e+00],
+       [2.16992188e-07, 2.12361533e+00],
+       ...,
+       [2.71953125e-07, 8.61830978e+02],
+       [2.71960938e-07, 8.60713309e+02],
+       [2.71968750e-07, 8.59583401e+02]]), &#39;/home/arachid1/output_data/C2-20241029-00006-velocity--smooth-v1_3_1-KXP.csv&#39;], &#39;voltage&#39;: [array([[0.00000000e+00, 2.05526572e-03, 1.12649037e-03],
+       [7.81300000e-12, 1.99116422e-03, 1.36792409e-03],
+       [1.56250000e-11, 1.89701964e-03, 1.60696144e-03],
+       ...,
+       [9.37476563e-07, 2.07579434e-03, 4.25160821e-04],
+       [9.37484375e-07, 2.09624850e-03, 6.51576014e-04],
+       [9.37492188e-07, 2.08992687e-03, 8.86489793e-04]]), &#39;/home/arachid1/output_data/C2-20241029-00006-voltage-v1_3_1-KXP.csv&#39;], &#39;noise&#39;: [array([[2.16976563e-07, 2.53718713e-01],
+       [2.16984375e-07, 2.53718713e-01],
+       [2.16992188e-07, 2.53718713e-01],
+       ...,
+       [2.71953125e-07, 4.01378658e+00],
+       [2.71960938e-07, 4.01378658e+00],
+       [2.71968750e-07, 4.01378658e+00]]), &#39;/home/arachid1/output_data/C2-20241029-00006-noisefrac-v1_3_1-KXP.csv&#39;], &#39;vel_uncert&#39;: [array([[2.16976563e-07, 5.45970679e+00],
+       [2.16984375e-07, 5.45970679e+00],
+       [2.16992188e-07, 5.45970679e+00],
+       ...,
+       [2.71953125e-07, 8.63716263e+01],
+       [2.71960938e-07, 8.63716263e+01],
+       [2.71968750e-07, 8.63716263e+01]]), &#39;/home/arachid1/output_data/C2-20241029-00006-veluncert-v1_3_1-KXP.csv&#39;], &#39;results&#39;: {&#39;Date&#39;: &#39;Oct 17 2025&#39;, &#39;Time&#39;: &#39;01:13 PM&#39;, &#39;File Name&#39;: &#39;C2-20241029-00006.csv&#39;, &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:02.330949&#39;), &#39;Velocity at Max Compression&#39;: 1219.0143853545164, &#39;Time at Max Compression&#39;: 2.2666406299999964e-07, &#39;Velocity at Max Tension&#39;: 411.006771158308, &#39;Time at Max Tension&#39;: 2.3456249999999976e-07, &#39;Velocity at Recompression&#39;: 980.3342701418769, &#39;Time at Recompression&#39;: 2.325859379999997e-07, &#39;Carrier Frequency&#39;: 1719999999.082659, &#39;Spall Strength&#39;: 3173126701.70993, &#39;Spall Strength Uncertainty&#39;: 243642936.93462005, &#39;Strain Rate&#39;: 11266485.09177604, &#39;Strain Rate Uncertainty&#39;: 3793443.5340695996, &#39;Peak Shock Stress&#39;: 4787191392.725721, &#39;Spect Time Res&#39;: 6.01562500320836e-10, &#39;Spect Freq Res&#39;: 24999999.98666656, &#39;Spect Velocity Res&#39;: 19.34326248968351, &#39;Signal Start Time&#39;: 2.2197656261838848e-07, &#39;Smoothing Characteristic Time&#39;: 1.831171875976633e-09}}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241104-SP-00001.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:14:10,745 - ERROR - alpss - Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+ERROR:alpss:Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+2025-10-17 13:14:10,747 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+ERROR:alpss:Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+2025-10-17 13:14:10,748 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+INFO:alpss:Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:14:13,058 - INFO - alpss - Fallback visualization was successful.
+INFO:alpss:Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/C2-20241104-SP-00001--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241029-00001.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:14:16,234 - INFO - alpss - 
+Full program runtime (including plotting and saving):
+0:00:03.174357
+
+INFO:alpss:
+Full program runtime (including plotting and saving):
+0:00:03.174357
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;Date&#39;: &#39;Oct 17 2025&#39;,
+ &#39;Time&#39;: &#39;01:14 PM&#39;,
+ &#39;File Name&#39;: &#39;C2-20241029-00001.csv&#39;,
+ &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:01.307214&#39;),
+ &#39;Velocity at Max Compression&#39;: 1170.7034228925088,
+ &#39;Time at Max Compression&#39;: 3.0007812500000005e-07,
+ &#39;Velocity at Max Tension&#39;: 375.18023652003717,
+ &#39;Time at Max Tension&#39;: 3.0330468699999987e-07,
+ &#39;Velocity at Recompression&#39;: 756.8100721322296,
+ &#39;Time at Recompression&#39;: 3.0575781199999996e-07,
+ &#39;Carrier Frequency&#39;: 1784055752.6937463,
+ &#39;Spall Strength&#39;: 3124099105.2033334,
+ &#39;Spall Strength Uncertainty&#39;: 147508115.4186394,
+ &#39;Strain Rate&#39;: 27153572.664602563,
+ &#39;Strain Rate Uncertainty&#39;: 21830927.17769304,
+ &#39;Peak Shock Stress&#39;: 4597469412.041171,
+ &#39;Spect Time Res&#39;: 6.01562499679164e-10,
+ &#39;Spect Freq Res&#39;: 25000000.01333344,
+ &#39;Spect Velocity Res&#39;: 19.34326251031649,
+ &#39;Signal Start Time&#39;: 2.7010156235594465e-07,
+ &#39;Smoothing Characteristic Time&#39;: 1.8311718740233668e-09}
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(24000x12000)
+{&#39;figure&#39;: [&lt;Figure size 24000x12000 with 16 Axes&gt;, &#39;/home/arachid1/output_data/C2-20241029-00001-plots-v1_3_1-828.png&#39;], &#39;inputs&#39;: [                                                                   Input
+filepath               /home/arachid1/EZOpenMSIStream/amdee_pdv_data_...
+out_files_dir                                 /home/arachid1/output_data
+start_time_user                                                     otsu
+carrier_filter_type                                       gaussian_notch
+save_data                                                            yes
+display_plots                                                         no
+spall_calculation                                                    yes
+window                                                              hann
+cmap                                                             viridis
+header_lines                                                           1
+time_to_skip                                                    0.000002
+time_to_take                                                    0.000002
+t_before                                                             0.0
+t_after                                                              0.0
+start_time_correction                                                0.0
+freq_min                                                    1500000000.0
+freq_max                                                    4000000000.0
+smoothing_window                                                     601
+smoothing_wid                                                          3
+smoothing_amp                                                          1
+smoothing_sigma                                                        1
+smoothing_mu                                                           0
+pb_neighbors                                                         400
+pb_idx_correction                                                      0
+rc_neighbors                                                         400
+rc_idx_correction                                                      0
+sample_rate                                                  80000000000
+nperseg                                                              512
+noverlap                                                             435
+nfft                                                                5120
+blur_kernel                                                       [5, 5]
+blur_sigx                                                              0
+blur_sigy                                                              0
+carrier_band_time                                                    0.0
+uncert_mult                                                          100
+order                                                                  6
+wid                                                           50000000.0
+lam                                                             0.000002
+C0                                                                  4540
+density                                                             1730
+delta_rho                                                              9
+delta_C0                                                              23
+delta_lam                                                            0.0
+theta                                                                  0
+delta_theta                                                            5
+plot_figsize                                                    [80, 40]
+plot_dpi                                                             300
+iq_threshold_factor                                                  0.4
+cusum_offset                                                           5
+cusum_threshold                                                     1000
+t_fit_begin                                                           20
+t_fit_end                                                            300, &#39;/home/arachid1/output_data/C2-20241029-00001-inputs-v1_3_1-828.csv&#39;], &#39;velocity&#39;: [array([[ 2.65101562e-07, -1.60370565e+01],
+       [ 2.65109375e-07, -2.18515613e+01],
+       [ 2.65117187e-07, -2.73311099e+01],
+       ...,
+       [ 3.20078125e-07,  2.14491174e+02],
+       [ 3.20085937e-07,  2.02816958e+02],
+       [ 3.20093750e-07,  1.93006333e+02]]), &#39;/home/arachid1/output_data/C2-20241029-00001-velocity-v1_3_1-828.csv&#39;], &#39;smooth_velocity&#39;: [array([[ 2.65101562e-07, -1.46036559e+00],
+       [ 2.65109375e-07, -1.47233409e+00],
+       [ 2.65117187e-07, -1.48432002e+00],
+       ...,
+       [ 3.20078125e-07,  9.73263935e+02],
+       [ 3.20085937e-07,  9.75674901e+02],
+       [ 3.20093750e-07,  9.78093511e+02]]), &#39;/home/arachid1/output_data/C2-20241029-00001-velocity--smooth-v1_3_1-828.csv&#39;], &#39;voltage&#39;: [array([[ 0.00000000e+00, -1.40747784e-03, -4.33865738e-03],
+       [ 7.81200000e-12, -1.04543662e-03, -4.46301475e-03],
+       [ 1.56250000e-11, -6.70679231e-04, -4.55832195e-03],
+       ...,
+       [ 9.37476562e-07, -2.39903764e-03, -3.80849363e-03],
+       [ 9.37484375e-07, -2.08587960e-03, -4.00961835e-03],
+       [ 9.37492187e-07, -1.75486244e-03, -4.18693878e-03]]), &#39;/home/arachid1/output_data/C2-20241029-00001-voltage-v1_3_1-828.csv&#39;], &#39;noise&#39;: [array([[2.65101562e-07, 9.01001580e-02],
+       [2.65109375e-07, 9.01001580e-02],
+       [2.65117187e-07, 9.01001580e-02],
+       ...,
+       [3.20078125e-07, 7.99170231e-01],
+       [3.20085937e-07, 7.99170231e-01],
+       [3.20093750e-07, 7.99170231e-01]]), &#39;/home/arachid1/output_data/C2-20241029-00001-noisefrac-v1_3_1-828.csv&#39;], &#39;vel_uncert&#39;: [array([[2.65101562e-07, 1.93884180e+00],
+       [2.65109375e-07, 1.93884180e+00],
+       [2.65117187e-07, 1.93884180e+00],
+       ...,
+       [3.20078125e-07, 1.71971357e+01],
+       [3.20085937e-07, 1.71971357e+01],
+       [3.20093750e-07, 1.71971357e+01]]), &#39;/home/arachid1/output_data/C2-20241029-00001-veluncert-v1_3_1-828.csv&#39;], &#39;results&#39;: {&#39;Date&#39;: &#39;Oct 17 2025&#39;, &#39;Time&#39;: &#39;01:14 PM&#39;, &#39;File Name&#39;: &#39;C2-20241029-00001.csv&#39;, &#39;Run Time&#39;: Timedelta(&#39;0 days 00:00:01.307214&#39;), &#39;Velocity at Max Compression&#39;: 1170.7034228925088, &#39;Time at Max Compression&#39;: 3.0007812500000005e-07, &#39;Velocity at Max Tension&#39;: 375.18023652003717, &#39;Time at Max Tension&#39;: 3.0330468699999987e-07, &#39;Velocity at Recompression&#39;: 756.8100721322296, &#39;Time at Recompression&#39;: 3.0575781199999996e-07, &#39;Carrier Frequency&#39;: 1784055752.6937463, &#39;Spall Strength&#39;: 3124099105.2033334, &#39;Spall Strength Uncertainty&#39;: 147508115.4186394, &#39;Strain Rate&#39;: 27153572.664602563, &#39;Strain Rate Uncertainty&#39;: 21830927.17769304, &#39;Peak Shock Stress&#39;: 4597469412.041171, &#39;Spect Time Res&#39;: 6.01562499679164e-10, &#39;Spect Freq Res&#39;: 25000000.01333344, &#39;Spect Velocity Res&#39;: 19.34326251031649, &#39;Signal Start Time&#39;: 2.7010156235594465e-07, &#39;Smoothing Characteristic Time&#39;: 1.8311718740233668e-09}}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241104-SP-00006.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:15:23,641 - ERROR - alpss - Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+ERROR:alpss:Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+2025-10-17 13:15:23,644 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+ERROR:alpss:Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+2025-10-17 13:15:23,645 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+INFO:alpss:Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:15:26,521 - INFO - alpss - Fallback visualization was successful.
+INFO:alpss:Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/C2-20241104-SP-00006--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241101-00013.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:15:30,505 - ERROR - alpss - Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+ERROR:alpss:Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+2025-10-17 13:15:30,507 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+ERROR:alpss:Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+2025-10-17 13:15:30,508 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+INFO:alpss:Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:15:33,662 - INFO - alpss - Fallback visualization was successful.
+INFO:alpss:Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/C2-20241101-00013--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241104-SP-00008.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:15:37,835 - ERROR - alpss - Error in the execution of the main program:: length of velocity pad is 0
+ERROR:alpss:Error in the execution of the main program:: length of velocity pad is 0
+2025-10-17 13:15:37,837 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 55, in alpss_main
+    vc_out = velocity_calculation(sdf_out, cen, cf_out, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/velocity_calculation.py&quot;, line 49, in velocity_calculation
+    velocity_f_smooth = smoothing(
+  File &quot;/home/arachid1/ALPSS/src/alpss/smoothing.py&quot;, line 15, in smoothing
+    raise Exception(f&#39;length of velocity pad is {len(velocity_pad)}&#39;)
+Exception: length of velocity pad is 0
+
+ERROR:alpss:Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 55, in alpss_main
+    vc_out = velocity_calculation(sdf_out, cen, cf_out, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/velocity_calculation.py&quot;, line 49, in velocity_calculation
+    velocity_f_smooth = smoothing(
+  File &quot;/home/arachid1/ALPSS/src/alpss/smoothing.py&quot;, line 15, in smoothing
+    raise Exception(f&#39;length of velocity pad is {len(velocity_pad)}&#39;)
+Exception: length of velocity pad is 0
+
+2025-10-17 13:15:37,838 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+INFO:alpss:Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:15:40,037 - INFO - alpss - Fallback visualization was successful.
+INFO:alpss:Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/C2-20241104-SP-00008--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/end_to_end_example_3.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ERROR:root:Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/instantaneous_uncertainty_analysis.py&quot;, line 110, in instantaneous_uncertainty_analysis
+    popt, pcov = curve_fit(
+  File &quot;/srv/hemi01-j01/anaconda3/envs/default/lib/python3.9/site-packages/scipy/optimize/_minpack_py.py&quot;, line 1005, in curve_fit
+    raise RuntimeError(&quot;Optimal parameters not found: &quot; + errmsg)
+RuntimeError: Optimal parameters not found: Number of calls to function has reached maxfev = 1000.
+
+2025-10-17 13:15:44,271 - INFO - alpss - 
+Full program runtime (including plotting and saving):
+0:00:04.227520
+
+INFO:alpss:
+Full program runtime (including plotting and saving):
+0:00:04.227520
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/end_to_end_example_4.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:16:11,407 - ERROR - alpss - Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+ERROR:alpss:Error in the execution of the main program:: local variable &#39;cidx&#39; referenced before assignment
+2025-10-17 13:16:11,410 - ERROR - alpss - Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+ERROR:alpss:Traceback: Traceback (most recent call last):
+  File &quot;/home/arachid1/ALPSS/src/alpss/alpss_main.py&quot;, line 46, in alpss_main
+    sdf_out = spall_doi_finder(data, **inputs)
+  File &quot;/home/arachid1/ALPSS/src/alpss/spall_doi_finder.py&quot;, line 115, in spall_doi_finder
+    t_start_detected = t[cidx]
+UnboundLocalError: local variable &#39;cidx&#39; referenced before assignment
+
+2025-10-17 13:16:11,411 - INFO - alpss - Attempting a fallback visualization of the voltage signal...
+INFO:alpss:Attempting a fallback visualization of the voltage signal...
+2025-10-17 13:16:13,392 - INFO - alpss - Fallback visualization was successful.
+INFO:alpss:Fallback visualization was successful.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Figure(3300x1200)
+{&#39;error&#39;: &#39;/home/arachid1/output_data/end_to_end_example_4--error_plot.png&#39;}
+Processing file /home/arachid1/EZOpenMSIStream/amdee_pdv_data_stieff_girder_uploader/C2-20241029-00008.csv...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2025-10-17 13:16:20,423 - INFO - alpss - 
+Full program runtime (including plotting and saving):
+0:00:07.026355
+
+INFO:alpss:
+Full program runtime (including plotting and saving):
+0:00:07.026355
+</pre></div>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="simple visible nav section-nav flex-column">
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Laser Shock Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
