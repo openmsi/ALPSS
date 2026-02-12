@@ -98,18 +98,25 @@ def alpss_main(**inputs):
             logger.error("Fallback visualization also failed: %s", str(e2))
         return None
 
-    # --- Phase 2: Analysis (spall points + uncertainties) ---
+    # --- Phase 2a: Spall analysis ---
+    sa_out = _default_spall_output()
     try:
         sa_out = spall_analysis(vc_out, iua_out, **inputs)
+    except Exception as e:
+        logger.error("Error in spall analysis: %s", str(e))
+        logger.error("Traceback: %s", traceback.format_exc())
+        logger.info("Continuing without spall analysis.")
+
+    # --- Phase 2b: Full uncertainty analysis ---
+    fua_out = _default_uncertainty_output()
+    try:
         fua_out = full_uncertainty_analysis(cen, sa_out, iua_out, **inputs)
     except Exception as e:
-        logger.error("Error in analysis phase: %s", str(e))
+        logger.error("Error in uncertainty analysis: %s", str(e))
         logger.error("Traceback: %s", traceback.format_exc())
-        logger.info("Continuing with velocity results only (no spall analysis).")
-        sa_out = _default_spall_output()
-        fua_out = _default_uncertainty_output()
+        logger.info("Continuing without uncertainty analysis.")
 
-    # --- Phase 2b: HEL detection (optional) ---
+    # --- Phase 2c: HEL detection (optional) ---
     hel_out = _default_hel_output()
     hel_enabled = inputs.get("hel_detection_enabled", False)
     if hel_enabled:
@@ -192,7 +199,7 @@ def alpss_main(**inputs):
         start_time,
         end_time,
         fig,
-        hel_out=hel_out,
+        hel_out=hel_out if hel_enabled else None,
         **inputs,
     )
 

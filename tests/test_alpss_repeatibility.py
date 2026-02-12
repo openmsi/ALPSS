@@ -18,10 +18,10 @@ def test_alpss_main_wo_configfile(valid_inputs, expected_values):
 
     # Iterate over the expected values and assert that the results match
     for key, expected_value in expected_values.items():
-        assert key in result_dict['results'], f"Key '{key}' not found in the results."
-        assert result_dict['results'][key] == pytest.approx(
+        assert key in result_dict['results'][0], f"Key '{key}' not found in the results."
+        assert result_dict['results'][0][key] == pytest.approx(
             expected_value, rel=1e-9
-        ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][key]}"
+        ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][0][key]}"
 
 
 def test_alpss_main_with_configfile(config_file_path, expected_values):
@@ -38,10 +38,10 @@ def test_alpss_main_with_configfile(config_file_path, expected_values):
 
     # Iterate over the expected values and assert that the results match
     for key, expected_value in expected_values.items():
-        assert key in result_dict['results'], f"Key '{key}' not found in the results."
-        assert result_dict['results'][key] == pytest.approx(
+        assert key in result_dict['results'][0], f"Key '{key}' not found in the results."
+        assert result_dict['results'][0][key] == pytest.approx(
             expected_value, rel=1e-9
-        ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][key]}"
+        ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][0][key]}"
 
 
 @pytest.mark.parametrize("start_time_user,carrier_filter_type", [
@@ -63,7 +63,7 @@ def test_alpss_exact_values(valid_inputs, start_time_user, carrier_filter_type):
     results = alpss_main(**inputs)
     assert results is not None, f"alpss_main returned None for start={start_time_user}, filter={carrier_filter_type}"
 
-    result_dict = results[1]["results"]
+    result_dict = results[1]["results"][0]
     expected = EXPECTED_VALUES_MAP.get((start_time_user, carrier_filter_type))
     assert expected is not None, f"No expected values for ({start_time_user}, {carrier_filter_type})"
 
@@ -89,6 +89,6 @@ def test_alpss_smoke(valid_inputs, start_time_user, carrier_filter_type):
     results = alpss_main(**inputs)
     assert results is not None, f"alpss_main returned None for start={start_time_user}, filter={carrier_filter_type}"
     assert isinstance(results[0], Figure)
-    result_dict = results[1]["results"]
+    result_dict = results[1]["results"][0]
     # Carrier frequency should always be a valid number
     assert not np.isnan(result_dict["Carrier Frequency"])

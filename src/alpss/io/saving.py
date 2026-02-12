@@ -6,31 +6,34 @@ from importlib.metadata import version, PackageNotFoundError
 import random
 import string
 
-try:
-    pkg_version = version("alpss")
-    pkg_version = pkg_version.replace(".", "_")
-    pkg_version = "v" + pkg_version
-except PackageNotFoundError:
-    pkg_version = "unknown"
 
 # function for saving all the final outputs
 def save(
-    sdf_out, cen, vc_out, sa_out, iua_out, fua_out, start_time, end_time, fig, hel_out=None, **inputs
+    sdf_out,
+    cen,
+    vc_out,
+    sa_out,
+    iua_out,
+    fua_out,
+    start_time,
+    end_time,
+    fig,
+    hel_out=None,
+    **inputs,
 ):
     filename = os.path.splitext(os.path.basename(inputs["filepath"]))[0]
     fname = os.path.join(inputs["out_files_dir"], filename)
-    unique_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3))
 
     # save the plots
     fig_assets = [fig]
     if inputs["save_data"]:
-        fig_path = f"{fname}-plots-{pkg_version}-{unique_id}.png"
+        fig_path = f"{fname}-plots.png"
         fig.savefig(
             fname=fig_path,
             dpi="figure",
             format="png",
             facecolor="w",
-            )
+        )
         fig_assets.append(fig_path)
 
     # save the function inputs used for this run
@@ -38,7 +41,7 @@ def save(
     inputs_df = pd.DataFrame.from_dict(inputs, orient="index", columns=["Input"])
     inputs_assets = [inputs_df]
     if inputs["save_data"]:
-        inputs_path = f"{fname}-inputs-{pkg_version}-{unique_id}.csv"
+        inputs_path = f"{fname}-inputs.csv"
         inputs_df.to_csv(inputs_path, index=True, header=False)
         inputs_assets.append(inputs_path)
 
@@ -46,7 +49,7 @@ def save(
     velocity_data = np.stack((vc_out["time_f"], vc_out["velocity_f"]), axis=1)
     velocity_assets = [velocity_data]
     if inputs["save_data"]:
-        velocity_path = f"{fname}-velocity-{pkg_version}-{unique_id}.csv" 
+        velocity_path = f"{fname}-velocity.csv"
         np.savetxt(velocity_path, velocity_data, delimiter=",")
         velocity_assets.append(velocity_path)
 
@@ -56,14 +59,14 @@ def save(
     )
     smooth_velocity_assets = [velocity_data_smooth]
     if inputs["save_data"]:
-        smooth_velocity_path = f"{fname}-velocity--smooth-{pkg_version}-{unique_id}.csv" 
+        smooth_velocity_path = f"{fname}-velocity--smooth.csv"
         np.savetxt(
             smooth_velocity_path,
             velocity_data_smooth,
             delimiter=",",
         )
         smooth_velocity_assets.append(smooth_velocity_path)
-    
+
     # save the filtered voltage data
     voltage_data = np.stack(
         (
@@ -75,7 +78,7 @@ def save(
     )
     voltage_assets = [voltage_data]
     if inputs["save_data"]:
-        voltage_path = f"{fname}-voltage-{pkg_version}-{unique_id}.csv"  
+        voltage_path = f"{fname}-voltage.csv"
         np.savetxt(voltage_path, voltage_data, delimiter=",")
         voltage_assets.append(voltage_path)
 
@@ -83,7 +86,7 @@ def save(
     noise_data = np.stack((vc_out["time_f"], iua_out["inst_noise"]), axis=1)
     noise_assets = [noise_data]
     if inputs["save_data"]:
-        noise_path = f"{fname}-noisefrac-{pkg_version}-{unique_id}.csv"  
+        noise_path = f"{fname}-noisefrac.csv"
         np.savetxt(noise_path, noise_data, delimiter=",")
         noise_assets.append(noise_path)
 
@@ -91,7 +94,7 @@ def save(
     vel_uncert_data = np.stack((vc_out["time_f"], iua_out["vel_uncert"]), axis=1)
     vel_uncert_assets = [vel_uncert_data]
     if inputs["save_data"]:
-        vel_uncert_path = f"{fname}-veluncert-{pkg_version}-{unique_id}.csv"
+        vel_uncert_path = f"{fname}-veluncert.csv"
         np.savetxt(
             vel_uncert_path,
             vel_uncert_data,
@@ -125,17 +128,20 @@ def save(
         "Smoothing Characteristic Time": iua_out["tau"],
     }
 
-    # Add HEL results if available
-    if hel_out is not None and hel_out.ok:
-        results_to_save.update({
-            "HEL Strength (GPa)": hel_out.strength_gpa,
-            "HEL Uncertainty (GPa)": hel_out.uncertainty_gpa,
-            "HEL Free Surface Velocity (m/s)": hel_out.free_surface_velocity,
-            "HEL Time Detection (ns)": hel_out.time_detection_ns,
-            "HEL Consecutive Points": hel_out.consecutive_points,
-            "HEL Segment Duration (ns)": hel_out.segment_duration_ns,
-            "HEL Strain Rate": hel_out.strain_rate,
-        })
+    # Add HEL results when HEL detection was enabled
+    if hel_out is not None:
+        results_to_save.update(
+            {
+                "HEL Detected": hel_out.ok,
+                "HEL Strength (GPa)": hel_out.strength_gpa,
+                "HEL Uncertainty (GPa)": hel_out.uncertainty_gpa,
+                "HEL Free Surface Velocity (m/s)": hel_out.free_surface_velocity,
+                "HEL Time Detection (ns)": hel_out.time_detection_ns,
+                "HEL Consecutive Points": hel_out.consecutive_points,
+                "HEL Segment Duration (ns)": hel_out.segment_duration_ns,
+                "HEL Strain Rate": hel_out.strain_rate,
+            }
+        )
 
     # Convert the dictionary to a DataFrame
     results_df = pd.DataFrame([results_to_save])
@@ -149,6 +155,20 @@ def save(
     # results_df.loc[0, "Signal Start Time"] /= 1e-9
 
     results_dict = results_df.iloc[0].to_dict()
+    results_assets = [results_dict]
+    if inputs["save_data"]:
+        results_path = f"{fname}-results.csv"
+        results_df.to_csv(results_path, index=False)
+        results_assets.append(results_path)
 
     display(results_dict)
-    return {"figure": fig_assets, "inputs": inputs_assets, "velocity": velocity_assets, "smooth_velocity": smooth_velocity_assets,"voltage":voltage_assets, "noise":noise_assets, "vel_uncert":vel_uncert_assets,  "results" : results_dict}
+    return {
+        "figure": fig_assets,
+        "inputs": inputs_assets,
+        "velocity": velocity_assets,
+        "smooth_velocity": smooth_velocity_assets,
+        "voltage": voltage_assets,
+        "noise": noise_assets,
+        "vel_uncert": vel_uncert_assets,
+        "results": results_assets,
+    }
