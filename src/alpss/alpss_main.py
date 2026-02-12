@@ -1,6 +1,7 @@
 import os
 from alpss.detection.spall_doi_finder import spall_doi_finder
 from alpss.plotting.plots import plot_results, plot_voltage
+from alpss.plotting.hel import plot_hel_detection
 from alpss.carrier.frequency import carrier_frequency
 from alpss.carrier.filter import carrier_filter
 from alpss.velocity.calculation import velocity_calculation
@@ -149,6 +150,32 @@ def alpss_main(**inputs):
         end_time,
         **inputs,
     )
+
+    # Generate HEL diagnostic plot as a separate figure
+    hel_fig = None
+    if hel_enabled and hel_out.ok:
+        try:
+            time_ns = vc_out["time_f"] / 1e-9
+            hel_fig = plot_hel_detection(
+                time_ns,
+                vc_out["velocity_f_smooth"],
+                hel_out,
+                hel_start_ns=inputs.get("hel_start_time_ns", 0.0),
+                hel_end_ns=inputs.get("hel_end_time_ns", time_ns[-1]),
+                angle_threshold_deg=inputs.get("hel_angle_threshold_deg", 45.0),
+                sample_name=os.path.basename(inputs.get("filepath", "")),
+                sample_material=inputs.get("material", ""),
+            )
+            if inputs.get("save_data"):
+                filename = os.path.splitext(os.path.basename(inputs["filepath"]))[0]
+                hel_path = os.path.join(inputs["out_files_dir"], f"{filename}-hel.png")
+                hel_fig.savefig(hel_path, dpi=inputs.get("plot_dpi", 300), facecolor="w")
+                logger.info("HEL diagnostic plot saved to %s", hel_path)
+            if inputs.get("display_plots") != "yes":
+                import matplotlib.pyplot as _plt
+                _plt.close(hel_fig)
+        except Exception as e:
+            logger.error("Error generating HEL plot: %s", str(e))
 
     logger.info(
         f"\nFull runtime: {end_time_final - start_time}\n"
