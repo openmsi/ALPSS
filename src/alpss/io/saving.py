@@ -158,7 +158,7 @@ def save(
     results_assets = [results_dict]
     if inputs["save_data"]:
         results_path = f"{fname}-results.csv"
-        results_df.to_csv(results_path, index=False)
+        results_df.T.to_csv(results_path, header=False)
         results_assets.append(results_path)
 
     display(results_dict)
