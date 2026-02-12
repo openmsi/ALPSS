@@ -5,7 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.0] - 2025-06-01
+## [1.5.0] - 2026-02-11
+
+### Added
+- Hugoniot Elastic Limit (HEL) detection module (`alpss.analysis.hel`)
+  - `hel_detection()` — gradient-based plateau detection with configurable thresholds
+  - `elastic_shock_strain_rate()` — elastic strain rate calculation
+  - `HELResult` dataclass with typed fields for all detection outputs
+- HEL diagnostic plotting (`alpss.plotting.hel.plot_hel_detection`)
+- HEL integrated into `alpss_main` pipeline as optional Phase 2b
+- Unit tests for HEL detection and strain rate calculation
+
+## [1.4.0] - 2026-02-11
 
 ### Changed
 - Reorganized codebase from flat layout to modular package structure under `src/alpss/`

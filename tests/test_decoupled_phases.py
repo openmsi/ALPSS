@@ -14,7 +14,7 @@ def test_velocity_only_no_spall(valid_inputs):
     results = alpss_main(**inputs)
     assert results is not None, "alpss_main should return results even with spall_calculation='no'"
     assert isinstance(results[0], Figure)
-    result_dict = results[1]["results"]
+    result_dict = results[1]["results"][0]
     assert not np.isnan(result_dict["Carrier Frequency"])
     # Spall values should be NaN when spall_calculation is 'no'
     assert np.isnan(result_dict["Spall Strength"])
@@ -30,7 +30,7 @@ def test_analysis_failure_returns_nan_defaults(valid_inputs):
 
     assert results is not None, "alpss_main should return results even when analysis fails"
     assert isinstance(results[0], Figure)
-    result_dict = results[1]["results"]
+    result_dict = results[1]["results"][0]
     # Velocity-derived values should still be valid
     assert not np.isnan(result_dict["Carrier Frequency"])
     # Spall analysis values should be NaN due to analysis failure

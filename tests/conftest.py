@@ -67,7 +67,16 @@ def valid_inputs():
         "cusum_offset": 5,
         "cusum_threshold": 1000,
         "t_fit_begin": 20,
-        "t_fit_end": 300
+        "t_fit_end": 300,
+        # HEL detection parameters
+        "hel_detection_enabled": True,
+        "hel_start_time_ns": 0.0,
+        "hel_end_time_ns": 30.0,
+        "hel_angle_threshold_deg": 45.0,
+        "hel_detection_min_points": 3,
+        "minimum_HEL_velocity_expected": 10.0,
+        "C_L": 4540,
+        "material": "test_material",
     }
 
 @pytest.fixture

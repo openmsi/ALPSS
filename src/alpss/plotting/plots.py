@@ -8,12 +8,6 @@ import random
 import string
 from importlib.metadata import version, PackageNotFoundError
 
-try:
-    pkg_version = version("alpss")
-    pkg_version = pkg_version.replace(".", "_")
-    pkg_version = "v" + pkg_version
-except PackageNotFoundError:
-    pkg_version = "unknown"
 
 # function to generate the final figure
 def plot_results(
@@ -28,6 +22,7 @@ def plot_results(
     end_time,
     **inputs,
 ):
+
     # create the figure and axes
     fig = plt.figure(
         num=1, figsize=inputs["plot_figsize"], dpi=inputs["plot_dpi"], clear=True
@@ -78,19 +73,21 @@ def plot_results(
         label="ROI",
         zorder=4,
     )
+
+    #################### voltage plot
     ax1.set_xlabel("Time (ns)")
     ax1.set_ylabel("Voltage (mV)")
     ax1.set_xlim([sdf_out["time"][0] / 1e-9, sdf_out["time"][-1] / 1e-9])
     ax1.legend(loc="upper right")
     ax1.set_title("Voltage Data")
 
-    # noise distribution histogram
+    #################### noise distribution histogram
     ax2.hist(iua_out["noise"] * 1e3, bins=50, rwidth=0.8)
     ax2.set_xlabel("Noise (mV)")
     ax2.set_ylabel("Counts")
     ax2.set_title("Voltage Noise")
 
-    # imported voltage spectrogram and a rectangle to show the ROI
+    #################### imported voltage spectrogram and a rectangle to show the ROI
     plt3 = ax3.imshow(
         10 * np.log10(sdf_out["mag"] ** 2),
         aspect="auto",
@@ -123,7 +120,7 @@ def plot_results(
     ax3.minorticks_on()
     ax3.set_title("Spectrogram Original Signal")
 
-    # plotting the thresholded spectrogram on the ROI to show how the signal start time is found
+    #################### plotting the thresholded spectrogram on the ROI to show how the signal start time is found
     ax4.imshow(
         sdf_out["th3"],
         aspect="auto",
@@ -148,7 +145,7 @@ def plot_results(
     ax4.minorticks_on()
     ax4.set_title("Thresholded Spectrogram")
 
-    # plotting the spectrogram of the ROI with the start-time line to see how well it lines up
+    #################### plotting the spectrogram of the ROI with the start-time line to see how well it lines up
     plt5 = ax5.imshow(
         10 * np.log10(sdf_out["mag"] ** 2),
         aspect="auto",
@@ -175,7 +172,7 @@ def plot_results(
     ax5.minorticks_on()
     ax5.set_title("Spectrogram ROI")
 
-    # plotting the filtered spectrogram of the ROI
+    #################### plotting the filtered spectrogram of the ROI
     plt6 = ax6.imshow(
         cf_out["power_filt"],
         aspect="auto",
@@ -200,7 +197,7 @@ def plot_results(
     ax6.minorticks_on()
     ax6.set_title("Filtered Spectrogram ROI")
 
-    # voltage in the ROI and the signal envelope
+    #################### voltage in the ROI and the signal envelope
     ax7.plot(
         sdf_out["time"] / 1e-9,
         np.real(vc_out["voltage_filt"]) * 1e3,
@@ -220,7 +217,7 @@ def plot_results(
     ax7.legend(loc="upper right")
     ax7.set_title("Voltage ROI")
 
-    # plotting the velocity and smoothed velocity curves to be overlaid on top of the spectrogram
+    #################### plotting the velocity and smoothed velocity curves to be overlaid on top of the spectrogram
     ax8.plot(
         (vc_out["time_f"]) / 1e-9,
         vc_out["velocity_f"],
@@ -257,7 +254,7 @@ def plot_results(
     ax8.patch.set_visible(False)
     ax8.set_title("Filtered Spectrogram ROI with Velocity")
 
-    # plotting the final spectrogram to go with the velocity curves
+    #################### plotting the final spectrogram to go with the velocity curves
     plt9 = ax9.imshow(
         cf_out["power_filt"],
         extent=[
@@ -281,7 +278,7 @@ def plot_results(
     ax9.minorticks_on()
     plt9.set_clim([np.min(cf_out["power_filt_doi"]), np.max(cf_out["power_filt_doi"])])
 
-    # plot the noise fraction on the ROI
+    #################### plot the noise fraction on the ROI
     ax10.plot(vc_out["time_f"] / 1e-9, iua_out["inst_noise"] * 100, "r", linewidth=2)
     ax10.set_xlabel("Time (ns)")
     ax10.set_ylabel("Noise Fraction (%)")
@@ -295,7 +292,7 @@ def plot_results(
     ax11.set_ylabel("Velocity Uncertainty (m/s)")
     ax11.minorticks_on()
 
-    # plotting the final smoothed velocity trace and uncertainty bounds with spall point markers (if they were found
+    #################### plotting the final smoothed velocity trace and uncertainty bounds with spall point markers (if they were found
     # on the signal)
     ax12.fill_between(
         (vc_out["time_f"] - sdf_out["t_start_corrected"]) / 1e-9,
@@ -452,16 +449,15 @@ def plot_voltage(data, **inputs):
     ax2.set_ylabel("Frequency (GHz)")
     fig.suptitle("ERROR: Program Failed", c="r", fontsize=16)
 
-    
     plt.tight_layout()
     if inputs["save_data"] == "yes":
         fname = os.path.join(
-            inputs["out_files_dir"], os.path.splitext(os.path.basename(inputs["filepath"]))[0]
+            inputs["out_files_dir"],
+            os.path.splitext(os.path.basename(inputs["filepath"]))[0],
         )
-        unique_id = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3))
-        dest = f"{fname}--error_plot-{pkg_version}-{unique_id}.png"
+        dest = f"{fname}--error_plot.png"
         fig.savefig(dest)
     if inputs["display_plots"] == "yes":
         plt.show()
-    
-    return fig, {'error': [mag, dest if inputs["save_data"] == "yes" else None]}
+
+    return fig, {"error": [mag, dest if inputs["save_data"] == "yes" else None]}
