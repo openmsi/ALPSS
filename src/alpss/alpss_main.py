@@ -10,7 +10,7 @@ from alpss.analysis.spall import spall_analysis
 from alpss.analysis.full_uncertainty import full_uncertainty_analysis
 from alpss.analysis.instantaneous_uncertainty import instantaneous_uncertainty_analysis
 from alpss.analysis.hel import hel_detection
-from alpss.utils import extract_data
+from alpss.utils import extract_data, display_figure, open_file_for_display
 from alpss.io.saving import save
 from datetime import datetime
 import traceback
@@ -132,8 +132,9 @@ def alpss_main(**inputs):
             logger.info("Attempting a fallback visualization of the voltage signal...")
             plot_voltage(data, **inputs)
             logger.info("Fallback voltage plot saved.")
-        except Exception:
-            logger.error("Fallback visualization also failed.")
+        except Exception as fe:
+            logger.error("Fallback visualization also failed: %s", str(fe))
+            logger.error("Fallback traceback: %s", traceback.format_exc())
         # Re-raise so the caller can track this as a failure
         raise
 
@@ -282,5 +283,13 @@ def alpss_main(**inputs):
     )
 
     logger.info("Outputs saved")
+
+    if inputs.get("display_plots") == "yes":
+        filename = os.path.splitext(os.path.basename(inputs["filepath"]))[0]
+        fig_path = os.path.abspath(os.path.join(inputs["out_files_dir"], f"{filename}-plots.png"))
+        if os.path.exists(fig_path):
+            open_file_for_display(fig_path)
+        else:
+            display_figure(fig)
 
     return (fig, items)

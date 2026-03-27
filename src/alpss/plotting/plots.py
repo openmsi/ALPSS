@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import pandas as pd
 import os
-from alpss.utils import stft
+from alpss.utils import stft, display_figure, open_file_for_display
 import numpy as np
 import random
 import string
@@ -25,7 +25,7 @@ def plot_results(
 
     # create the figure and axes
     plt.close("all")
-    fig = plt.figure(figsize=inputs["plot_figsize"], dpi=inputs["plot_dpi"])
+    fig = plt.figure(figsize=inputs["plot_figsize"], dpi=inputs["plot_dpi"], layout="tight")
     ax1 = plt.subplot2grid((3, 5), (0, 0))  # voltage data
     ax2 = plt.subplot2grid((3, 5), (0, 1))  # noise distribution histogram
     ax3 = plt.subplot2grid((3, 5), (1, 0))  # imported voltage spectrogram
@@ -81,10 +81,41 @@ def plot_results(
     ax1.set_title("Voltage Data")
 
     #################### noise distribution histogram
-    ax2.hist(iua_out["noise"] * 1e3, bins=50, rwidth=0.8)
-    ax2.set_xlabel("Noise (mV)")
-    ax2.set_ylabel("Counts")
-    ax2.set_title("Voltage Noise")
+    if inputs["carrier_filter_type"]=='sin_fit_subtract':
+        mask_window = (cf_out["freq"]>inputs["freq_min"]) & (cf_out["freq"]<inputs["freq_max"])
+        # FFT of the signal post start time
+        ax2.plot(
+            cf_out["freq"][mask_window]*1e-9,
+            np.abs(cf_out["fft_vals"][mask_window])*1e3,
+            label = "Unfiltered Signal",
+            c = 'b')
+        
+        mask_carrier = (cf_out["freq"]>(cen-inputs["wid"]/2)) & (cf_out["freq"]<(cen+inputs["wid"]/2))
+
+        # Isolated carrier band
+        ax2.plot(
+            cf_out["freq"][mask_carrier]*1e-9,
+            np.abs(cf_out["fft_vals"][mask_carrier])*1e3,
+            label = "Carrier Band",
+            c = 'r')
+
+        # FFT of filtered signal post start time 
+        ax2.plot(
+            cf_out["freq"][mask_window]*1e-9,
+            np.abs(cf_out["fft_vals_filtered"][mask_window])*1e3,
+            label = "Filtered Signal",
+            c = 'g')
+        
+        ax2.set_xlabel("Frequency (GHz)")
+        ax2.set_ylabel("Magnitude")
+        ax2.set_xlim([inputs["freq_min"]*1e-9,inputs["freq_max"]*1e-9])
+        ax2.legend(loc="upper right")
+        ax2.set_title("FFT Carrier Band")
+    else: 
+        ax2.hist(iua_out["noise"] * 1e3, bins=50, rwidth=0.8)
+        ax2.set_xlabel("Noise (mV)")
+        ax2.set_ylabel("Counts")
+        ax2.set_title("Voltage Noise")
 
     #################### imported voltage spectrogram and a rectangle to show the ROI
     plt3 = ax3.imshow(
@@ -113,6 +144,7 @@ def plot_results(
         linewidth=0.75,
         linestyle="-",
     )
+    ax3.set_ylim([0,20])
     ax3.add_patch(win)
     ax3.set_xlabel("Time (ns)")
     ax3.set_ylabel("Frequency (GHz)")
@@ -120,29 +152,35 @@ def plot_results(
     ax3.set_title("Spectrogram Original Signal")
 
     #################### plotting the thresholded spectrogram on the ROI to show how the signal start time is found
-    ax4.imshow(
-        sdf_out["th3"],
-        aspect="auto",
-        origin="lower",
-        interpolation="none",
-        extent=[
-            sdf_out["t"][0] / 1e-9,
-            sdf_out["t"][-1] / 1e-9,
-            sdf_out["f_doi"][0] / 1e9,
-            sdf_out["f_doi"][-1] / 1e9,
-        ],
-        cmap=inputs["cmap"],
-    )
+    if inputs["start_time_user"] == "cusum":
+        ax4.plot(sdf_out["cusum_time"]*1e9,sdf_out["cusum_s"])
+        ax4.set_title("Cusum Detection")
+        ax4.set_xlabel("Time (ns)")
+    else:
+        ax4.imshow(
+            sdf_out["th3"],
+            aspect="auto",
+            origin="lower",
+            interpolation="none",
+            extent=[
+                sdf_out["t"][0] / 1e-9,
+                sdf_out["t"][-1] / 1e-9,
+                sdf_out["f_doi"][0] / 1e9,
+                sdf_out["f_doi"][-1] / 1e9,
+            ],
+            cmap=inputs["cmap"],
+        )
+        ax4.set_title("Thresholded Spectrogram")
+        ax4.set_ylim([inputs["freq_min"] / 1e9, inputs["freq_max"] / 1e9])
+        ax4.set_xlabel("Time (ns)")
+        ax4.set_ylabel("Frequency (GHz)")
+        ax4.minorticks_on()
+        ax4.set_title("Thresholded Spectrogram")
+        ax4.set_xlim([sdf_out["t_doi_start"] / 1e-9, sdf_out["t_doi_end"] / 1e-9])
+    if inputs["start_time_user"] == "otsu":
+        ax4.axhline(sdf_out["f_doi"][sdf_out["f_doi_carr_top_idx"]] / 1e9, c="r")    
     ax4.axvline(sdf_out["t_start_detected"] / 1e-9, ls="--", c="r")
     ax4.axvline(sdf_out["t_start_corrected"] / 1e-9, ls="-", c="r")
-    if inputs["start_time_user"] == "otsu":
-        ax4.axhline(sdf_out["f_doi"][sdf_out["f_doi_carr_top_idx"]] / 1e9, c="r")
-    ax4.set_ylim([inputs["freq_min"] / 1e9, inputs["freq_max"] / 1e9])
-    ax4.set_xlim([sdf_out["t_doi_start"] / 1e-9, sdf_out["t_doi_end"] / 1e-9])
-    ax4.set_xlabel("Time (ns)")
-    ax4.set_ylabel("Frequency (GHz)")
-    ax4.minorticks_on()
-    ax4.set_title("Thresholded Spectrogram")
 
     #################### plotting the spectrogram of the ROI with the start-time line to see how well it lines up
     plt5 = ax5.imshow(
@@ -209,6 +247,19 @@ def plot_results(
         label="Signal Envelope",
         c="tab:red",
     )
+    if inputs["carrier_filter_type"] == "sin_fit_subtract":
+        ax7.plot(
+            cf_out["time_fitting"] / 1e-9, 
+            cf_out["carrier_fitting"] * 1e3, 
+            label="Carrier Band",
+            c='tab:green')
+        ax7.plot(
+            cf_out["time_fitting"] / 1e-9, 
+            cf_out["sin_fitting"] * 1e3, 
+            label="Sin Fit",
+            c='r', 
+            ls='--',
+            alpha=0.5)
     ax7.plot(vc_out["time_f"] / 1e-9, iua_out["env_min_interp"] * 1e3, c="tab:red")
     ax7.set_xlabel("Time (ns)")
     ax7.set_ylabel("Voltage (mV)")
@@ -346,7 +397,7 @@ def plot_results(
         )
 
     # if not np.isnan(sa_out['t_max_comp']) or not np.isnan(sa_out['t_max_ten']) or not np.isnan(sa_out['t_rc']):
-    ax12.legend(loc="upper left", bbox_to_anchor=(1.01, 1), borderaxespad=0, fontsize=6, framealpha=1)
+    ax12.legend(loc="upper left", borderaxespad=0, fontsize=6, framealpha=1)
     ax12.set_xlim(
         [
             -inputs["t_before"] / 1e-9,
@@ -379,7 +430,7 @@ def plot_results(
         "Value": [
             start_time.strftime("%b %d %Y"),
             start_time.strftime("%I:%M %p"),
-            inputs["filepath"],
+            os.path.basename(inputs["filepath"]),
             (end_time - start_time),
             round(iua_out["tau"] * 1e9, 2),
             round(
@@ -405,10 +456,6 @@ def plot_results(
 
     # fix the layout
     plt.tight_layout()
-
-    # display the plots if desired. if this is turned off the plots will still save
-    if inputs["display_plots"] == "yes":
-        plt.show()
 
     return fig
 
@@ -450,14 +497,18 @@ def plot_voltage(data, **inputs):
     fig.suptitle("ERROR: Program Failed", c="r", fontsize=16)
 
     plt.tight_layout()
+    dest = None
     if inputs["save_data"] == "yes":
         fname = os.path.join(
             inputs["out_files_dir"],
             os.path.splitext(os.path.basename(inputs["filepath"]))[0],
         )
         dest = f"{fname}--error_plot.png"
-        fig.savefig(dest)
+        fig.savefig(dest, dpi="figure", format="png", facecolor="w")
     if inputs["display_plots"] == "yes":
-        plt.show()
+        if dest is not None and os.path.exists(dest):
+            open_file_for_display(dest)
+        else:
+            display_figure(fig)
 
-    return fig, {"error": [mag, dest if inputs["save_data"] == "yes" else None]}
+    return fig, {"error": [mag, dest]}

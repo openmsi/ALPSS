@@ -1,9 +1,45 @@
 from scipy.signal import ShortTimeFFT
 import numpy as np
 import io
+import os
+import platform
+import subprocess
+import tempfile
+import threading
 import pandas as pd
 import logging
 logger = logging.getLogger("alpss")
+
+
+def _open_and_cleanup(path):
+    system = platform.system()
+    if system == "Windows":
+        subprocess.run(["cmd", "/c", "start", "/wait", "", path], shell=False)
+    elif system == "Darwin":
+        subprocess.run(["open", "-W", path])
+    else:
+        subprocess.run(["xdg-open", path])
+    if os.path.exists(path):
+        os.remove(path)
+
+
+def display_figure(fig):
+    """Save fig to a temp file, open it with the system viewer, then clean up."""
+    tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    tmp.close()
+    fig.savefig(tmp.name, dpi="figure", format="png", facecolor="w")
+    threading.Thread(target=_open_and_cleanup, args=(tmp.name,), daemon=False).start()
+
+
+def open_file_for_display(path):
+    """Open an existing file with the system viewer."""
+    system = platform.system()
+    if system == "Windows":
+        subprocess.run(["cmd", "/c", "start", "", os.path.abspath(path)], shell=False)
+    elif system == "Darwin":
+        subprocess.run(["open", os.path.abspath(path)])
+    else:
+        subprocess.run(["xdg-open", os.path.abspath(path)])
 
 
 def extract_data(inputs):
