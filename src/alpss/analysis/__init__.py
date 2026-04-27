@@ -13,3 +13,10 @@ from alpss.analysis.hel import (
     elastic_shock_strain_rate,
     HELResult,
 )
+from alpss.analysis.shock_stress import (
+    calculate_shock_stress,
+    shock_stress_hugoniot,
+    shock_stress_acoustic,
+    shock_stress_hugoniot_uncertainty,
+    get_hugoniot_S,
+)

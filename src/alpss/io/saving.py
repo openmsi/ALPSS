@@ -24,6 +24,8 @@ def save(
     spall_ok=True,
     uncertainty_ok=True,
     error_msg=None,
+    spall_result=None,   # SpallResult from spall_analysis_with_dns (optional)
+    shock_result=None,   # dict from calculate_shock_stress (optional)
     **inputs,
 ):
     filename = os.path.splitext(os.path.basename(inputs["filepath"]))[0]
@@ -72,6 +74,20 @@ def save(
         )
         smooth_velocity_assets.append(smooth_velocity_path)
 
+    # save smoothed velocity with uncertainty — 4-column file read by SPADE
+    # columns: Time_s, Velocity_Smooth_m_s, Velocity_Uncertainty_m_s,
+    #          Velocity_Plus_Uncertainty_m_s
+    vel_plus_unc = vc_out["velocity_f_smooth"] + iua_out["vel_uncert"]
+    vel_smooth_uncert_data = np.stack(
+        (vc_out["time_f"], vc_out["velocity_f_smooth"], iua_out["vel_uncert"], vel_plus_unc),
+        axis=1,
+    )
+    vel_smooth_uncert_assets = [vel_smooth_uncert_data]
+    if inputs["save_data"]:
+        vel_smooth_uncert_path = f"{fname}-vel-smooth-with-uncert.csv"
+        np.savetxt(vel_smooth_uncert_path, vel_smooth_uncert_data, delimiter=",")
+        vel_smooth_uncert_assets.append(vel_smooth_uncert_path)
+
     # save the filtered voltage data
     voltage_data = np.stack(
         (
@@ -107,12 +123,48 @@ def save(
         )
         vel_uncert_assets.append(vel_uncert_path)
 
+    # Shock stress: prefer Hugoniot result passed from alpss_main; fall back to
+    # acoustic approximation for backward-compatibility when shock_result is None.
+    if shock_result is not None:
+        peak_shock_stress_gpa = shock_result.get("shock_stress_gpa", np.nan)
+        peak_shock_stress_unc_gpa = shock_result.get("shock_stress_unc_gpa", np.nan)
+        shock_method = shock_result.get("method", "hugoniot")
+        hugoniot_S = shock_result.get("S", np.nan)
+    else:
+        # Legacy acoustic approximation (Pa → GPa)
+        v_peak = sa_out["v_max_comp"]
+        peak_shock_stress_gpa = (
+            0.5 * inputs["density"] * inputs["C0"] * v_peak * 1e-9
+            if not np.isnan(v_peak) else np.nan
+        )
+        peak_shock_stress_unc_gpa = np.nan
+        shock_method = "acoustic_legacy"
+        hugoniot_S = np.nan
+
+    # DNS / spall classification from extended spall_analysis_with_dns
+    dns_classification = "Unknown"
+    spall_strength_gpa = np.nan
+    spall_strength_unc_gpa = np.nan
+    if spall_result is not None:
+        dns_classification = getattr(spall_result, "dns_classification", "Unknown")
+        raw_strength = getattr(spall_result, "spall_strength_pa", np.nan)
+        raw_unc = getattr(spall_result, "spall_strength_unc_pa", np.nan)
+        spall_strength_gpa = raw_strength * 1e-9 if not np.isnan(raw_strength) else np.nan
+        spall_strength_unc_gpa = raw_unc * 1e-9 if not np.isnan(raw_unc) else np.nan
+    else:
+        # Derive from legacy sa_out (Pa → GPa)
+        raw_strength = sa_out["spall_strength_est"]
+        spall_strength_gpa = raw_strength * 1e-9 if not np.isnan(raw_strength) else np.nan
+        spall_unc_pa = fua_out["spall_uncert"]
+        spall_strength_unc_gpa = spall_unc_pa * 1e-9 if not np.isnan(spall_unc_pa) else np.nan
+
     results_to_save = {
         "Date": start_time.strftime("%b %d %Y"),
         "Time": start_time.strftime("%I:%M %p"),
         "File Name": os.path.basename(inputs["filepath"]),
         "Velocity OK": True,
         "Spall OK": spall_ok,
+        "DNS Classification": dns_classification,
         "Uncertainty OK": uncertainty_ok,
         "Error Message": error_msg,
         "Run Time": (end_time - start_time),
@@ -123,10 +175,20 @@ def save(
         "Velocity at Recompression": sa_out["v_rc"],
         "Time at Recompression": sa_out["t_rc"],
         "Carrier Frequency": cen,
+        # Spall strength in GPa (converted from Pa using 0.5·ρ·C0·Δv·1e-9)
+        "Spall Strength (GPa)": spall_strength_gpa,
+        "Spall Strength Uncertainty (GPa)": spall_strength_unc_gpa,
+        # Legacy Pa fields kept for backward-compatibility
         "Spall Strength": sa_out["spall_strength_est"],
         "Spall Strength Uncertainty": fua_out["spall_uncert"],
         "Strain Rate": sa_out["strain_rate_est"],
         "Strain Rate Uncertainty": fua_out["strain_rate_uncert"],
+        # Shock stress (Hugoniot EOS: σ = ρ·U_s·u_p; GPa)
+        "Peak Shock Stress (GPa)": peak_shock_stress_gpa,
+        "Peak Shock Stress Uncertainty (GPa)": peak_shock_stress_unc_gpa,
+        "Shock Stress Method": shock_method,
+        "Hugoniot S": hugoniot_S,
+        # Legacy Pa field kept for backward-compatibility
         "Peak Shock Stress": (
             0.5 * inputs["density"] * inputs["C0"] * sa_out["v_max_comp"]
         ),
@@ -190,6 +252,7 @@ def save(
         "inputs": inputs_assets,
         "velocity": velocity_assets,
         "smooth_velocity": smooth_velocity_assets,
+        "vel_smooth_with_uncert": vel_smooth_uncert_assets,
         "voltage": voltage_assets,
         "noise": noise_assets,
         "vel_uncert": vel_uncert_assets,

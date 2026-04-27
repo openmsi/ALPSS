@@ -10,6 +10,7 @@ from alpss.analysis.spall import spall_analysis, spall_analysis_with_dns, SpallR
 from alpss.analysis.full_uncertainty import full_uncertainty_analysis
 from alpss.analysis.instantaneous_uncertainty import instantaneous_uncertainty_analysis
 from alpss.analysis.hel import hel_detection
+from alpss.analysis.shock_stress import calculate_shock_stress
 from alpss.utils import extract_data
 from alpss.io.saving import save
 from datetime import datetime
@@ -202,7 +203,32 @@ def alpss_main(**inputs):
             logger.error("Traceback: %s", traceback.format_exc())
             logger.info("Continuing without uncertainty analysis.")
 
-    # --- Phase 2c: HEL detection (optional) ---
+    # --- Phase 2c: Shock stress (Hugoniot EOS) ---
+    shock_result = {
+        "shock_stress_pa": np.nan, "shock_stress_gpa": np.nan,
+        "shock_stress_unc_pa": np.nan, "shock_stress_unc_gpa": np.nan,
+        "method": "none", "S": np.nan,
+    }
+    peak_velocity = sa_out.get("v_max_comp", np.nan)
+    if np.isfinite(float(peak_velocity)):
+        peak_vel_unc = sa_out.get("peak_velocity_vel_uncert", 0.0) or 0.0
+        shock_result = calculate_shock_stress(
+            density=inputs.get("density", np.nan),
+            C0=inputs.get("C0", np.nan),
+            peak_velocity=peak_velocity,
+            peak_velocity_unc=float(peak_vel_unc),
+            material=inputs.get("material", ""),
+            S=inputs.get("hugoniot_S", None),
+            method=inputs.get("shock_stress_method", "hugoniot"),
+        )
+        logger.info(
+            "Shock stress: %.4f GPa (method=%s, S=%.2f)",
+            shock_result["shock_stress_gpa"],
+            shock_result["method"],
+            shock_result["S"] if not np.isnan(shock_result["S"]) else 0,
+        )
+
+    # --- Phase 2d: HEL detection (optional) ---
     hel_out = _default_hel_output()
     hel_enabled = inputs.get("hel_detection_enabled", False)
     if hel_enabled:
@@ -309,6 +335,7 @@ def alpss_main(**inputs):
         uncertainty_ok=uncertainty_ok,
         error_msg="; ".join(errors) if errors else "",
         spall_result=spall_result,
+        shock_result=shock_result,
         **inputs,
     )
 
