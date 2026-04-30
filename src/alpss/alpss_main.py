@@ -6,7 +6,7 @@ from alpss.carrier.frequency import carrier_frequency
 from alpss.carrier.filter import carrier_filter
 from alpss.velocity.calculation import velocity_calculation
 from alpss.validation import validate_inputs
-from alpss.analysis.spall import spall_analysis
+from alpss.analysis.spall import spall_analysis, spall_analysis_with_dns, SpallResult
 from alpss.analysis.full_uncertainty import full_uncertainty_analysis
 from alpss.analysis.instantaneous_uncertainty import instantaneous_uncertainty_analysis
 from alpss.analysis.hel import hel_detection
@@ -70,6 +70,11 @@ def _default_hel_output():
     from alpss.analysis.hel import HELResult
 
     return HELResult(ok=False)
+
+
+def _default_spall_result():
+    """Return a failed SpallResult for graceful degradation."""
+    return SpallResult(ok=False, dns_classification="analysis not run")
 
 
 # main function to link together all the sub-functions
@@ -140,16 +145,35 @@ def alpss_main(**inputs):
     # --- Phase 2a: Spall analysis ---
     errors = []
     sa_out = _default_spall_output()
+    spall_result = _default_spall_result()
     spall_ok = False
+    spall_detection_method = inputs.get("spall_detection_method", "max_min")
+    use_dns = inputs.get("spall_calculation", "yes") == "yes"
     try:
-        logger.info("Running spall analysis...")
+        logger.info("Running spall analysis (method=%s)...", spall_detection_method)
         sa_out = spall_analysis(vc_out, iua_out, **inputs)
         spall_ok = True
         logger.info(
-            "Spall analysis complete: spall strength=%.4f, strain rate=%.4e",
+            "Spall analysis complete: spall strength=%.4f Pa, strain rate=%.4e s^-1",
             sa_out["spall_strength_est"],
             sa_out["strain_rate_est"],
         )
+        if use_dns:
+            spall_result = spall_analysis_with_dns(
+                vc_out, iua_out,
+                spall_detection_method=spall_detection_method,
+                rdp_epsilon=inputs.get("spall_rdp_epsilon", 5.0),
+                min_pullback_velocity=inputs.get("min_pullback_velocity", 10.0),
+                min_recomp_ratio=inputs.get("min_recomp_ratio", 0.03),
+                min_recomp_velocity_ratio=inputs.get("min_recomp_velocity_ratio", 1.10),
+                min_recomp_time_ns=inputs.get("min_recomp_time_ns", 2.5),
+                **inputs,
+            )
+            logger.info(
+                "DNS classification: %s (ok=%s)",
+                spall_result.dns_classification,
+                spall_result.ok,
+            )
     except Exception as e:
         errors.append(f"spall: {e}")
         logger.error("Error in spall analysis: %s", str(e))
@@ -284,6 +308,7 @@ def alpss_main(**inputs):
         spall_ok=spall_ok,
         uncertainty_ok=uncertainty_ok,
         error_msg="; ".join(errors) if errors else "",
+        spall_result=spall_result,
         **inputs,
     )
 
