@@ -6,7 +6,7 @@ import logging
 import copy
 import numpy as np
 from matplotlib.figure import Figure
-from conftest import EXPECTED_VALUES_MAP
+from conftest import EXPECTED_VALUES_MAP, assert_results_match
 
 
 def test_alpss_main_wo_configfile(valid_inputs, expected_values):
@@ -16,32 +16,14 @@ def test_alpss_main_wo_configfile(valid_inputs, expected_values):
     # Extract the results dictionary (results[1] should be the output dictionary)
     result_dict = results[1]
 
-    # Iterate over the expected values and assert that the results match
-    for key, expected_value in expected_values.items():
-        assert key in result_dict['results'][0], f"Key '{key}' not found in the results."
-        assert result_dict['results'][0][key] == pytest.approx(
-            expected_value, rel=1e-9
-        ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][0][key]}"
+    assert_results_match(result_dict['results'][0], expected_values)
 
 
 def test_alpss_main_with_configfile(config_file_path, expected_values):
     """Test ALPSS using a JSON config file instead of direct dictionary input."""
-
-    # Ensure the config file exists
     assert os.path.exists(config_file_path), f"Config file not found: {config_file_path}"
-
-    # Run ALPSS using the config file
     results = alpss_main_with_config(config_file_path)
-
-    # Extract the results dictionary (results[1] should be the output dictionary)
-    result_dict = results[1]
-
-    # Iterate over the expected values and assert that the results match
-    for key, expected_value in expected_values.items():
-        assert key in result_dict['results'][0], f"Key '{key}' not found in the results."
-        assert result_dict['results'][0][key] == pytest.approx(
-            expected_value, rel=1e-9
-        ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][0][key]}"
+    assert_results_match(results[1]['results'][0], expected_values)
 
 
 @pytest.mark.parametrize("start_time_user,carrier_filter_type", [
@@ -67,11 +49,7 @@ def test_alpss_exact_values(valid_inputs, start_time_user, carrier_filter_type):
     expected = EXPECTED_VALUES_MAP.get((start_time_user, carrier_filter_type))
     assert expected is not None, f"No expected values for ({start_time_user}, {carrier_filter_type})"
 
-    for key, val in expected.items():
-        assert key in result_dict, f"Key '{key}' not found in results."
-        assert result_dict[key] == pytest.approx(
-            val, rel=1e-9
-        ), f"Mismatch for '{key}': expected {val}, got {result_dict[key]}"
+    assert_results_match(result_dict, expected)
 
 
 @pytest.mark.parametrize("start_time_user", ["otsu", "iq", 7.5e-07])

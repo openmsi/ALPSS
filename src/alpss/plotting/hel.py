@@ -15,6 +15,7 @@ def plot_hel_detection(
     sample_material="",
     U_0=None,
     t_0=None,
+    **inputs,
 ):
     """
     Generate a 3-panel HEL detection diagnostic plot.
@@ -125,18 +126,18 @@ def plot_hel_detection(
 
     ax2.legend(loc="best", fontsize=10)
 
-    # --- Bottom: Gradient vs time ---
-    if gradient is not None and t_win is not None:
-        ax3.plot(t_win, gradient, "g-", linewidth=1.5, alpha=0.6, label="Gradient (dv/dt)")
-        ax3.axhline(0, color="black", linestyle="-", linewidth=0.8, alpha=0.5)
+# --- Bottom: Gradient vs time ---
+    if inputs["hel_method"] == "gradient":
+        if gradient is not None and t_win is not None:
+            ax3.plot(t_win, gradient, "g-", linewidth=1.5, alpha=0.6, label="Gradient (dv/dt)")
+            ax3.axhline(0, color="black", linestyle="-", linewidth=0.8, alpha=0.5)
 
-        if seg_start is not None and seg_end is not None:
-            ax3.axvspan(
-                t_win[seg_start], t_win[seg_end], alpha=0.3, color="orange",
-                label="HEL Plateau Region",
-            )
-
-        # Angle threshold as gradient
+            if seg_start is not None and seg_end is not None:
+                ax3.axvspan(
+                    t_win[seg_start], t_win[seg_end], alpha=0.3, color="orange",
+                    label="HEL Plateau Region",
+                )
+            # Angle threshold as gradient
         angle_thresh_rad = np.radians(angle_threshold_deg)
         gradient_thresh = np.tan(angle_thresh_rad)
         ax3.axhline(
@@ -144,6 +145,32 @@ def plot_hel_detection(
             label=f"Angle Threshold ({angle_threshold_deg}\u00b0)",
         )
         ax3.axhline(-gradient_thresh, color="red", linestyle="--", linewidth=1, alpha=0.7)
+
+    elif inputs["hel_method"] == "rdp_linear":
+        # Calculate the gradient based on the RDP points
+        """
+        Note: TODO the rdp hybrid actually calculates linear regression for each slope,
+        not the rdp points, they should be essentially the same, but need to verify. Those slopes
+        aren't currently saved. 
+        """
+        rdp_pts = hel_result.rdp_points 
+
+        # Gradient is just slope between the points. I am interpolating it onto the t_win plotting
+        gradient = np.gradient(rdp_pts[:,1], rdp_pts[:,0])
+
+        rdp_plot_t = np.empty(())
+        rdp_plot_grad = np.empty(())
+        for i in range(rdp_pts[:,1].size-1):
+            rdp_plot_t = np.append(rdp_plot_t, rdp_pts[i:i+2,0])
+            rdp_plot_grad = np.append(rdp_plot_grad, [gradient[i], gradient[i]])
+
+        ax3.plot(rdp_plot_t, rdp_plot_grad, "g-", linewidth=1.5, alpha=0.6, label="Gradient (dv/dt)")
+
+    else:
+        raise TypeError(
+            f"invalid HEL method selected. Plotting failed: {inputs.get('hel_method')}"
+        )
+    
 
     ax3.set_xlabel("Time (ns)", fontsize=12)
     ax3.set_ylabel("Gradient (m/s per ns)", fontsize=12)

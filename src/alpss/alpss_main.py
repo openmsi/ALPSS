@@ -4,7 +4,7 @@ from alpss.plotting.hel import plot_hel_detection
 from alpss.validation import validate_inputs
 from alpss.analysis.spall import spall_analysis
 from alpss.analysis.full_uncertainty import full_uncertainty_analysis
-from alpss.analysis.hel import hel_detection
+from alpss.analysis.hel.hel import hel_detection
 from alpss.io.saving import save
 from alpss.utils.phases import run_velocity_phase
 from alpss.utils.defaults import (
@@ -96,26 +96,33 @@ def alpss_main(**inputs):
         try:
             logger.info("Running HEL detection...")
             # Convert velocity time from seconds to nanoseconds for HEL
-            time_ns = vc_out["time_f"] / 1e-9
+            # AND zero the time to signal start time
+            t_start_corrected = sdf_out["t_start_corrected"]
+            time_ns = (vc_out["time_f"] - t_start_corrected) / 1e-9
             hel_out = hel_detection(
                 time_ns,
                 vc_out["velocity_f_smooth"],
                 iua_out["vel_uncert"],
-                hel_start_ns=inputs.get("hel_start_time_ns"),
-                hel_end_ns=inputs.get("hel_end_time_ns"),
-                angle_threshold_deg=inputs.get("hel_angle_threshold_deg"),
-                min_points=inputs.get("hel_detection_min_points"),
-                min_velocity=inputs.get("minimum_HEL_velocity_expected"),
+                hel_start_ns=inputs["hel_start_time_ns"],
+                hel_end_ns=inputs["hel_end_time_ns"],
+                angle_threshold_deg=inputs["hel_angle_threshold_deg"],
+                min_points=inputs["hel_detection_min_points"],
+                min_velocity=inputs["minimum_HEL_velocity_expected"],
                 density=inputs.get("density"),
                 acoustic_velocity=inputs.get("C0"),
                 C_L=inputs.get("C_L"),
+                method=inputs["hel_method"],
+                hel_rdp_epsilon=inputs["hel_rdp_epsilon"],
+                hel_slope_drop_ratio=inputs["hel_slope_drop_ratio"],
+                hel_min_plateau_duration=inputs["hel_min_plateau_duration"],
             )
             if hel_out.ok:
                 logger.info(
-                    "HEL detected: strength=%.4f GPa, FSV=%.2f m/s, time=%.2f ns",
+                    "HEL detected: strength=%.4f GPa, FSV=%.2f m/s, time=%.2f ns (method=%s)",
                     hel_out.strength_gpa,
                     hel_out.free_surface_velocity,
                     hel_out.time_detection_ns,
+                    hel_out.method,
                 )
             else:
                 if hel_out.error_message:
@@ -151,7 +158,7 @@ def alpss_main(**inputs):
         try:
             time_ns = vc_out["time_f"] / 1e-9
             hel_fig = plot_hel_detection(
-                time_ns,
+                time_ns - t_start_corrected * 1e9,
                 vc_out["velocity_f_smooth"],
                 hel_out,
                 hel_start_ns=inputs.get("hel_start_time_ns"),

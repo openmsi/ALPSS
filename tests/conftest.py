@@ -1,5 +1,77 @@
 import pytest
 import os
+import numpy as np
+
+
+HEL_DETECTION_BASE = dict(
+    hel_start_ns=0.0,
+    hel_end_ns=None,
+    angle_threshold_deg=45.0,
+    min_points=3,
+    min_velocity=10.0,
+    density=None,
+    acoustic_velocity=None,
+    C_L=None,
+    method="gradient",
+    hel_rdp_epsilon=2.0,
+    hel_slope_drop_ratio=0.85,
+    hel_min_plateau_duration=0.5,
+)
+
+HEL_RDP_BASE = dict(
+    hel_start_ns=0.0,
+    hel_end_ns=None,
+    min_velocity=10.0,
+    density=None,
+    acoustic_velocity=None,
+    C_L=None,
+    rdp_epsilon=2.0,
+    slope_drop_ratio=0.85,
+    min_plateau_duration_ns=0.5,
+    min_points=3,
+    angle_threshold_deg=45.0,
+)
+
+
+@pytest.fixture
+def synthetic_hel_signal():
+    """Synthetic PDV trace: HEL plateau at ~200 m/s from 2–8 ns (seed=42)."""
+    np.random.seed(42)
+    t = np.linspace(-5, 30, 70)
+    v = np.zeros_like(t)
+    v[t < 0] = np.random.normal(0, 0.3, np.sum(t < 0))
+    rise_mask = (t >= 0) & (t < 2)
+    v[rise_mask] = 200 * (t[rise_mask] / 2)
+    plateau_mask = (t >= 2) & (t < 8)
+    v[plateau_mask] = 200 + np.random.normal(0, 0.2, np.sum(plateau_mask))
+    ramp_mask = (t >= 8) & (t < 15)
+    v[ramp_mask] = 200 + (t[ramp_mask] - 8) * 60
+    decay_mask = t >= 15
+    v[decay_mask] = 620 * np.exp(-(t[decay_mask] - 15) * 0.1)
+    return t, v, np.ones_like(v) * 5.0
+
+
+@pytest.fixture
+def synthetic_hel_signal_rdp():
+    """Synthetic PDV trace: sharp HEL knee at ~4 ns, plateau at ~160 m/s (seed=7)."""
+    np.random.seed(7)
+    t = np.linspace(-2, 25, 200)
+    v = np.zeros_like(t)
+    v[t < 0] = np.random.normal(0, 0.5, (t < 0).sum())
+    rise_mask = (t >= 0) & (t < 4)
+    v[rise_mask] = 160 * t[rise_mask] / 4 + np.random.normal(0, 0.3, rise_mask.sum())
+    plat_mask = (t >= 4) & (t < 12)
+    v[plat_mask] = 160 + np.random.normal(0, 0.5, plat_mask.sum())
+    ramp_mask = t >= 12
+    v[ramp_mask] = 160 + 30 * (t[ramp_mask] - 12) + np.random.normal(0, 1, ramp_mask.sum())
+    return t, v, np.ones_like(v) * 5.0
+
+
+def assert_results_match(result_dict, expected, rel=1e-9):
+    for key, val in expected.items():
+        assert key in result_dict, f"Key '{key}' not found in results."
+        assert result_dict[key] == pytest.approx(val, rel=rel), \
+            f"Mismatch for '{key}': expected {val}, got {result_dict[key]}"
 
 
 @pytest.fixture
