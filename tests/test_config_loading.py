@@ -9,7 +9,7 @@ from alpss.commands import load_json_config
 
 def test_flatten_merges_sections():
     config = {
-        "io": {"filepath": "a.csv", "save_data": "yes"},
+        "io": {"filepath": "a.csv", "save_data": True},
         "material": {"density": 8960, "C0": 3950},
     }
     flat = _flatten_config(config)

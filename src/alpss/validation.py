@@ -94,6 +94,10 @@ def validate_inputs(inputs):
     if unknown:
         raise ValueError(f"Unknown config params: {unknown}")
 
+    for bool_key in ("save_data", "display_plots"):
+        if not isinstance(inputs[bool_key], bool):
+            raise ValueError(f"'{bool_key}' must be a bool, got {type(inputs[bool_key]).__name__!r}.")
+
     stu = inputs["start_time_user"]
     if not (isinstance(stu, (int, float)) or stu in _START_TIME_MODES):
         raise ValueError(

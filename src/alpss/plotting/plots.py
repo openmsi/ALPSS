@@ -413,7 +413,7 @@ def plot_results(
     plt.tight_layout()
 
     # display the plots if desired. if this is turned off the plots will still save
-    if inputs["display_plots"] == "yes":
+    if inputs["display_plots"]:
         plt.show()
 
     return fig
@@ -456,14 +456,14 @@ def plot_voltage(data, **inputs):
     fig.suptitle("ERROR: Program Failed", c="r", fontsize=16)
 
     plt.tight_layout()
-    if inputs["save_data"] == "yes":
+    if inputs["save_data"]:
         fname = os.path.join(
             inputs["out_files_dir"],
             os.path.splitext(os.path.basename(inputs["filepath"]))[0],
         )
         dest = f"{fname}--error_plot.png"
         fig.savefig(dest)
-    if inputs["display_plots"] == "yes":
+    if inputs["display_plots"]:
         plt.show()
 
-    return fig, {"error": [mag, dest if inputs["save_data"] == "yes" else None]}
+    return fig, {"error": [mag, dest if inputs["save_data"] else None]}

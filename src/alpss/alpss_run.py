@@ -73,7 +73,7 @@ import os
 
 alpss_main(
     filename="example_file.csv",
-    save_data="yes",
+    save_data=True,
     start_time_user="none",
     header_lines=0,
     time_to_skip=0e-6,
@@ -117,7 +117,7 @@ alpss_main(
     out_files_dir="/srv/hemi01-j01/ALPSS/tests/output_data2",
     # exp_data_dir="/Users/Administrator/Desktop/PDV_DATA",
     # out_files_dir="/Users/Administrator/Desktop/ALPSS_output/custom",
-    display_plots="yes",
+    display_plots=True,
     plot_figsize=(30, 10),
     plot_dpi=300,
 )

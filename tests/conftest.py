@@ -23,8 +23,8 @@ def valid_inputs():
             "header_lines": 1,
             "time_to_skip": 2.3e-06,
             "time_to_take": 1.5e-06,
-            "save_data": "yes",
-            "display_plots": "no",
+            "save_data": True,
+            "display_plots": False,
         },
         "stft": {
             "sample_rate": 80000000000.0,

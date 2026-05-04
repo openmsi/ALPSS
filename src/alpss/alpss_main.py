@@ -157,7 +157,7 @@ def alpss_main(**inputs):
                 angle_threshold_deg=inputs["hel_angle_threshold_deg"],
                 sample_name=os.path.basename(inputs.get("filepath", "")),
             )
-            if inputs.get("display_plots") != "yes":
+            if not inputs.get("display_plots"):
                 import matplotlib.pyplot as _plt
 
                 _plt.close(hel_fig)

@@ -214,3 +214,21 @@ def test_invalid_carrier_filter_type_raises(flat_inputs):
     inputs["carrier_filter_type"] = "bad_filter"
     with pytest.raises(ValueError, match="Invalid carrier_filter_type"):
         validate_inputs(inputs)
+
+
+# --- bool params ---
+
+
+@pytest.mark.parametrize("key", ["save_data", "display_plots"])
+def test_bool_param_string_raises(flat_inputs, key):
+    inputs = copy.deepcopy(flat_inputs)
+    inputs[key] = "yes"
+    with pytest.raises(ValueError, match=f"'{key}' must be a bool"):
+        validate_inputs(inputs)
+
+
+@pytest.mark.parametrize("key,value", [("save_data", True), ("save_data", False), ("display_plots", True), ("display_plots", False)])
+def test_bool_param_valid(flat_inputs, key, value):
+    inputs = copy.deepcopy(flat_inputs)
+    inputs[key] = value
+    validate_inputs(inputs)
