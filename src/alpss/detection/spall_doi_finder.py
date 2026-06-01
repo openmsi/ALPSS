@@ -225,6 +225,10 @@ def spall_doi_finder(data, **inputs):
         sdf_out["phase"] = phase
         sdf_out["iq_fig"] = iq_fig
 
+    if inputs.get("start_time_user") == "cusum":
+        sdf_out["cusum_time"] = time_eval
+        sdf_out["cusum_s"] = s
+
     return sdf_out
 
 
