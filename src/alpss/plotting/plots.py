@@ -133,6 +133,7 @@ def plot_results(
         ax4.plot(sdf_out["cusum_time"]*1e9,sdf_out["cusum_s"])
         ax4.set_title("Cusum Detection")
         ax4.set_xlabel("Time (ns)")
+        ax4.set_ylim([-inputs["cusum_offset"]-1,100])
     else:
         ax4.imshow(
             sdf_out["th3"],
@@ -153,9 +154,9 @@ def plot_results(
         ax4.set_ylabel("Frequency (GHz)")
         ax4.minorticks_on()
         ax4.set_title("Thresholded Spectrogram")
-        ax4.set_xlim([sdf_out["t_doi_start"] / 1e-9, sdf_out["t_doi_end"] / 1e-9])
     if inputs["start_time_user"] == "otsu":
         ax4.axhline(sdf_out["f_doi"][sdf_out["f_doi_carr_top_idx"]] / 1e9, c="r")    
+    ax4.set_xlim([sdf_out["t_doi_start"] / 1e-9, sdf_out["t_doi_end"] / 1e-9])
     ax4.axvline(sdf_out["t_start_detected"] / 1e-9, ls="--", c="r")
     ax4.axvline(sdf_out["t_start_corrected"] / 1e-9, ls="-", c="r")
 
