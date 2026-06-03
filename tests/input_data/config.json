@@ -33,7 +33,7 @@
     "carrier": {
         "carrier_filter_type": "gaussian_notch",
         "order": 6,
-        "wid": 50000000.0,
+        "wid": 0.2e9,
         "t_fit_begin": 20e-9,
         "t_fit_end": 300e-9
     },
