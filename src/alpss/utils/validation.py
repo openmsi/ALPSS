@@ -111,3 +111,6 @@ def validate_inputs(inputs):
 
     if inputs["t_after"] > inputs["time_to_take"]:
         raise ValueError("'t_after' must be less than 'time_to_take'.")
+
+    if inputs["hel_enabled"] and inputs["carrier_filter_type"] == "gaussian_notch":
+        raise ValueError("HEL detection is incompatible with gaussian_notch filter (removes carrier signal needed for HEL analysis).")

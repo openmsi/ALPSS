@@ -245,3 +245,31 @@ def test_invalid_carrier_filter_type_raises(flat_inputs):
     inputs["carrier_filter_type"] = "bad_filter"
     with pytest.raises(ValueError, match="Invalid carrier_filter_type"):
         validate_inputs(inputs)
+
+
+# --- HEL and carrier filter incompatibility ---
+
+
+def test_hel_enabled_with_gaussian_notch_raises(flat_inputs):
+    inputs = copy.deepcopy(flat_inputs)
+    inputs["spall_enabled"] = False
+    inputs["hel_enabled"] = True
+    inputs["carrier_filter_type"] = "gaussian_notch"
+    with pytest.raises(ValueError, match="HEL detection is incompatible with gaussian_notch"):
+        validate_inputs(inputs)
+
+
+def test_hel_enabled_with_sin_fit_subtract_passes(flat_inputs):
+    inputs = copy.deepcopy(flat_inputs)
+    inputs["spall_enabled"] = False
+    inputs["hel_enabled"] = True
+    inputs["carrier_filter_type"] = "sin_fit_subtract"
+    validate_inputs(inputs)
+
+
+def test_hel_enabled_with_none_filter_passes(flat_inputs):
+    inputs = copy.deepcopy(flat_inputs)
+    inputs["spall_enabled"] = False
+    inputs["hel_enabled"] = True
+    inputs["carrier_filter_type"] = "none"
+    validate_inputs(inputs)
