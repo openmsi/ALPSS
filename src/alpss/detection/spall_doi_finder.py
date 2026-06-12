@@ -3,7 +3,7 @@ import cv2 as cv
 from alpss.utils.stft import stft
 import logging
 from scipy import signal
-from scipy.fft import fft, fftfreq
+from scipy.fft import fft, fftshift, ifft 
 import matplotlib.pyplot as plt
 import os
 
@@ -128,31 +128,39 @@ def spall_doi_finder(data, **inputs):
 
             # Collect necessary parameters
             carrier_band_time = inputs["carrier_band_time"]
-            k = inputs["cusum_offset"]
-            h = inputs["cusum_threshold"]
+            k=inputs["cusum_offset"]
+            h=inputs["cusum_threshold"]
+            f_min = inputs["freq_min"]
+            f_max = inputs["freq_max"]
 
-            # Carrier band Frequency
-            carrier_mask = time < carrier_band_time
-            carrier_fft_vals = fft(voltage[carrier_mask])
-            carrier_fft_freqs = fftfreq(voltage[carrier_mask].size, 1 / fs)
-            mask3 = carrier_fft_freqs > 0
-            max_idx = np.argmax(np.abs(carrier_fft_vals * mask3))
-            cen = carrier_fft_freqs[max_idx]
-            idx = np.argmin(np.abs(f - cen))
-            signal = mag[idx, :]
-            mask4 = t < carrier_band_time
-            mask5 = t > (t.max() - carrier_band_time)
-            mu0 = np.mean(signal[mask4])
-            mu1 = 0  # Expected post-change signal level
-            sigma0 = np.var(signal[mask4])
+            # Apply a bandpass filter to get rid of noise outside of frequency bounds
+            numpts = len(time)
+            pad_len = numpts // 2
+            voltage_padded = np.pad(voltage, (pad_len, pad_len), mode='reflect')
+            numpts_padded = len(voltage_padded)
+            freq_padded = fftshift(np.arange((-numpts_padded / 2), (numpts_padded / 2)) * fs / numpts_padded)
+            filt_padded = (freq_padded > f_min) * (freq_padded < f_max)
+            voltage_filt_padded = ifft(fft(voltage_padded) * filt_padded)
+            voltage_filt = voltage_filt_padded[pad_len:pad_len + numpts]
 
-            print("signal shape: ", signal.shape)
-            detection_indices, change_indices, G, s = cusum(
-                signal, mu0, mu1, sigma0, h, k
-            )
+            # Unwrap the phase
+            phas = np.unwrap(np.angle(voltage_filt), axis=0)
 
-            print("change _indices shape: ", change_indices.shape)
-            detection_time = t[change_indices]
+            # Analyzed signal is equal to the gradient of the phase. Essentially a pseudo-velocity
+            signal = np.gradient(phas)
+
+            # Skip leading edge samples to avoid filter artifact spikes
+            edge_skip = 100
+            signal_eval = signal[edge_skip:]
+            time_eval = time[edge_skip:]
+
+            # Initial mean and standard deviation of the signal. Utilized in cusum
+            mask = time_eval < carrier_band_time
+            mu0 = np.mean(signal_eval[mask])
+            sigma0 = np.var(signal_eval[mask])
+
+            detection_indices, change_indices, G, s = cusum(signal_eval, mu0, sigma0, h, k)
+            detection_time = time_eval[change_indices]
 
             # these params become nan because they are only needed if the program
             # is finding the signal start time automatically
@@ -163,9 +171,7 @@ def spall_doi_finder(data, **inputs):
             # use the user input signal start time to define the domain of interest
             t_start_detected = detection_time
         else:
-            raise TypeError(
-                f"invalid mode assigned to variable 'start_time_user': {inputs.get('start_time_user')}"
-            )
+            raise TypeError(f"invalid mode assigned to variable 'start_time_user': {inputs.get('start_time_user')}")
 
     # if using a user input for the signal start time
     else:
@@ -215,25 +221,28 @@ def spall_doi_finder(data, **inputs):
         sdf_out["phase"] = phase
         sdf_out["iq_fig"] = iq_fig
 
+    if inputs.get("start_time_user") == "cusum":
+        sdf_out["cusum_time"] = time_eval
+        sdf_out["cusum_s"] = s
+
     return sdf_out
 
 
-def cusum(signal, mu0, mu1, sigma, h, k):
+def cusum(signal, mu0, sigma, h, k):
     """
-    Detect a single mean shift from mu0 to mu1 using CUSUM.
+    Detect a single mean shift from mu0 using CUSUM.
     Returns:
     - Detection index
     - Estimated change point index
     - Full G[k] array
     """
     # Score for general mean change
-    Z = (signal - mu0) / (np.sqrt(sigma))
-    s = -Z - k
-    # s = ((mu1 - mu0) / sigma) * (signal - mu0) - ((mu0**2 - mu1**2) / (2 * sigma))
+    Z = (signal - mu0)/(np.sqrt(sigma))
+    s = Z - k
     G = np.zeros_like(s)
 
     for k in range(1, len(s)):
-        G[k] = max(G[k - 1] + s[k], 0)
+        G[k] = max(G[k-1] + s[k], 0)
 
         if G[k] > h:
             detect_idx = k

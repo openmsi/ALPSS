@@ -26,16 +26,16 @@
         "t_before": 5.0e-09,
         "t_after": 5.0e-08,
         "iq_threshold_factor": 0.4,
-        "cusum_offset": 5,
-        "cusum_threshold": 1000,
+        "cusum_offset": 2,
+        "cusum_threshold": 100,
         "carrier_band_time": 2.5e-07
     },
     "carrier": {
         "carrier_filter_type": "gaussian_notch",
         "order": 6,
         "wid": 50000000.0,
-        "t_fit_begin": 20,
-        "t_fit_end": 300
+        "t_fit_begin": 20e-9,
+        "t_fit_end": 300e-9
     },
     "velocity": {
         "smoothing_window": 601,

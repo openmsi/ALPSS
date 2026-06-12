@@ -74,7 +74,7 @@ def test_alpss_exact_values(valid_inputs, start_time_user, carrier_filter_type):
         ), f"Mismatch for '{key}': expected {val}, got {result_dict[key]}"
 
 
-@pytest.mark.parametrize("start_time_user", ["otsu", "iq", 7.5e-07])
+@pytest.mark.parametrize("start_time_user", ["otsu", "iq", "cusum", 7.5e-07])
 @pytest.mark.parametrize("carrier_filter_type", ["gaussian_notch", "none"])
 def test_alpss_smoke(valid_inputs, start_time_user, carrier_filter_type):
     """Smoke test: mode/filter combos complete without error and return valid results."""
