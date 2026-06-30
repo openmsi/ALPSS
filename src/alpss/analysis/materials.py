@@ -23,7 +23,7 @@ def get_material(name):
   if key not in MATERIAL_TABLE:
     raise ValueError(
       "Unknown material'"+str(name)+"'."
-      "Known materials are:"+", ".join(list_materials())
+      "Known materials are:"+", ".join(list_materials()) 
     )
   
   #pull the three numbers out of the tuple and build a Material
