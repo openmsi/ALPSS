@@ -3,12 +3,10 @@ import argparse
 from alpss.alpss_watcher import Watcher
 from alpss.alpss_main import alpss_main
 from alpss.multipoint.alpss_multipoint import alpss_multipoint
-from alpss.utils.config import flatten_config
 import os
 import json
 import logging
 import sys
-import pandas as pd
 
 def start_watcher():
     w = Watcher()
@@ -73,33 +71,8 @@ def alpss_multipoint_with_config(config=None):
     else:
         config = load_json_config(config)
 
-    # Flatten all sections into a single dict, then extract multipoint-specific keys
-    flat = flatten_config(config)
-
-    raw_channels = flat.pop("channels")
-    channels = {name: pd.DataFrame(rows) for name, rows in raw_channels.items()}
-
-    filepath = flat.pop("filepath")
-    freq_lower = flat.pop("freq_lower", 1e9)
-    freq_upper = flat.pop("freq_upper", 1e9)
-    freq_refine_lower = flat.pop("freq_refine_lower", None)
-    freq_refine_upper = flat.pop("freq_refine_upper", None)
-
-    # Set per-probe by the wrapper; remove from shared kwargs to avoid conflicts
-    flat.pop("freq_min", None)
-    flat.pop("freq_max", None)
-    flat.pop("lam", None)
-    flat.pop("multipoint", None)
-
-    return alpss_multipoint(
-        channels=channels,
-        filepath=filepath,
-        freq_lower=freq_lower,
-        freq_upper=freq_upper,
-        freq_refine_lower=freq_refine_lower,
-        freq_refine_upper=freq_refine_upper,
-        **flat,
-    )
+    # alpss_multipoint flattens sections internally and reads "io"/"multipoint" directly
+    return alpss_multipoint(config)
 
 
 def alpss_cli():
