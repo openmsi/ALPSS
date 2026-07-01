@@ -2,7 +2,7 @@ import argparse
 
 from alpss.alpss_watcher import Watcher
 from alpss.alpss_main import alpss_main
-from alpss.alpss_multipoint import alpss_multipoint
+from alpss.multipoint.alpss_multipoint import alpss_multipoint
 from alpss.utils.config import flatten_config
 import os
 import json
