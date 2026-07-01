@@ -1,6 +1,6 @@
 {
     "io": {
-        "filepath": "tests/input_data/multipoint/multipoint_example.csv",
+        "filepath": "tests/input_data/multipoint/multipoint_example_separate.csv",
         "out_files_dir": "tests/output_data/multipoint/",
         "header_lines": 1,
         "time_to_skip": 0.1e-06,
@@ -11,22 +11,22 @@
     "multipoint": {
         "multipoint": true,
         "metadata": [
-            {"osc_channel": 1, "probe_number": 10, "tar_lam": 1550.000e-9, "ref_lam": 1550.016e-9, "expected_upshift": 2e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 2, "probe_number": 6, "tar_lam": 1531.116e-9, "ref_lam": 1531.140e-9, "expected_upshift": 3e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 2, "probe_number": 9, "tar_lam": 1537.397e-9, "ref_lam": 1537.453e-9, "expected_upshift": 7e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 2, "probe_number": 15, "tar_lam": 1543.730e-9, "ref_lam": 1543.810e-9, "expected_upshift": 10e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 3, "probe_number": 3, "tar_lam": 1531.236e-9, "ref_lam": 1531.316e-9, "expected_upshift": 10e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 3, "probe_number": 8, "tar_lam": 1537.549e-9, "ref_lam": 1537.605e-9, "expected_upshift": 7e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 3, "probe_number": 19, "tar_lam": 1543.906e-9, "ref_lam": 1543.930e-9, "expected_upshift": 3e9, "pdv_filename": "multipoint_example"}
+            {"osc_channel": 1, "probe_number": 10, "tar_lam": 1550.000e-9, "ref_lam": 1550.016e-9, "expected_upshift": 2e9, "pdv_filename": "C1--multipoint_example_separate"},
+            {"osc_channel": 2, "probe_number": 6, "tar_lam": 1531.116e-9, "ref_lam": 1531.140e-9, "expected_upshift": 8e9, "pdv_filename": "C2--multipoint_example_separate"},
+            {"osc_channel": 2, "probe_number": 9, "tar_lam": 1537.397e-9, "ref_lam": 1537.453e-9, "expected_upshift": 5e9, "pdv_filename": "C2--multipoint_example_separate"},
+            {"osc_channel": 2, "probe_number": 15, "tar_lam": 1543.730e-9, "ref_lam": 1543.810e-9, "expected_upshift": 2e9, "pdv_filename": "C2--multipoint_example_separate"},
+            {"osc_channel": 3, "probe_number": 3, "tar_lam": 1531.236e-9, "ref_lam": 1531.316e-9, "expected_upshift": 2e9, "pdv_filename": "C3--multipoint_example_separate"},
+            {"osc_channel": 3, "probe_number": 8, "tar_lam": 1537.549e-9, "ref_lam": 1537.605e-9, "expected_upshift": 5e9, "pdv_filename": "C3--multipoint_example_separate"},
+            {"osc_channel": 3, "probe_number": 19, "tar_lam": 1543.906e-9, "ref_lam": 1543.930e-9, "expected_upshift": 8e9, "pdv_filename": "C3--multipoint_example_separate"}
         ],
-            "file_input_type": "single",
+            "file_input_type": "separate",
             "freq_lower": 2e9,
             "freq_upper": 2e9,
             "freq_refine_lower": 0.25e9,
-            "freq_refine_upper": 1e9
+            "freq_refine_upper": 1.5e9
     },
     "stft": {
-        "sample_rate": 128e9,
+        "sample_rate": 80e9,
         "nperseg": 512,
         "noverlap": 435,
         "nfft": 5120,
@@ -40,8 +40,8 @@
     "start_time": {
         "start_time_user": "iq",
         "start_time_correction": 0.0,
-        "t_before": 100e-09,
-        "t_after": 1000e-09,
+        "t_before": 50e-09,
+        "t_after": 350e-09,
         "iq_threshold_factor": 0.4,
         "cusum_offset": 2,
         "cusum_threshold": 500,
@@ -50,7 +50,7 @@
     "carrier": {
         "carrier_filter_type": "gaussian_notch",
         "order": 6,
-        "wid": 0.2e9,
+        "wid": 0.02e9,
         "t_fit_begin": 20e-9,
         "t_fit_end": 300e-9
     },

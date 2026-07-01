@@ -1,0 +1,97 @@
+{
+    "io": {
+        "filepath": "tests/input_data/multipoint/multipoint_example_single.csv",
+        "out_files_dir": "tests/output_data/multipoint/",
+        "header_lines": 1,
+        "time_to_skip": 0.1e-06,
+        "time_to_take": 3e-06,
+        "save_data": true,
+        "display_plots": false
+    },
+    "multipoint": {
+        "multipoint": true,
+        "metadata": [
+            {"osc_channel": 1, "probe_number": 10, "tar_lam": 1550.000e-9, "ref_lam": 1550.016e-9, "expected_upshift": 2e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 2, "probe_number": 6, "tar_lam": 1531.116e-9, "ref_lam": 1531.140e-9, "expected_upshift": 3e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 2, "probe_number": 9, "tar_lam": 1537.397e-9, "ref_lam": 1537.453e-9, "expected_upshift": 7e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 2, "probe_number": 15, "tar_lam": 1543.730e-9, "ref_lam": 1543.810e-9, "expected_upshift": 10e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 3, "probe_number": 3, "tar_lam": 1531.236e-9, "ref_lam": 1531.316e-9, "expected_upshift": 10e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 3, "probe_number": 8, "tar_lam": 1537.549e-9, "ref_lam": 1537.605e-9, "expected_upshift": 7e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 3, "probe_number": 19, "tar_lam": 1543.906e-9, "ref_lam": 1543.930e-9, "expected_upshift": 3e9, "pdv_filename": "multipoint_example"}
+        ],
+            "file_input_type": "single",
+            "freq_lower": 2e9,
+            "freq_upper": 2e9,
+            "freq_refine_lower": 0.25e9,
+            "freq_refine_upper": 1e9
+    },
+    "stft": {
+        "sample_rate": 128e9,
+        "nperseg": 512,
+        "noverlap": 435,
+        "nfft": 5120,
+        "window": "hann",
+        "freq_min": 1500000000.0,
+        "freq_max": 4000000000.0,
+        "blur_kernel": [5, 5],
+        "blur_sigx": 0,
+        "blur_sigy": 0
+    },
+    "start_time": {
+        "start_time_user": "iq",
+        "start_time_correction": 0.0,
+        "t_before": 100e-09,
+        "t_after": 1000e-09,
+        "iq_threshold_factor": 0.4,
+        "cusum_offset": 2,
+        "cusum_threshold": 500,
+        "carrier_band_time": 2.5e-07
+    },
+    "carrier": {
+        "carrier_filter_type": "gaussian_notch",
+        "order": 6,
+        "wid": 0.2e9,
+        "t_fit_begin": 20e-9,
+        "t_fit_end": 300e-9
+    },
+    "velocity": {
+        "smoothing_window": 1001,
+        "smoothing_wid": 3,
+        "smoothing_amp": 1,
+        "smoothing_sigma": 1,
+        "smoothing_mu": 0,
+        "theta": 0
+    },
+    "material": {
+        "C0": 4540,
+        "C_L": 4540,
+        "density": 1730,
+        "delta_rho": 9,
+        "delta_C0": 23,
+        "delta_lam": 8.0e-18,
+        "delta_theta": 5
+    },
+    "spall": {
+        "spall_enabled": false,
+        "pb_neighbors": 400,
+        "pb_idx_correction": 0,
+        "rc_neighbors": 400,
+        "rc_idx_correction": 0
+    },
+    "hel": {
+        "hel_enabled": false,
+        "hel_start_time_ns": 0.0,
+        "hel_end_time_ns": 30.0,
+        "hel_angle_threshold_deg": 45.0,
+        "hel_detection_min_points": 3,
+        "minimum_HEL_velocity_expected": 10.0
+    },
+    "uncertainty": {
+        "uncert_mult": 10
+    },
+    "plotting": {
+        "cmap": "viridis",
+        "plot_figsize": [30, 10],
+        "plot_dpi": 300
+    }
+}
