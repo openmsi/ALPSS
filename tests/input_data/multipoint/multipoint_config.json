@@ -11,13 +11,13 @@
     "multipoint": {
         "multipoint": true,
         "metadata": [
-            {"osc_channel": 1, "probe_number": 10, "tar_lam": 1550.000, "ref_lam": 1550.016, "expected_upshift": 2e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 2, "probe_number": 6, "tar_lam": 1531.116, "ref_lam": 1531.140, "expected_upshift": 3e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 2, "probe_number": 9, "tar_lam": 1537.397, "ref_lam": 1537.453, "expected_upshift": 7e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 2, "probe_number": 15, "tar_lam": 1543.730, "ref_lam": 1543.810, "expected_upshift": 10e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 3, "probe_number": 3, "tar_lam": 1531.236, "ref_lam": 1531.316, "expected_upshift": 10e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 3, "probe_number": 8, "tar_lam": 1537.549, "ref_lam": 1537.605, "expected_upshift": 7e9, "pdv_filename": "multipoint_example"},
-            {"osc_channel": 3, "probe_number": 19, "tar_lam": 1543.906, "ref_lam": 1543.930, "expected_upshift": 3e9, "pdv_filename": "multipoint_example"}
+            {"osc_channel": 1, "probe_number": 10, "tar_lam": 1550.000e-9, "ref_lam": 1550.016e-9, "expected_upshift": 2e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 2, "probe_number": 6, "tar_lam": 1531.116e-9, "ref_lam": 1531.140e-9, "expected_upshift": 3e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 2, "probe_number": 9, "tar_lam": 1537.397e-9, "ref_lam": 1537.453e-9, "expected_upshift": 7e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 2, "probe_number": 15, "tar_lam": 1543.730e-9, "ref_lam": 1543.810e-9, "expected_upshift": 10e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 3, "probe_number": 3, "tar_lam": 1531.236e-9, "ref_lam": 1531.316e-9, "expected_upshift": 10e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 3, "probe_number": 8, "tar_lam": 1537.549e-9, "ref_lam": 1537.605e-9, "expected_upshift": 7e9, "pdv_filename": "multipoint_example"},
+            {"osc_channel": 3, "probe_number": 19, "tar_lam": 1543.906e-9, "ref_lam": 1543.930e-9, "expected_upshift": 3e9, "pdv_filename": "multipoint_example"}
         ],
             "file_input_type": "single",
             "freq_lower": 2e9,
