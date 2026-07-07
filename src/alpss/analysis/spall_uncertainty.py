@@ -9,7 +9,7 @@ import numpy as np
 
 
 # program to calculate the uncertainty in the spall strength and strain rate
-def spall_uncertainty_analysis(cen, vc_out, iua_out, **inputs):
+def spall_uncertainty_analysis(cen, vc_out, vu_out, iua_out, **inputs):
     """
     Based on the work of Mallick et al.
 
@@ -26,8 +26,8 @@ def spall_uncertainty_analysis(cen, vc_out, iua_out, **inputs):
     delta_lam = inputs["delta_lam"]
     theta = inputs["theta"]
     delta_theta = inputs["delta_theta"]
-    delta_freq_tb = vc_out["peak_velocity_freq_uncert"]
-    delta_freq_td = vc_out["max_ten_freq_uncert"]
+    delta_freq_tb = vu_out["peak_velocity_freq_uncert"]
+    delta_freq_td = vu_out["max_ten_freq_uncert"]
     delta_time_c = iua_out["tau"]
     delta_time_d = iua_out["tau"]
     freq_tb = (vc_out["v_max_comp"] * 2) / lam + cen

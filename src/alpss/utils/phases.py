@@ -128,7 +128,7 @@ def run_spall_phase(vc_out, iua_out, **inputs) -> tuple:
     return sa_out, spall_ok, error_msg
 
 
-def run_spall_uncertainty_phase(cen, vc_out, sa_out, iua_out, spall_ok, **inputs) -> tuple:
+def run_spall_uncertainty_phase(cen, vc_out, vu_out, sa_out, iua_out, spall_ok, **inputs) -> tuple:
     """Phase 2b: Spall uncertainty analysis. Returns (sua_out, spall_uncertainty_ok, error_msg)."""
     sua_out = default_spall_uncertainty_output()
     spall_uncertainty_ok = False
@@ -141,7 +141,7 @@ def run_spall_uncertainty_phase(cen, vc_out, sa_out, iua_out, spall_ok, **inputs
 
     try:
         logger.info("Running spall uncertainty analysis...")
-        sua_out = spall_uncertainty_analysis(cen, vc_out, iua_out, **inputs)
+        sua_out = spall_uncertainty_analysis(cen, vc_out, vu_out, iua_out, **inputs)
         spall_uncertainty_ok = True
         logger.info(
             "Spall uncertainty analysis complete."
