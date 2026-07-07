@@ -12,6 +12,7 @@ def plot_results(
     cen,
     cf_out,
     vc_out,
+    vu_out,
     sa_out,
     iua_out,
     fua_out,
@@ -339,19 +340,19 @@ def plot_results(
             "bs",
             label=f'Velocity at Max Compression: {int(round(vc_out["v_max_comp"]))}',
         )
-    if not np.isnan(sa_out["t_max_ten"]):
+    if not np.isnan(vc_out["t_max_ten"]):
         ax12.plot(
-            (sa_out["t_max_ten"] - sdf_out["t_start_corrected"]) / 1e-9,
-            sa_out["v_max_ten"],
+            (vc_out["t_max_ten"] - sdf_out["t_start_corrected"]) / 1e-9,
+            vc_out["v_max_ten"],
             "ro",
-            label=f'Velocity at Max Tension: {int(round(sa_out["v_max_ten"]))}',
+            label=f'Velocity at Max Tension: {int(round(vc_out["v_max_ten"]))}',
         )
-    if not np.isnan(sa_out["t_rc"]):
+    if not np.isnan(vc_out["t_rc"]):
         ax12.plot(
-            (sa_out["t_rc"] - sdf_out["t_start_corrected"]) / 1e-9,
-            sa_out["v_rc"],
+            (vc_out["t_rc"] - sdf_out["t_start_corrected"]) / 1e-9,
+            vc_out["v_rc"],
             "gD",
-            label=f'Velocity at Recompression: {int(round(sa_out["v_rc"]))}',
+            label=f'Velocity at Recompression: {int(round(vc_out["v_rc"]))}',
         )
 
     # if not np.isnan(sa_out['t_max_comp']) or not np.isnan(sa_out['t_max_ten']) or not np.isnan(sa_out['t_rc']):

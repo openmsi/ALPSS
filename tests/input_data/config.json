@@ -4,7 +4,7 @@
         "out_files_dir": "tests/output_data/",
         "header_lines": 1,
         "time_to_skip": 2.3e-06,
-        "time_to_take": 1.5e-06,
+        "time_to_take": 2e-06,
         "save_data": true,
         "display_plots": false
     },

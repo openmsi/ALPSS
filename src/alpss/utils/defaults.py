@@ -3,10 +3,7 @@ import numpy as np
 
 def default_spall_output() -> dict:
     return {
-        "t_max_ten": np.nan, "t_rc": np.nan,
-        "v_max_ten": np.nan, "v_rc": np.nan,
         "spall_strength_est": np.nan, "strain_rate_est": np.nan,
-        "max_ten_freq_uncert": np.nan, "max_ten_vel_uncert": np.nan,
     }
 
 
