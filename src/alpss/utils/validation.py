@@ -5,7 +5,6 @@ logger = logging.getLogger("alpss")
 _ALWAYS_REQUIRED = [
     "filepath",
     "out_files_dir",
-    "header_lines",
     "time_to_skip",
     "time_to_take",
     "t_before",
@@ -44,7 +43,9 @@ _ALWAYS_REQUIRED = [
 ]
 
 # Optional keys — warning is emitted if absent.
-_OPTIONAL = ["bytestring"]
+# `header_lines` defaults to "auto" (sniff the first numeric row) when omitted;
+# an integer keeps the legacy fixed-skip behavior.
+_OPTIONAL = ["bytestring", "header_lines"]
 
 _REQUIRED_BY_MODE = {
     "start_time_user=otsu": [],
@@ -85,9 +86,14 @@ def validate_inputs(inputs):
             if missing:
                 raise ValueError(f"{param}='{value}' requires: {missing}")
 
-    for key in _OPTIONAL:
-        if key not in inputs:
-            logger.warning("Optional param '%s' not provided", key)
+    if "bytestring" not in inputs:
+        logger.warning("Optional param 'bytestring' not provided")
+
+    hl = inputs.get("header_lines", "auto")
+    if not (isinstance(hl, int) or (isinstance(hl, str) and hl.lower() == "auto")):
+        raise ValueError(
+            f"Invalid header_lines={hl!r}. Must be an integer or \"auto\"."
+        )
 
     unknown = [k for k in inputs if k not in _ALL_KNOWN]
     if unknown:
