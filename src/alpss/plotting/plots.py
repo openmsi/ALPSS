@@ -18,6 +18,10 @@ def plot_results(
     shock_out,
     start_time,
     end_time,
+    velocity_ok,
+    spall_ok,
+    spall_uncertainty_ok,
+    hel_ok,
     **inputs,
 ):
 
@@ -41,25 +45,26 @@ def plot_results(
     ax13 = plt.subplot2grid((3, 5), (2, 4), colspan=1, rowspan=1)  # results table
 
     # voltage data
-    ax1.plot(
-        sdf_out["time"] / 1e-9,
-        sdf_out["voltage"] * 1e3,
-        label="Original Signal",
-        c="tab:blue",
-    )
-    ax1.plot(
-        sdf_out["time"] / 1e-9,
-        np.real(vc_out["voltage_filt"]) * 1e3,
-        label="Filtered Signal",
-        c="tab:orange",
-    )
-    ax1.plot(
-        iua_out["time_cut"] / 1e-9,
-        iua_out["volt_fit"] * 1e3,
-        label="Sine Fit",
-        c="tab:green",
-    )
-    ax1.axvspan(
+    try:
+        ax1.plot(
+            sdf_out["time"] / 1e-9,
+            sdf_out["voltage"] * 1e3,
+            label="Original Signal",
+            c="tab:blue",
+        )
+        ax1.plot(
+            sdf_out["time"] / 1e-9,
+            np.real(vc_out["voltage_filt"]) * 1e3,
+            label="Filtered Signal",
+            c="tab:orange",
+        )
+        ax1.plot(
+            iua_out["time_cut"] / 1e-9,
+            iua_out["volt_fit"] * 1e3,
+            label="Sine Fit",
+            c="tab:green",
+        )
+        ax1.axvspan(
         sdf_out["t_doi_start"] / 1e-9,
         sdf_out["t_doi_end"] / 1e-9,
         ymin=-1,
@@ -71,18 +76,24 @@ def plot_results(
         zorder=4,
     )
 
-    #################### voltage plot
-    ax1.set_xlabel("Time (ns)")
-    ax1.set_ylabel("Voltage (mV)")
-    ax1.set_xlim([sdf_out["time"][0] / 1e-9, sdf_out["time"][-1] / 1e-9])
-    ax1.legend(loc="upper right", fontsize=6)
-    ax1.set_title("Voltage Data")
+        ax1.set_xlabel("Time (ns)")
+        ax1.set_ylabel("Voltage (mV)")
+        ax1.set_xlim([sdf_out["time"][0] / 1e-9, sdf_out["time"][-1] / 1e-9])
+        ax1.legend(loc="upper right", fontsize=6)
+        ax1.set_title("Voltage Data")
+    except (KeyError, IndexError):
+        ax1.text(0.5, 0.5, "Voltage data unavailable", ha="center", va="center", transform=ax1.transAxes)
+        ax1.set_title("Voltage Data")
 
     #################### noise distribution histogram
-    ax2.hist(iua_out["noise"] * 1e3, bins=50, rwidth=0.8)
-    ax2.set_xlabel("Noise (mV)")
-    ax2.set_ylabel("Counts")
-    ax2.set_title("Voltage Noise")
+    try:
+        ax2.hist(iua_out["noise"] * 1e3, bins=50, rwidth=0.8)
+        ax2.set_xlabel("Noise (mV)")
+        ax2.set_ylabel("Counts")
+        ax2.set_title("Voltage Noise")
+    except (KeyError, TypeError):
+        ax2.text(0.5, 0.5, "Noise data unavailable", ha="center", va="center", transform=ax2.transAxes)
+        ax2.set_title("Voltage Noise")
 
     #################### imported voltage spectrogram and a rectangle to show the ROI
     plt3 = ax3.imshow(
@@ -379,6 +390,9 @@ def plot_results(
             "Peak Shock Stress (GPa)",
             "Strain Rate (x1e6)",
             "Spall Strength (GPa)",
+            "Velocity",
+            "Spall & Uncertainty",
+            "HEL",
         ],
         "Value": [
             start_time.strftime("%b %d %Y"),
@@ -389,6 +403,9 @@ def plot_results(
             round(shock_out["peak_shock_stress"] / 1e9, 6),
             rf"{round(sa_out['strain_rate_est'] / 1e6, 6)} $\pm$ {round(fua_out['strain_rate_uncert'] / 1e6, 6)}",
             rf"{round(sa_out['spall_strength_est'] / 1e9, 6)} $\pm$ {round(fua_out['spall_uncert'] / 1e9, 6)}",
+            "✓" if velocity_ok else "✗",
+            f"{'✓' if spall_ok else '✗'} | {'✓' if spall_uncertainty_ok else '✗'}",
+            "✓" if hel_ok else "✗",
         ],
     }
 
@@ -402,6 +419,17 @@ def plot_results(
     table1.set_fontsize(8)
     table1.auto_set_column_width([0, 1])
     table1.scale(1, 1.2)
+
+    # Color code the phase status rows (account for header row in table indexing)
+    phase_colors = [
+        ("#90EE90" if velocity_ok else "#FFB6C6", len(df1) - 2),
+        ("#90EE90" if (spall_ok and spall_uncertainty_ok) else "#FFB6C6", len(df1) - 1),
+        ("#90EE90" if hel_ok else "#FFB6C6", len(df1)),
+    ]
+    for color, row_idx in phase_colors:
+        table1[(row_idx, 0)].set_facecolor(color)
+        table1[(row_idx, 1)].set_facecolor(color)
+
     ax13.axis("tight")
     ax13.axis("off")
 
@@ -415,7 +443,7 @@ def plot_results(
     return fig
 
 
-def plot_voltage(data, **inputs):
+def plot_voltage(data, errors=None, **inputs):
 
     # rename the columns of the data
     data.columns = ["Time", "Ampl"]
@@ -449,7 +477,12 @@ def plot_voltage(data, **inputs):
     )
     ax2.set_xlabel("Time (ns)")
     ax2.set_ylabel("Frequency (GHz)")
-    fig.suptitle("ERROR: Program Failed", c="r", fontsize=16)
+
+    # Add error information to plot
+    error_text = "ERROR: Program Failed"
+    if errors:
+        error_text += f"\n{'; '.join(errors)}"
+    fig.suptitle(error_text, c="r", fontsize=16)
 
     plt.tight_layout()
     if inputs["save_data"]:
