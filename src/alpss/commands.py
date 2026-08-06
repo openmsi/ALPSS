@@ -2,6 +2,7 @@ import argparse
 
 from alpss.alpss_watcher import Watcher
 from alpss.alpss_main import alpss_main
+from alpss.multipoint.alpss_multipoint import alpss_multipoint
 import os
 import json
 import logging
@@ -24,6 +25,7 @@ def load_json_config(config):
         "Invalid config input: Provide a dictionary or a valid JSON file path."
     )
 
+
 def alpss_main_with_config(config=None):
     """
     Run ALPSS with a given JSON configuration.
@@ -32,7 +34,7 @@ def alpss_main_with_config(config=None):
         config (str or dict, optional): JSON config file, either given as parsable argument through CLI or directly as a string, or a dictionary containing config parameters.
     """
 
-    if config is None: 
+    if config is None:
         # If called from CLI, parse arguments
         parser = argparse.ArgumentParser(
             description="Run ALPSS using a JSON config file"
@@ -47,8 +49,31 @@ def alpss_main_with_config(config=None):
     else:
         config = load_json_config(config)
 
-    # Run ALPSS with the loaded config
+    # alpss_main flattens nested sections internally
     return alpss_main(**config)
+
+def alpss_multipoint_with_config(config=None):
+    """
+    Run alpss_multipoint with a given nested-section JSON configuration.
+
+    Args:
+        config (str or dict, optional): Path to a JSON config file or a dict.
+    """
+    if config is None:
+        parser = argparse.ArgumentParser(
+            description="Run alpss_multipoint using a JSON config file"
+        )
+        parser.add_argument(
+            "config_path", type=str, help="Path to the JSON configuration file"
+        )
+        args = parser.parse_args()
+        config = load_json_config(args.config_path)
+    else:
+        config = load_json_config(config)
+
+    # alpss_multipoint flattens sections internally and reads "io"/"multipoint" directly
+    return alpss_multipoint(config)
+
 
 def alpss_cli():
     """

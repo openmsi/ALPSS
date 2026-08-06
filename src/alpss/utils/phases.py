@@ -39,13 +39,17 @@ def run_velocity_phase(**inputs) -> tuple:
         data = extract_data(inputs)
         logger.info("Extracted %d samples", len(data))
 
+        if inputs.get("multipoint") is not True:
+            data = data
+        else:
+            data = data.iloc[:, [0, 1]] #truncate the data if it is not multipoint
+
         sdf_out = spall_doi_finder(data, **inputs)
         logger.info(
             "Spall DOI found: start=%.3e s, end=%.3e s",
             sdf_out["t_doi_start"],
             sdf_out["t_doi_end"],
         )
-        vel_out["sdf_out"] = sdf_out
 
         cen = carrier_frequency(sdf_out, **inputs)
         logger.info("Carrier frequency: %.6e Hz", cen)

@@ -1,6 +1,6 @@
 SECTIONS = {
     "io", "stft", "start_time", "carrier", "velocity",
-    "material", "spall", "hel", "uncertainty", "plotting",
+    "material", "spall", "hel", "uncertainty", "plotting", "multipoint",
 }
 
 
@@ -12,11 +12,8 @@ def flatten_config(config: dict) -> dict:
     """
     has_sections = any(k in SECTIONS for k in config)
     if not has_sections:
-        raise ValueError(
-            f"Config must use nested sections. "
-            f"Expected top-level keys from: {sorted(SECTIONS)}. "
-            f"Got: {sorted(config.keys())}"
-        )
+        # Already flat (e.g. assembled by alpss_multipoint); pass through.
+        return dict(config)
     unknown = [k for k in config if k not in SECTIONS]
     if unknown:
         raise ValueError(

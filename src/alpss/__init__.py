@@ -17,3 +17,4 @@ from alpss.plotting.plots import plot_results, plot_voltage
 from alpss.io.saving import save
 from alpss.io.reading import extract_data
 from alpss.utils.stft import stft
+from alpss.multipoint.alpss_multipoint import alpss_multipoint

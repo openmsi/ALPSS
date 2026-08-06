@@ -33,6 +33,11 @@ def velocity_calculation(
     time_start_idx = np.argmin(np.abs(time - t_doi_start))
     time_end_idx = np.argmin(np.abs(time - t_doi_end))
 
+    # save the displacement for multipoint
+    displacement = (phas - 2 * np.pi * cen * time) * lam / 4 / np.pi
+    displacement_f = displacement[time_start_idx:time_end_idx] # crop to signal doi
+    displacement_f = displacement_f - displacement_f[0] # zero the displacement for doi 
+
     # take the numerical derivative using the certral difference method with a 9-point stencil
     # return the derivative on the domain of interest (dpdt) as well as the padded derivative to be used for smoothing
     dpdt, dpdt_pad = num_derivative(
@@ -58,6 +63,7 @@ def velocity_calculation(
     # return a dictionary of the outputs
     vc_out = {
         "time_f": time_f,
+        "displacement_f": displacement_f,
         "velocity_f": velocity_f,
         "velocity_f_smooth": velocity_f_smooth,
         "phasD2_f": dpdt,

@@ -44,7 +44,8 @@ _ALWAYS_REQUIRED = [
 ]
 
 # Optional keys — warning is emitted if absent.
-_OPTIONAL = ["bytestring"]
+# _data and multipoint_probe are injected internally by alpss_multipoint.
+_OPTIONAL = ["bytestring", "_data", "multipoint_probe"]
 
 _REQUIRED_BY_MODE = {
     "start_time_user=otsu": [],

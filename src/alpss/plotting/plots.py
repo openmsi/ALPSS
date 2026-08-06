@@ -397,7 +397,7 @@ def plot_results(
         "Value": [
             start_time.strftime("%b %d %Y"),
             start_time.strftime("%I:%M %p"),
-            inputs["filepath"],
+            os.path.basename(inputs["filepath"]),
             (end_time - start_time),
             round(iua_out["tau"] * 1e9, 2),
             round(shock_out["peak_shock_stress"] / 1e9, 6),
