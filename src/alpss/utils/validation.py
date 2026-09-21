@@ -5,7 +5,6 @@ logger = logging.getLogger("alpss")
 _ALWAYS_REQUIRED = [
     "filepath",
     "out_files_dir",
-    "header_lines",
     "time_to_skip",
     "time_to_take",
     "t_before",
@@ -46,6 +45,12 @@ _ALWAYS_REQUIRED = [
 # Optional keys — warning is emitted if absent.
 _OPTIONAL = ["bytestring"]
 
+# Accepted but not required, and not worth warning about when absent.
+# `channel` selects one voltage column of a multi-channel export; without it
+# the first channel is read. `header_lines` is accepted so existing configs
+# keep loading, but the data start is auto-detected and the value is ignored.
+_ACCEPTED = ["channel", "header_lines"]
+
 _REQUIRED_BY_MODE = {
     "start_time_user=otsu": [],
     "start_time_user=iq": ["iq_threshold_factor"],
@@ -59,6 +64,7 @@ _REQUIRED_BY_MODE = {
 _ALL_KNOWN = (
     set(_ALWAYS_REQUIRED)
     | set(_OPTIONAL)
+    | set(_ACCEPTED)
     | {k for keys in _REQUIRED_BY_MODE.values() for k in keys}
 )
 

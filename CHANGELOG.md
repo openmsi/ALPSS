@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Multi-channel oscilloscope CSVs (e.g. Keysight exports with `Channel N`
+  columns) are now readable. A new optional `channel` config key selects which
+  channel to analyse; without it the first channel is read, so single-probe
+  runs against a multi-channel file work unchanged.
+
+### Changed
+- The start of the numeric data is auto-detected instead of being taken from
+  `header_lines`. The key is still accepted so existing configs keep loading,
+  but its value is ignored and a warning is logged — it was wrong in most
+  configs in use.
+- **Repeatability baselines re-recorded.** Reading no longer lets pandas infer
+  a header row after `skiprows`, which had been silently consuming the first
+  data sample of every run. Results shift by one sample (e.g. time at max
+  compression by 1.25e-11 s at 80 GHz); the new values are the correct ones.
+
+### Fixed
+- `plot_voltage` and `spall_doi_finder` no longer fail on a raw frame with more
+  than two columns, so the error-path diagnostic plot works for multi-channel
+  files.
+
 ## [1.7.1] - 2026-06-09
 
 ### Changed
