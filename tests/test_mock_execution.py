@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from alpss.alpss_main import alpss_main
+from alpss.commands import alpss_main_with_config
 import matplotlib.pyplot as plt
 
 
@@ -62,7 +62,7 @@ def test_alpss_main_success(valid_inputs):
         mock_plotting.return_value = plt.Figure()
         mock_saving.return_value = dict()
 
-        result = alpss_main(**valid_inputs)
+        result = alpss_main_with_config(valid_inputs)
 
         assert isinstance(result[0], plt.Figure)
         assert isinstance(result[1], dict)

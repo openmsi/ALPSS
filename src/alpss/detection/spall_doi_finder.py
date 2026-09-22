@@ -11,12 +11,11 @@ import os
 # function to find the specific domain of interest in the larger signal
 def spall_doi_finder(data, **inputs):
 
-    # put the data into numpy arrays. Zero the time data. Column 0 is time and
-    # column 1 the voltage of the channel the reader selected; index by position
-    # so the caller's frame is not renamed in place
-    time = data.iloc[:, 0].to_numpy()
+    # data is an (N, 2) array of [time, voltage] for a single channel. Zero the
+    # time data
+    time = data[:, 0]
     time = time - time[0]
-    voltage = data.iloc[:, 1].to_numpy()
+    voltage = data[:, 1]
 
     # calculate the true sample rate from the experimental data
     fs = 1 / np.mean(np.diff(time))

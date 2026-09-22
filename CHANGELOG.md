@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `alpss_main(data, **inputs)` now takes an `(N, 2)` numpy array of
+  `[time, voltage]`. Reading the file, flattening the config and validating it
+  are the caller's job; `alpss_main_with_config` remains the file-based entry
+  point and is unchanged. `run_velocity_phase(data, **inputs)` likewise takes
+  the array.
 - Multi-channel oscilloscope CSVs (e.g. Keysight exports with `Channel N`
   columns) are now readable. A new optional `channel` config key selects which
   channel to analyse; without it the first channel is read, so single-probe

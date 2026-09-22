@@ -97,10 +97,11 @@ def channel_columns(labels, n_cols):
 
 
 def extract_data(inputs):
-    # Allow for option to have voltage-time data directly passed into function
-    if "_data" in inputs:
-        return inputs["_data"]
+    """Read one channel of a scope export as an (N, 2) array of [time, voltage].
 
+    The analysis works on a plain array; everything that knows about file
+    formats -- header length, column labels, which channel -- stops here.
+    """
     t_step = 1 / inputs["sample_rate"]
     nrows = int(inputs["time_to_take"] / t_step)
 
@@ -149,4 +150,4 @@ def extract_data(inputs):
             "Check 'sample_rate'/'time_to_skip' or the file format."
         )
 
-    return data
+    return data.to_numpy(dtype=float)

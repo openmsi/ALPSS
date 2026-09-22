@@ -445,11 +445,10 @@ def plot_results(
 
 def plot_voltage(data, errors=None, **inputs):
 
-    # this runs on the error path, where the data may not have been narrowed to
-    # a single channel yet, so take the time column and the first voltage column
-    time = data.iloc[:, 0].to_numpy()
+    # data is an (N, 2) array of [time, voltage]
+    time = data[:, 0]
     time = time - time[0]
-    voltage = data.iloc[:, 1].to_numpy()
+    voltage = data[:, 1]
 
     # calculate the sample rate from the experimental data
     fs = 1 / np.mean(np.diff(time))

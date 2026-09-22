@@ -32,8 +32,8 @@ def read_inputs(filepath, **overrides):
 
 def carrier_ghz(data):
     """Dominant frequency of the voltage column, in GHz."""
-    time = data.iloc[:, 0].to_numpy()
-    voltage = data.iloc[:, 1].to_numpy()
+    time = data[:, 0]
+    voltage = data[:, 1]
     fs = 1 / np.mean(np.diff(time))
     freq = np.fft.fftfreq(len(voltage), 1 / fs)
     half = len(voltage) // 2
@@ -100,7 +100,7 @@ class TestExtractData:
             f.readline()  # label row
             first = float(f.readline().split(",")[0])
         data = extract_data(read_inputs(LEGACY_FILE, sample_rate=80e9))
-        assert data.iloc[0, 0] == pytest.approx(first, rel=1e-12)
+        assert data[0, 0] == pytest.approx(first, rel=1e-12)
 
     def test_multichannel_defaults_to_first_channel(self):
         data = extract_data(read_inputs(MULTICHANNEL_FILE))
@@ -126,14 +126,14 @@ class TestExtractData:
         from_bytes = extract_data(
             read_inputs(MULTICHANNEL_FILE, channel=2, bytestring=raw)
         )
-        np.testing.assert_array_equal(from_file.to_numpy(), from_bytes.to_numpy())
+        np.testing.assert_array_equal(from_file, from_bytes)
 
     def test_header_lines_is_ignored(self):
         """Existing configs carry a hand-tuned header_lines that is usually
         wrong; the auto-detected data start wins."""
         correct = extract_data(read_inputs(MULTICHANNEL_FILE))
         stale = extract_data(read_inputs(MULTICHANNEL_FILE, header_lines=22))
-        np.testing.assert_array_equal(correct.to_numpy(), stale.to_numpy())
+        np.testing.assert_array_equal(correct, stale)
 
     def test_time_to_skip_offsets_from_the_data_start(self):
         skip = 1e-08
@@ -141,9 +141,11 @@ class TestExtractData:
         skipped = extract_data(read_inputs(MULTICHANNEL_FILE, time_to_skip=skip))
         offset = int(skip * 128e9)
         np.testing.assert_array_equal(
-            full.to_numpy()[offset : offset + 10], skipped.to_numpy()[:10]
+            full[offset : offset + 10], skipped[:10]
         )
 
-    def test_preloaded_data_passes_through(self):
-        data = extract_data(read_inputs(LEGACY_FILE, sample_rate=80e9))
-        assert extract_data({"_data": data}) is data
+    def test_returns_a_plain_array(self):
+        data = extract_data(read_inputs(MULTICHANNEL_FILE))
+        assert isinstance(data, np.ndarray)
+        assert data.ndim == 2 and data.shape[1] == 2
+        assert data.dtype == np.float64

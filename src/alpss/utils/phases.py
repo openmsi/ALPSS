@@ -4,7 +4,6 @@ from datetime import datetime
 import os
 import numpy as np
 
-from alpss.io.reading import extract_data
 from alpss.io.saving import save
 from alpss.detection.spall_doi_finder import spall_doi_finder
 from alpss.carrier.frequency import carrier_frequency
@@ -28,17 +27,18 @@ from alpss.utils.defaults import (
 logger = logging.getLogger("alpss")
 
 
-def run_velocity_phase(**inputs) -> tuple:
-    """Run Phase 1 (velocity processing). Returns (vel_out, velocity_ok, error_msg)."""
+def run_velocity_phase(data, **inputs) -> tuple:
+    """Run Phase 1 (velocity processing) on an (N, 2) array of [time, voltage].
+
+    Returns (vel_out, velocity_ok, error_msg).
+    """
     start_time = datetime.now()
     velocity_ok = True
     errors = []
     vel_out = {}
+    logger.info("Analysing %d samples", len(data))
 
     try:
-        data = extract_data(inputs)
-        logger.info("Extracted %d samples", len(data))
-
         sdf_out = spall_doi_finder(data, **inputs)
         logger.info(
             "Spall DOI found: start=%.3e s, end=%.3e s",
@@ -90,7 +90,7 @@ def run_velocity_phase(**inputs) -> tuple:
         try:
             from alpss.plotting.plots import plot_voltage
 
-            plot_voltage(extract_data(inputs), errors=errors, **inputs)
+            plot_voltage(data, errors=errors, **inputs)
         except Exception:
             logger.error("Fallback voltage plot also failed.")
         # Re-raise to exit pipeline early after fallback plot
