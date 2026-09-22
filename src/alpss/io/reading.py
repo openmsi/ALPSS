@@ -118,14 +118,31 @@ def extract_data(inputs):
     if channel is None:
         # Default to the first voltage column, so a single-probe run against a
         # multi-channel file reads the first channel.
-        voltage_col = columns[min(columns)]
+        channel = min(columns)
+        voltage_col = columns[channel]
+        chosen_by = "defaulted to"
     elif channel in columns:
         voltage_col = columns[channel]
+        chosen_by = "requested"
     else:
         raise ValueError(
             f"Channel {channel!r} not found in {inputs.get('filepath')!r}. "
             f"Available channels: {sorted(columns)}."
         )
+
+    # record what was actually read, so the results and plots can report it even
+    # when the caller did not name a channel
+    inputs["channel"] = channel
+
+    logger.info(
+        "Reading channel %s (%s, column %d of %d) from %s; available channels: %s",
+        channel,
+        chosen_by,
+        voltage_col,
+        n_cols,
+        inputs.get("filepath", "<bytestring>"),
+        sorted(columns),
+    )
 
     rows_to_skip = data_start + int(inputs["time_to_skip"] / t_step)
 
