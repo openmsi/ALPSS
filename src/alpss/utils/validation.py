@@ -49,7 +49,7 @@ _OPTIONAL = ["bytestring"]
 # `channel` selects one voltage column of a multi-channel export; without it
 # the first channel is read. `header_lines` is accepted so existing configs
 # keep loading, but the data start is auto-detected and the value is ignored.
-_ACCEPTED = ["channel", "header_lines"]
+_ACCEPTED = ["channel", "header_lines", "multipoint_probe"]
 
 _REQUIRED_BY_MODE = {
     "start_time_user=otsu": [],

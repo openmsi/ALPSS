@@ -29,7 +29,15 @@ def save(
     **inputs,
 ):
     filename = os.path.splitext(os.path.basename(inputs["filepath"]))[0]
-    fname = os.path.join(inputs["out_files_dir"], filename)
+
+    # in multipoint mode the probe number is appended to each filename, and the
+    # data CSVs are skipped -- alpss_multipoint writes them once, combined
+    probe = (
+        "" if inputs.get("multipoint_probe") is None
+        else f"_probe{inputs['multipoint_probe']}"
+    )
+    _single_probe = inputs.get("multipoint_probe") is None
+    fname = os.path.join(inputs["out_files_dir"], filename + probe)
 
     # save the plots
     fig_assets = [fig]
@@ -47,7 +55,7 @@ def save(
     inputs.pop("bytestring", None)
     inputs_df = pd.DataFrame.from_dict(inputs, orient="index", columns=["Input"])
     inputs_assets = [inputs_df]
-    if inputs["save_data"]:
+    if inputs["save_data"] and _single_probe:
         inputs_path = f"{fname}-inputs.csv"
         inputs_df.to_csv(inputs_path, index=True, header=False)
         inputs_assets.append(inputs_path)
@@ -55,7 +63,7 @@ def save(
     # save the noisy velocity trace
     velocity_data = np.stack((vc_out["time_f"], vc_out["velocity_f"]), axis=1)
     velocity_assets = [velocity_data]
-    if inputs["save_data"]:
+    if inputs["save_data"] and _single_probe:
         velocity_path = f"{fname}-velocity.csv"
         np.savetxt(velocity_path, velocity_data, delimiter=",")
         velocity_assets.append(velocity_path)
@@ -65,7 +73,7 @@ def save(
         (vc_out["time_f"], vc_out["velocity_f_smooth"]), axis=1
     )
     smooth_velocity_assets = [velocity_data_smooth]
-    if inputs["save_data"]:
+    if inputs["save_data"] and _single_probe:
         smooth_velocity_path = f"{fname}-velocity--smooth.csv"
         np.savetxt(
             smooth_velocity_path,
@@ -84,7 +92,7 @@ def save(
         axis=1,
     )
     voltage_assets = [voltage_data]
-    if inputs["save_data"]:
+    if inputs["save_data"] and _single_probe:
         voltage_path = f"{fname}-voltage.csv"
         np.savetxt(voltage_path, voltage_data, delimiter=",")
         voltage_assets.append(voltage_path)
@@ -92,7 +100,7 @@ def save(
     # save the noise fraction
     noise_data = np.stack((vc_out["time_f"], iua_out["inst_noise"]), axis=1)
     noise_assets = [noise_data]
-    if inputs["save_data"]:
+    if inputs["save_data"] and _single_probe:
         noise_path = f"{fname}-noisefrac.csv"
         np.savetxt(noise_path, noise_data, delimiter=",")
         noise_assets.append(noise_path)
@@ -100,7 +108,7 @@ def save(
     # save the velocity uncertainty
     vel_uncert_data = np.stack((vc_out["time_f"], iua_out["vel_uncert"]), axis=1)
     vel_uncert_assets = [vel_uncert_data]
-    if inputs["save_data"]:
+    if inputs["save_data"] and _single_probe:
         vel_uncert_path = f"{fname}-veluncert.csv"
         np.savetxt(
             vel_uncert_path,
@@ -189,7 +197,7 @@ def save(
 
     results_dict = results_df.iloc[0].to_dict()
     results_assets = [results_dict]
-    if inputs["save_data"]:
+    if inputs["save_data"] and _single_probe:
         results_path = f"{fname}-results.csv"
         results_df.to_csv(results_path, index=False)
         results_assets.append(results_path)

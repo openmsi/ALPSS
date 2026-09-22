@@ -37,6 +37,7 @@ IPython = "*"
 [tool.poetry.scripts]
 alpss = "alpss.commands:alpss_cli"
 alpss-watch = "alpss.commands:start_watcher"
+alpss-multipoint = "alpss.commands:alpss_multipoint_cli"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"

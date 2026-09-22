@@ -41,3 +41,22 @@ def carrier_frequency(spall_doi_finder_outputs, **inputs):
 
     # return the carrier frequency
     return cen
+
+
+# find the carrier in a raw trace, before the domain of interest is known. Used
+# to narrow a wide search band onto the probe actually present -- several probes
+# may be multiplexed onto one channel, and carriers drift between shots.
+def prescan_carrier(data, freq_min, freq_max, carrier_band_time):
+
+    # data is an (N, 2) array of [time, voltage]. Zero the time data
+    time = data[:, 0] - data[0, 0]
+    voltage = data[:, 1]
+    fs = 1 / np.mean(np.diff(time))
+
+    # reuse the same peak-picking as the main pipeline rather than repeating it
+    return carrier_frequency(
+        {"fs": fs, "time": time, "voltage": voltage},
+        freq_min=freq_min,
+        freq_max=freq_max,
+        carrier_band_time=carrier_band_time,
+    )
