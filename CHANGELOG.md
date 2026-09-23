@@ -32,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `plot_voltage` and `spall_doi_finder` no longer fail on a raw frame with more
   than two columns, so the error-path diagnostic plot works for multi-channel
   files.
+- Otsu start detection no longer lands hundreds of ns late when the spectrogram
+  has columns with no signal (e.g. a brief carrier dropout). Those columns are
+  NaN in the top line, and `np.argmax` returned the first NaN instead of the
+  highest point; it now uses `np.nanargmax` / `np.nanmean`.
 
 ## [1.7.1] - 2026-06-09
 
