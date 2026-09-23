@@ -11,13 +11,11 @@ import os
 # function to find the specific domain of interest in the larger signal
 def spall_doi_finder(data, **inputs):
 
-    # rename the columns of the data
-    data.columns = ["Time", "Ampl"]
-
-    # put the data into numpy arrays. Zero the time data
-    time = data["Time"].to_numpy()
+    # data is an (N, 2) array of [time, voltage] for a single channel. Zero the
+    # time data
+    time = data[:, 0]
     time = time - time[0]
-    voltage = data["Ampl"].to_numpy()
+    voltage = data[:, 1]
 
     # calculate the true sample rate from the experimental data
     fs = 1 / np.mean(np.diff(time))
@@ -100,13 +98,19 @@ def spall_doi_finder(data, **inputs):
             carr_idx = np.argmin(np.abs(t - inputs["carrier_band_time"]))
 
             # calculate the average frequency of the top of the carrier band during carrier_band_time
-            f_doi_carr_top_avg = np.mean(f_doi_top_line_clean[:carr_idx])
+            f_doi_carr_top_avg = np.nanmean(f_doi_top_line_clean[:carr_idx])
 
             # find the index in f_doi that is closest in frequency to f_doi_carr_top_avg
             f_doi_carr_top_idx = np.argmin(np.abs(f_doi - f_doi_carr_top_avg))
 
-            # work backwards from the highest point on the signal top line until it matches or dips below f_doi_carr_top_idx
-            highest_idx = np.argmax(f_doi_top_line_clean)
+            # work backwards from the highest point on the signal top line until it matches or dips below f_doi_carr_top_idx.
+            # nan-aware: columns with no signal are NaN, and np.argmax would return the first NaN instead of the peak
+            highest_idx = np.nanargmax(f_doi_top_line_clean)
+            # the peak sits in the first time bin when there is no signal rising above the carrier
+            if highest_idx == 0:
+                raise ValueError(
+                    "Otsu start detection found no signal rising above the carrier band"
+                )
             for check_idx in range(highest_idx):
                 cidx = highest_idx - check_idx - 1
                 if top_line_clean[cidx] <= f_doi_carr_top_idx:

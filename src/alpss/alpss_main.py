@@ -1,6 +1,4 @@
 from alpss.plotting.plots import plot_voltage
-from alpss.utils.validation import validate_inputs
-from alpss.utils.config import flatten_config
 from alpss.utils.phases import (
     run_velocity_phase,
     run_spall_phase,
@@ -23,12 +21,15 @@ logger = setup_alpss_logger()
 
 
 # main function to link together all the sub-functions
-def alpss_main(**inputs):
-    inputs = flatten_config(inputs)
-    validate_inputs(inputs)
+def alpss_main(data, **inputs):
+    """Run the full analysis on an (N, 2) array of [time, voltage].
 
+    Reading the data, flattening the config and validating it are the caller's
+    job -- see alpss.commands.alpss_main_with_config for the file-based entry
+    point. `inputs` must already be flat.
+    """
     # --- Phase 1: Velocity Processing ---
-    vel, velocity_ok, velocity_error = run_velocity_phase(**inputs)
+    vel, velocity_ok, velocity_error = run_velocity_phase(data, **inputs)
 
 
     sdf_out = vel["sdf_out"]

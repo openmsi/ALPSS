@@ -116,6 +116,7 @@ def save(
         "Date": start_time.strftime("%b %d %Y"),
         "Time": start_time.strftime("%I:%M %p"),
         "File Name": os.path.basename(inputs["filepath"]),
+        "Channel": inputs.get("channel"),
         "Run Time": (end_time - start_time),
         "Error Message": error_msg,
     })

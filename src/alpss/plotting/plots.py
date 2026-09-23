@@ -385,6 +385,7 @@ def plot_results(
             "Date",
             "Time",
             "File Name",
+            "Channel",
             "Run Time",
             "Smoothing FWHM (ns)",
             "Peak Shock Stress (GPa)",
@@ -398,6 +399,7 @@ def plot_results(
             start_time.strftime("%b %d %Y"),
             start_time.strftime("%I:%M %p"),
             inputs["filepath"],
+            inputs.get("channel"),
             (end_time - start_time),
             round(iua_out["tau"] * 1e9, 2),
             round(shock_out["peak_shock_stress"] / 1e9, 6),
@@ -445,13 +447,10 @@ def plot_results(
 
 def plot_voltage(data, errors=None, **inputs):
 
-    # rename the columns of the data
-    data.columns = ["Time", "Ampl"]
-
-    # put the data into numpy arrays. Zero the time data
-    time = data["Time"].to_numpy()
+    # data is an (N, 2) array of [time, voltage]
+    time = data[:, 0]
     time = time - time[0]
-    voltage = data["Ampl"].to_numpy()
+    voltage = data[:, 1]
 
     # calculate the sample rate from the experimental data
     fs = 1 / np.mean(np.diff(time))

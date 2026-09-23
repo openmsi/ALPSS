@@ -1,5 +1,4 @@
 import pytest
-from alpss.alpss_main import alpss_main
 from alpss.commands import alpss_main_with_config
 import os
 import logging
@@ -12,7 +11,7 @@ from conftest import EXPECTED_VALUES_MAP
 def test_alpss_main_wo_configfile(valid_inputs, expected_values):
     # Call the function with valid inputs
     logging.info(f"Running test in spall doi mode {valid_inputs['start_time']['start_time_user']} and carrier filter {valid_inputs['carrier']['carrier_filter_type']}...")
-    results = alpss_main(**valid_inputs)
+    results = alpss_main_with_config(valid_inputs)
     # Extract the results dictionary (results[1] should be the output dictionary)
     result_dict = results[1]
 
@@ -60,7 +59,7 @@ def test_alpss_exact_values(valid_inputs, start_time_user, carrier_filter_type):
         "Running exact value test: start=%s, filter=%s",
         start_time_user, carrier_filter_type
     )
-    results = alpss_main(**inputs)
+    results = alpss_main_with_config(inputs)
     assert results is not None, f"alpss_main returned None for start={start_time_user}, filter={carrier_filter_type}"
 
     result_dict = results[1]["results"][0]
@@ -86,7 +85,7 @@ def test_alpss_smoke(valid_inputs, start_time_user, carrier_filter_type):
         "Running smoke test: start=%s, filter=%s",
         start_time_user, carrier_filter_type
     )
-    results = alpss_main(**inputs)
+    results = alpss_main_with_config(inputs)
     assert results is not None, f"alpss_main returned None for start={start_time_user}, filter={carrier_filter_type}"
     assert isinstance(results[0], Figure)
     result_dict = results[1]["results"][0]

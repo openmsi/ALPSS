@@ -3,7 +3,7 @@ import copy
 import numpy as np
 from unittest.mock import patch
 from matplotlib.figure import Figure
-from alpss.alpss_main import alpss_main
+from alpss.commands import alpss_main_with_config
 
 
 def test_velocity_only_no_spall(valid_inputs):
@@ -11,7 +11,7 @@ def test_velocity_only_no_spall(valid_inputs):
     inputs = copy.deepcopy(valid_inputs)
     inputs["spall"]["spall_enabled"] = False
 
-    results = alpss_main(**inputs)
+    results = alpss_main_with_config(inputs)
     assert (
         results is not None
     ), "alpss_main should return results even with spall_enabled='no'"
@@ -31,7 +31,7 @@ def test_analysis_failure_returns_nan_defaults(valid_inputs):
         "alpss.utils.phases.spall_analysis",
         side_effect=RuntimeError("simulated analysis failure"),
     ):
-        results = alpss_main(**inputs)
+        results = alpss_main_with_config(inputs)
 
     assert (
         results is not None
@@ -53,7 +53,7 @@ def test_velocity_failure_raises(valid_inputs):
 
     with pytest.raises(RuntimeError, match="simulated data failure"):
         with patch(
-            "alpss.utils.phases.extract_data",
+            "alpss.commands.extract_data",
             side_effect=RuntimeError("simulated data failure"),
         ):
-            alpss_main(**inputs)
+            alpss_main_with_config(inputs)

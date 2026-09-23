@@ -2,6 +2,9 @@ import argparse
 
 from alpss.alpss_watcher import Watcher
 from alpss.alpss_main import alpss_main
+from alpss.io.reading import extract_data
+from alpss.utils.config import flatten_config
+from alpss.utils.validation import validate_inputs
 import os
 import json
 import logging
@@ -47,8 +50,13 @@ def alpss_main_with_config(config=None):
     else:
         config = load_json_config(config)
 
-    # Run ALPSS with the loaded config
-    return alpss_main(**config)
+    # This is the file-aware seam: flatten, validate and read the trace here so
+    # alpss_main itself only ever sees an array.
+    inputs = flatten_config(config)
+    validate_inputs(inputs)
+    data = extract_data(inputs)
+
+    return alpss_main(data, **inputs)
 
 def alpss_cli():
     """
