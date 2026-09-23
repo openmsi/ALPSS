@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   has columns with no signal (e.g. a brief carrier dropout). Those columns are
   NaN in the top line, and `np.argmax` returned the first NaN instead of the
   highest point; it now uses `np.nanargmax` / `np.nanmean`.
+- Otsu start detection raises a clear `ValueError` when no signal rises above
+  the carrier band, instead of crashing with `UnboundLocalError: cidx`.
 
 ## [1.7.1] - 2026-06-09
 

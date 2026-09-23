@@ -106,6 +106,11 @@ def spall_doi_finder(data, **inputs):
             # work backwards from the highest point on the signal top line until it matches or dips below f_doi_carr_top_idx.
             # nan-aware: columns with no signal are NaN, and np.argmax would return the first NaN instead of the peak
             highest_idx = np.nanargmax(f_doi_top_line_clean)
+            # the peak sits in the first time bin when there is no signal rising above the carrier
+            if highest_idx == 0:
+                raise ValueError(
+                    "Otsu start detection found no signal rising above the carrier band"
+                )
             for check_idx in range(highest_idx):
                 cidx = highest_idx - check_idx - 1
                 if top_line_clean[cidx] <= f_doi_carr_top_idx:
