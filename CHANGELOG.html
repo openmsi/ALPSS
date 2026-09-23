@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Changelog &#8212; Laser Shock Documentation (v1.7.1)</title>
+    <title>Changelog &#8212; Laser Shock Documentation (v1.8.0)</title>
   
   
   
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=55c26ed414f5f8a31ebb" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
@@ -39,10 +39,10 @@
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- So that users can add custom icons -->
-  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=55c26ed414f5f8a31ebb"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb" />
 
     <script src="_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
@@ -61,25 +61,32 @@
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'CHANGELOG';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -105,7 +112,51 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
     </header>
   
 
@@ -142,7 +193,7 @@
   
   
   
-    <p class="title logo__title">Laser Shock Documentation (v1.7.1)</p>
+    <p class="title logo__title">Laser Shock Documentation (v1.8.0)</p>
   
 </a></div>
         <div class="sidebar-primary-item">
@@ -312,40 +363,46 @@
                 <h2> Contents </h2>
             </div>
             <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">Unreleased</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">1.7.1 - 2026-06-09</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">1.8.0 - 2026-09-23</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">1.7.0 - 2026-06-08</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">1.7.1 - 2026-06-09</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Changed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">1.6.0 - 2026-03-17</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">1.7.0 - 2026-06-08</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Added</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Changed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">1.5.0 - 2026-02-11</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">1.6.0 - 2026-03-17</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Changed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">1.4.0 - 2026-02-11</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Changed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Added</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Fixed</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">1.5.0 - 2026-02-11</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Added</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">1.4.0 - 2026-02-11</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">Fixed</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removed">Removed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">1.3.2 - 2024-12-01</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Changed</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">1.3.2 - 2024-12-01</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Changed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">1.2.4 - 2024-05-01</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">Added</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">1.2.4 - 2024-05-01</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Added</a></li>
 </ul>
 </li>
 </ul>
@@ -365,21 +422,69 @@
 <p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>,
 and this project adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <section id="unreleased">
-<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.7.1...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Link to this heading">#</a></h2>
+<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.8.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Link to this heading">#</a></h2>
 </section>
 <section id="id1">
-<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.7.0...v1.7.1">1.7.1</a> - 2026-06-09<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.7.1...v1.8.0">1.8.0</a> - 2026-09-23<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p><strong>Breaking:</strong> <code class="docutils literal notranslate"><span class="pre">alpss_main</span></code> now takes the trace array as its first argument.
+Code calling <code class="docutils literal notranslate"><span class="pre">alpss_main(**config)</span></code> must read the file first (see
+<code class="docutils literal notranslate"><span class="pre">alpss.io.reading.extract_data</span></code>) or switch to <code class="docutils literal notranslate"><span class="pre">alpss_main_with_config</span></code>, which
+is unchanged. The <code class="docutils literal notranslate"><span class="pre">alpss</span></code> CLI is unaffected.</p>
+<section id="added">
+<h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">alpss_main(data,</span> <span class="pre">**inputs)</span></code> now takes an <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">2)</span></code> numpy array of
+<code class="docutils literal notranslate"><span class="pre">[time,</span> <span class="pre">voltage]</span></code>. Reading the file, flattening the config and validating it
+are the caller’s job; <code class="docutils literal notranslate"><span class="pre">alpss_main_with_config</span></code> remains the file-based entry
+point and is unchanged. <code class="docutils literal notranslate"><span class="pre">run_velocity_phase(data,</span> <span class="pre">**inputs)</span></code> likewise takes
+the array.</p></li>
+<li><p>Multi-channel oscilloscope CSVs (e.g. Keysight exports with <code class="docutils literal notranslate"><span class="pre">Channel</span> <span class="pre">N</span></code>
+columns) are now readable. A new optional <code class="docutils literal notranslate"><span class="pre">channel</span></code> config key selects which
+channel to analyse; without it the first channel is read, so single-probe
+runs against a multi-channel file work unchanged.</p></li>
+</ul>
+</section>
 <section id="changed">
 <h3>Changed<a class="headerlink" href="#changed" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>The start of the numeric data is auto-detected instead of being taken from
+<code class="docutils literal notranslate"><span class="pre">header_lines</span></code>. The key is still accepted so existing configs keep loading,
+but its value is ignored and a warning is logged — it was wrong in most
+configs in use.</p></li>
+<li><p><strong>Repeatability baselines re-recorded.</strong> Reading no longer lets pandas infer
+a header row after <code class="docutils literal notranslate"><span class="pre">skiprows</span></code>, which had been silently consuming the first
+data sample of every run. Results shift by one sample (e.g. time at max
+compression by 1.25e-11 s at 80 GHz); the new values are the correct ones.</p></li>
+</ul>
+</section>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">plot_voltage</span></code> and <code class="docutils literal notranslate"><span class="pre">spall_doi_finder</span></code> no longer fail on a raw frame with more
+than two columns, so the error-path diagnostic plot works for multi-channel
+files.</p></li>
+<li><p>Otsu start detection no longer lands hundreds of ns late when the spectrogram
+has columns with no signal (e.g. a brief carrier dropout). Those columns are
+NaN in the top line, and <code class="docutils literal notranslate"><span class="pre">np.argmax</span></code> returned the first NaN instead of the
+highest point; it now uses <code class="docutils literal notranslate"><span class="pre">np.nanargmax</span></code> / <code class="docutils literal notranslate"><span class="pre">np.nanmean</span></code>.</p></li>
+<li><p>Otsu start detection raises a clear <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when no signal rises above
+the carrier band, instead of crashing with <code class="docutils literal notranslate"><span class="pre">UnboundLocalError:</span> <span class="pre">cidx</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="id2">
+<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.7.0...v1.7.1">1.7.1</a> - 2026-06-09<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<section id="id3">
+<h3>Changed<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Phase status display integrated into results table with color coding (velocity, spall &amp; uncertainty, HEL)</p></li>
 </ul>
 </section>
 </section>
-<section id="id2">
-<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.6.0...v1.7.0">1.7.0</a> - 2026-06-08<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
-<section id="added">
-<h3>Added<a class="headerlink" href="#added" title="Link to this heading">#</a></h3>
+<section id="id4">
+<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.6.0...v1.7.0">1.7.0</a> - 2026-06-08<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id5">
+<h3>Added<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Velocity phase now computes and tracks uncertainty (<code class="docutils literal notranslate"><span class="pre">velocity_ok</span></code> flag)</p>
 <ul>
@@ -391,8 +496,8 @@ and this project adheres to <a class="reference external" href="https://semver.o
 <li><p>New incompatibility check: HEL detection incompatible with gaussian_notch filter</p></li>
 </ul>
 </section>
-<section id="id3">
-<h3>Changed<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<section id="id6">
+<h3>Changed<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Major refactor</strong>: Decoupled uncertainty analysis from spall phase; now runs independently</p></li>
 <li><p>Renamed config parameters: <code class="docutils literal notranslate"><span class="pre">spall_calculation</span></code> → <code class="docutils literal notranslate"><span class="pre">spall_enabled</span></code>, <code class="docutils literal notranslate"><span class="pre">hel_calculation</span></code> → <code class="docutils literal notranslate"><span class="pre">hel_enabled</span></code></p></li>
@@ -405,16 +510,16 @@ and this project adheres to <a class="reference external" href="https://semver.o
 </ul>
 </section>
 </section>
-<section id="id4">
-<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.5.0...v1.6.0">1.6.0</a> - 2026-03-17<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
-<section id="id5">
-<h3>Added<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<section id="id7">
+<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.5.0...v1.6.0">1.6.0</a> - 2026-03-17<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h3>Added<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">velocity_ok</span></code>, <code class="docutils literal notranslate"><span class="pre">spall_ok</span></code>, and <code class="docutils literal notranslate"><span class="pre">uncertainty_ok</span></code> flags in output, with per-category error messages</p></li>
 </ul>
 </section>
-<section id="fixed">
-<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading">#</a></h3>
+<section id="id9">
+<h3>Fixed<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Clamp <code class="docutils literal notranslate"><span class="pre">time_start_idx</span> <span class="pre">-</span> <span class="pre">pad</span></code> to valid range and use <code class="docutils literal notranslate"><span class="pre">np.pad(...,</span> <span class="pre">mode=&quot;edge&quot;)</span></code> to prevent empty arrays when signal starts near the beginning of data</p></li>
 <li><p>Removed internal try/except from <code class="docutils literal notranslate"><span class="pre">spall_analysis</span></code> so real exceptions surface to <code class="docutils literal notranslate"><span class="pre">alpss_main</span></code></p></li>
@@ -423,18 +528,18 @@ and this project adheres to <a class="reference external" href="https://semver.o
 <li><p>HEL diagnostic figure is now saved via <code class="docutils literal notranslate"><span class="pre">save()</span></code> and returned in the assets dict</p></li>
 </ul>
 </section>
-<section id="id6">
-<h3>Changed<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<section id="id10">
+<h3>Changed<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Reduced legend font size for “Voltage Data” and “Velocity with Uncertainty Bounds” plots</p></li>
 <li><p>Improved informational logging throughout the pipeline</p></li>
 </ul>
 </section>
 </section>
-<section id="id7">
-<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.4.0...v1.5.0">1.5.0</a> - 2026-02-11<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
-<section id="id8">
-<h3>Added<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<section id="id11">
+<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.4.0...v1.5.0">1.5.0</a> - 2026-02-11<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<section id="id12">
+<h3>Added<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Hugoniot Elastic Limit (HEL) detection module (<code class="docutils literal notranslate"><span class="pre">alpss.analysis.hel</span></code>)</p>
 <ul>
@@ -458,10 +563,10 @@ and this project adheres to <a class="reference external" href="https://semver.o
 </ul>
 </section>
 </section>
-<section id="id9">
-<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.3.2...v1.4.0">1.4.0</a> - 2026-02-11<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
-<section id="id10">
-<h3>Changed<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<section id="id13">
+<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.3.2...v1.4.0">1.4.0</a> - 2026-02-11<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
+<section id="id14">
+<h3>Changed<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Reorganized codebase from flat layout to modular package structure under <code class="docutils literal notranslate"><span class="pre">src/alpss/</span></code></p></li>
 <li><p>Moved carrier frequency and filter logic into <code class="docutils literal notranslate"><span class="pre">alpss.carrier</span></code> subpackage</p></li>
@@ -473,8 +578,8 @@ and this project adheres to <a class="reference external" href="https://semver.o
 <li><p>Moved shared utilities (<code class="docutils literal notranslate"><span class="pre">extract_data</span></code>, <code class="docutils literal notranslate"><span class="pre">stft</span></code>) into <code class="docutils literal notranslate"><span class="pre">alpss.utils</span></code></p></li>
 </ul>
 </section>
-<section id="id11">
-<h3>Added<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<section id="id15">
+<h3>Added<a class="headerlink" href="#id15" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>CLI entry points: <code class="docutils literal notranslate"><span class="pre">alpss</span></code> and <code class="docutils literal notranslate"><span class="pre">alpss-watch</span></code> commands</p></li>
 <li><p>Backward-compatible re-exports in <code class="docutils literal notranslate"><span class="pre">alpss.__init__</span></code> for existing user code</p></li>
@@ -486,8 +591,8 @@ and this project adheres to <a class="reference external" href="https://semver.o
 <li><p>Changelog page in Jupyter Book documentation</p></li>
 </ul>
 </section>
-<section id="id12">
-<h3>Fixed<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<section id="id16">
+<h3>Fixed<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Dockerfile now pins the exact released version instead of using <code class="docutils literal notranslate"><span class="pre">--pre</span></code></p></li>
 </ul>
@@ -499,19 +604,19 @@ and this project adheres to <a class="reference external" href="https://semver.o
 </ul>
 </section>
 </section>
-<section id="id13">
-<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.2.4...v1.3.2">1.3.2</a> - 2024-12-01<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
-<section id="id14">
-<h3>Changed<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<section id="id17">
+<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/compare/v1.2.4...v1.3.2">1.3.2</a> - 2024-12-01<a class="headerlink" href="#id17" title="Link to this heading">#</a></h2>
+<section id="id18">
+<h3>Changed<a class="headerlink" href="#id18" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Maintenance release with minor bug fixes and dependency updates</p></li>
 </ul>
 </section>
 </section>
-<section id="id15">
-<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/releases/tag/v1.2.4">1.2.4</a> - 2024-05-01<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
-<section id="id16">
-<h3>Added<a class="headerlink" href="#id16" title="Link to this heading">#</a></h3>
+<section id="id19">
+<h2><a class="reference external" href="https://github.com/openmsi/ALPSS/releases/tag/v1.2.4">1.2.4</a> - 2024-05-01<a class="headerlink" href="#id19" title="Link to this heading">#</a></h2>
+<section id="id20">
+<h3>Added<a class="headerlink" href="#id20" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Time-resolved uncertainty estimates for velocity traces</p></li>
 <li><p>Automated spall signal analysis pipeline</p></li>
@@ -568,40 +673,46 @@ and this project adheres to <a class="reference external" href="https://semver.o
     <i class="fa-solid fa-list"></i> Contents
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">Unreleased</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">1.7.1 - 2026-06-09</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">1.8.0 - 2026-09-23</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#changed">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">1.7.0 - 2026-06-08</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#added">Added</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">1.7.1 - 2026-06-09</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Changed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">1.6.0 - 2026-03-17</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">1.7.0 - 2026-06-08</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Added</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed">Fixed</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Changed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">1.5.0 - 2026-02-11</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">1.6.0 - 2026-03-17</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Fixed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Changed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">1.4.0 - 2026-02-11</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Changed</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Added</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Fixed</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">1.5.0 - 2026-02-11</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Added</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">1.4.0 - 2026-02-11</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Changed</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Added</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">Fixed</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removed">Removed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">1.3.2 - 2024-12-01</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Changed</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">1.3.2 - 2024-12-01</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Changed</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">1.2.4 - 2024-05-01</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">Added</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">1.2.4 - 2024-05-01</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Added</a></li>
 </ul>
 </li>
 </ul>
@@ -652,8 +763,8 @@ By Laser Shock Team
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=55c26ed414f5f8a31ebb"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=55c26ed414f5f8a31ebb"></script>
 
   <footer class="bd-footer">
   </footer>

@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-09-23
+
+**Breaking:** `alpss_main` now takes the trace array as its first argument.
+Code calling `alpss_main(**config)` must read the file first (see
+`alpss.io.reading.extract_data`) or switch to `alpss_main_with_config`, which
+is unchanged. The `alpss` CLI is unaffected.
+
+### Added
+- `alpss_main(data, **inputs)` now takes an `(N, 2)` numpy array of
+  `[time, voltage]`. Reading the file, flattening the config and validating it
+  are the caller's job; `alpss_main_with_config` remains the file-based entry
+  point and is unchanged. `run_velocity_phase(data, **inputs)` likewise takes
+  the array.
+- Multi-channel oscilloscope CSVs (e.g. Keysight exports with `Channel N`
+  columns) are now readable. A new optional `channel` config key selects which
+  channel to analyse; without it the first channel is read, so single-probe
+  runs against a multi-channel file work unchanged.
+
+### Changed
+- The start of the numeric data is auto-detected instead of being taken from
+  `header_lines`. The key is still accepted so existing configs keep loading,
+  but its value is ignored and a warning is logged — it was wrong in most
+  configs in use.
+- **Repeatability baselines re-recorded.** Reading no longer lets pandas infer
+  a header row after `skiprows`, which had been silently consuming the first
+  data sample of every run. Results shift by one sample (e.g. time at max
+  compression by 1.25e-11 s at 80 GHz); the new values are the correct ones.
+
+### Fixed
+- `plot_voltage` and `spall_doi_finder` no longer fail on a raw frame with more
+  than two columns, so the error-path diagnostic plot works for multi-channel
+  files.
+- Otsu start detection no longer lands hundreds of ns late when the spectrogram
+  has columns with no signal (e.g. a brief carrier dropout). Those columns are
+  NaN in the top line, and `np.argmax` returned the first NaN instead of the
+  highest point; it now uses `np.nanargmax` / `np.nanmean`.
+- Otsu start detection raises a clear `ValueError` when no signal rises above
+  the carrier band, instead of crashing with `UnboundLocalError: cidx`.
+
 ## [1.7.1] - 2026-06-09
 
 ### Changed
@@ -101,7 +140,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated spall signal analysis pipeline
 - Initial PyPI and Docker publishing workflows
 
-[Unreleased]: https://github.com/openmsi/ALPSS/compare/v1.7.1...HEAD
+[Unreleased]: https://github.com/openmsi/ALPSS/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/openmsi/ALPSS/compare/v1.7.1...v1.8.0
 [1.7.1]: https://github.com/openmsi/ALPSS/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/openmsi/ALPSS/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/openmsi/ALPSS/compare/v1.5.0...v1.6.0
