@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Multi-point PDV: `alpss_multipoint(config)` runs `alpss_main` once per probe,
+  driven by a `multipoint` config section. New `alpss-multipoint` console
+  script. Probes are not channels -- several probes may be wavelength
+  multiplexed onto one oscilloscope channel, reading the same column but
+  separated by frequency -- so the probe list comes from `multipoint.metadata`,
+  never from the file. Probes sharing a channel read the trace once.
+- `list_channels()` in `alpss.io.reading` enumerates the channels a file holds.
+- `prescan_carrier()` in `alpss.carrier.frequency` locates the carrier in a raw
+  trace before the domain of interest is known, so a wide search band can be
+  narrowed onto the probe actually present. Reuses `carrier_frequency` rather
+  than duplicating it.
+- Per-probe outputs: figures are written per probe (`<stem>_probeN-plots.png`),
+  while the data CSVs are written once, combined, with one column (or row) per
+  probe on a shared time axis.
+
+### Added
 - `alpss_main(data, **inputs)` now takes an `(N, 2)` numpy array of
   `[time, voltage]`. Reading the file, flattening the config and validating it
   are the caller's job; `alpss_main_with_config` remains the file-based entry

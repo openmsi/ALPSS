@@ -96,6 +96,18 @@ def channel_columns(labels, n_cols):
     return columns
 
 
+def list_channels(inputs):
+    """Oscilloscope channel numbers present in the source, in column order.
+
+    Returns [1] for a single-probe export that carries no channel labels. Note
+    this enumerates *columns*, not probes: several probes may be wavelength
+    multiplexed onto one channel and separated only by frequency, so the probe
+    list comes from the multipoint metadata, not from here.
+    """
+    _, labels, n_cols = sniff_header(inputs)
+    return sorted(channel_columns(labels, n_cols))
+
+
 def extract_data(inputs):
     """Read one channel of a scope export as an (N, 2) array of [time, voltage].
 

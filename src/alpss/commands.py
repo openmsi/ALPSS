@@ -2,6 +2,7 @@ import argparse
 
 from alpss.alpss_watcher import Watcher
 from alpss.alpss_main import alpss_main
+from alpss.multipoint import alpss_multipoint
 from alpss.io.reading import extract_data
 from alpss.utils.config import flatten_config
 from alpss.utils.validation import validate_inputs
@@ -57,6 +58,38 @@ def alpss_main_with_config(config=None):
     data = extract_data(inputs)
 
     return alpss_main(data, **inputs)
+
+def alpss_multipoint_with_config(config=None):
+    """
+    Run multi-point ALPSS with a given JSON configuration.
+
+    Args:
+        config (str or dict, optional): JSON config file path or a dict. Must
+            carry a "multipoint" section describing the probes.
+    """
+    if config is None:
+        parser = argparse.ArgumentParser(
+            description="Run multi-point ALPSS using a JSON config file"
+        )
+        parser.add_argument(
+            "config_path", type=str, help="Path to the JSON configuration file"
+        )
+        args = parser.parse_args()
+        config = load_json_config(args.config_path)
+    else:
+        config = load_json_config(config)
+
+    return alpss_multipoint(config)
+
+
+def alpss_multipoint_cli():
+    """Entry point for console_scripts."""
+    try:
+        sys.exit(alpss_multipoint_with_config())
+    except Exception as e:
+        print(f"[ALPSS ERROR] {e}", file=sys.stderr)
+        sys.exit(1)
+
 
 def alpss_cli():
     """
