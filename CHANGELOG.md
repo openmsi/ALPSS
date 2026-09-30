@@ -7,7 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+**Breaking:** `pb_neighbors` and `rc_neighbors` are replaced by
+`pb_neighbors_time` and `rc_neighbors_time`, in seconds. Configs using the
+old keys are rejected. To convert, divide the old value by the sample rate,
+e.g. 400 samples at 80 GHz is `5e-09`.
+
+### Changed
+- The pullback and recompression search windows are now given in time, so
+  they cover the same span of signal at any sample rate. They were sample
+  counts, so the same config searched 5 ns of signal on an 80 GHz scope but
+  only 3.1 ns on a 128 GHz one.
+- The sample rate is measured from the time column instead of taken from
+  `sample_rate`. The key is still accepted so existing configs keep loading,
+  but its value is ignored and a warning is logged.
+
 ### Added
+- The results CSV reports the measured `Sample Rate`.
 - `time_to_take` accepts `"all"` to read the signal from `time_to_skip` to
   the end of the file. The `t_after` check is skipped in that case, and any
   other string is rejected by validation.

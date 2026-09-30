@@ -9,7 +9,6 @@
         "display_plots": false
     },
     "stft": {
-        "sample_rate": 80000000000,
         "nperseg": 512,
         "noverlap": 435,
         "nfft": 5120,
@@ -59,9 +58,9 @@
     },
     "spall": {
         "spall_enabled": true,
-        "pb_neighbors": 400,
+        "pb_neighbors_time": 5e-09,
         "pb_idx_correction": 0,
-        "rc_neighbors": 400,
+        "rc_neighbors_time": 5e-09,
         "rc_idx_correction": 0
     },
     "hel": {
