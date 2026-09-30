@@ -27,7 +27,6 @@ def valid_inputs():
             "display_plots": False,
         },
         "stft": {
-            "sample_rate": 80000000000.0,
             "nperseg": 512,
             "noverlap": 435,
             "nfft": 5120,
@@ -77,9 +76,9 @@ def valid_inputs():
         },
         "spall": {
             "spall_enabled": True,
-            "pb_neighbors": 400,
+            "pb_neighbors_time": 5e-09,
             "pb_idx_correction": 0,
-            "rc_neighbors": 400,
+            "rc_neighbors_time": 5e-09,
             "rc_idx_correction": 0,
         },
         "hel": {

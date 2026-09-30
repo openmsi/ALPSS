@@ -11,7 +11,6 @@ _ALWAYS_REQUIRED = [
     "t_after",
     "start_time_user",
     "start_time_correction",
-    "sample_rate",
     "nperseg",
     "noverlap",
     "nfft",
@@ -49,7 +48,8 @@ _OPTIONAL = ["bytestring"]
 # `channel` selects one voltage column of a multi-channel export; without it
 # the first channel is read. `header_lines` is accepted so existing configs
 # keep loading, but the data start is auto-detected and the value is ignored.
-_ACCEPTED = ["channel", "header_lines"]
+# `sample_rate` is likewise ignored: it is measured from the time column.
+_ACCEPTED = ["channel", "header_lines", "sample_rate"]
 
 _REQUIRED_BY_MODE = {
     "start_time_user=otsu": [],
@@ -57,7 +57,7 @@ _REQUIRED_BY_MODE = {
     "start_time_user=cusum": ["cusum_offset", "cusum_threshold"],
     "carrier_filter_type=gaussian_notch": ["order", "wid"],
     "carrier_filter_type=sin_fit_subtract": ["wid", "t_fit_begin", "t_fit_end"],
-    "spall_enabled=True": ["pb_neighbors", "pb_idx_correction", "rc_neighbors", "rc_idx_correction", "C0", "density", "delta_rho", "delta_C0", "delta_lam", "delta_theta"],
+    "spall_enabled=True": ["pb_neighbors_time", "pb_idx_correction", "rc_neighbors_time", "rc_idx_correction", "C0", "density", "delta_rho", "delta_C0", "delta_lam", "delta_theta"],
     "hel_enabled=True": ["hel_start_time_ns", "hel_end_time_ns", "hel_angle_threshold_deg", "hel_detection_min_points", "minimum_HEL_velocity_expected", "density", "C_L"],
 }
 
@@ -114,6 +114,13 @@ def validate_inputs(inputs):
         raise ValueError(
             f"Invalid carrier_filter_type='{cft}'. Must be one of {_CARRIER_FILTER_TYPES}."
         )
+
+    if inputs["spall_enabled"]:
+        for key in ("pb_neighbors_time", "rc_neighbors_time"):
+            if not (isinstance(inputs[key], (int, float)) and inputs[key] > 0):
+                raise ValueError(
+                    f"'{key}' must be a positive time in seconds, got {inputs[key]!r}."
+                )
 
     ttt = inputs["time_to_take"]
     if not (isinstance(ttt, (int, float)) or ttt == "all"):

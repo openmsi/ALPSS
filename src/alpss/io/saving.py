@@ -117,6 +117,7 @@ def save(
         "Time": start_time.strftime("%I:%M %p"),
         "File Name": os.path.basename(inputs["filepath"]),
         "Channel": inputs.get("channel"),
+        "Sample Rate": sdf_out["fs"],
         "Run Time": (end_time - start_time),
         "Error Message": error_msg,
     })

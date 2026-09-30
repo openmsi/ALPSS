@@ -27,7 +27,6 @@ def test_missing_always_required_raises(flat_inputs):
     "key",
     [
         "out_files_dir",
-        "sample_rate",
         "lam",
         "uncert_mult",
     ],
@@ -103,7 +102,7 @@ def test_none_filter_does_not_require_order_wid(flat_inputs):
 # --- _REQUIRED_BY_MODE: spall_enabled ---
 
 
-@pytest.mark.parametrize("missing_key", ["pb_neighbors", "pb_idx_correction", "rc_neighbors", "rc_idx_correction", "C0", "density", "delta_rho", "delta_C0", "delta_lam", "delta_theta"])
+@pytest.mark.parametrize("missing_key", ["pb_neighbors_time", "pb_idx_correction", "rc_neighbors_time", "rc_idx_correction", "C0", "density", "delta_rho", "delta_C0", "delta_lam", "delta_theta"])
 def test_spall_enabled_requires_key(flat_inputs, missing_key):
     inputs = copy.deepcopy(flat_inputs)
     inputs["spall_enabled"] = True
@@ -116,9 +115,9 @@ def test_spall_enabled_false_does_not_require_params(flat_inputs):
     inputs = copy.deepcopy(flat_inputs)
     inputs["spall_enabled"] = False
     inputs["hel_enabled"] = False
-    inputs.pop("pb_neighbors", None)
+    inputs.pop("pb_neighbors_time", None)
     inputs.pop("pb_idx_correction", None)
-    inputs.pop("rc_neighbors", None)
+    inputs.pop("rc_neighbors_time", None)
     inputs.pop("rc_idx_correction", None)
     inputs.pop("C0", None)
     inputs.pop("density", None)
@@ -151,9 +150,9 @@ def test_hel_enabled_false_does_not_require_params(flat_inputs):
     inputs.pop("hel_angle_threshold_deg", None)
     inputs.pop("hel_detection_min_points", None)
     inputs.pop("minimum_HEL_velocity_expected", None)
-    inputs.pop("pb_neighbors", None)
+    inputs.pop("pb_neighbors_time", None)
     inputs.pop("pb_idx_correction", None)
-    inputs.pop("rc_neighbors", None)
+    inputs.pop("rc_neighbors_time", None)
     inputs.pop("rc_idx_correction", None)
     inputs.pop("C0", None)
     inputs.pop("density", None)
@@ -187,6 +186,35 @@ def test_invalid_time_to_take_raises(flat_inputs, value):
     with pytest.raises(ValueError, match="Invalid time_to_take"):
         validate_inputs(inputs)
 
+
+
+# --- time-based spall windows ---
+
+
+@pytest.mark.parametrize("old_key", ["pb_neighbors", "rc_neighbors"])
+def test_sample_count_neighbors_rejected(flat_inputs, old_key):
+    """The pre-1.9 sample-count keys fail loudly rather than being misread."""
+    inputs = copy.deepcopy(flat_inputs)
+    inputs[old_key] = 400
+    with pytest.raises(ValueError, match="Unknown config params"):
+        validate_inputs(inputs)
+
+
+@pytest.mark.parametrize("key", ["pb_neighbors_time", "rc_neighbors_time"])
+@pytest.mark.parametrize("value", [0, -5e-09, "5ns"])
+def test_invalid_neighbors_time_raises(flat_inputs, key, value):
+    inputs = copy.deepcopy(flat_inputs)
+    inputs[key] = value
+    with pytest.raises(ValueError, match=key):
+        validate_inputs(inputs)
+
+
+def test_sample_rate_is_accepted_but_not_required(flat_inputs):
+    inputs = copy.deepcopy(flat_inputs)
+    inputs.pop("sample_rate", None)
+    validate_inputs(inputs)
+    inputs["sample_rate"] = 80e9
+    validate_inputs(inputs)
 
 
 # --- unknown params ---
