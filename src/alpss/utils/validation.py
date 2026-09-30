@@ -115,5 +115,11 @@ def validate_inputs(inputs):
             f"Invalid carrier_filter_type='{cft}'. Must be one of {_CARRIER_FILTER_TYPES}."
         )
 
-    if isinstance(inputs["time_to_take"], (int, float)) and inputs["t_after"] > inputs["time_to_take"]:
+    ttt = inputs["time_to_take"]
+    if not (isinstance(ttt, (int, float)) or ttt == "all"):
+        raise ValueError(
+            f"Invalid time_to_take={ttt!r}. Must be a float or 'all'."
+        )
+
+    if ttt != "all" and inputs["t_after"] > ttt:
         raise ValueError("'t_after' must be less than 'time_to_take'.")
