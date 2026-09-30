@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `time_to_take` accepts `"all"` to read the signal from `time_to_skip` to
+  the end of the file. The `t_after` check is skipped in that case, and any
+  other string is rejected by validation.
+
 ## [1.8.0] - 2026-09-23
 
 **Breaking:** `alpss_main` now takes the trace array as its first argument.

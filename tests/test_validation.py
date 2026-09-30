@@ -174,6 +174,20 @@ def test_t_after_exceeds_time_to_take_raises(flat_inputs):
         validate_inputs(inputs)
 
 
+def test_time_to_take_all_skips_t_after_check(flat_inputs):
+    inputs = copy.deepcopy(flat_inputs)
+    inputs["time_to_take"] = "all"
+    validate_inputs(inputs)
+
+
+@pytest.mark.parametrize("value", ["al", "ALL", None])
+def test_invalid_time_to_take_raises(flat_inputs, value):
+    inputs = copy.deepcopy(flat_inputs)
+    inputs["time_to_take"] = value
+    with pytest.raises(ValueError, match="Invalid time_to_take"):
+        validate_inputs(inputs)
+
+
 
 # --- unknown params ---
 

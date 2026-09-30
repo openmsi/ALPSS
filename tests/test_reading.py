@@ -144,6 +144,22 @@ class TestExtractData:
             full[offset : offset + 10], skipped[:10]
         )
 
+    def test_time_to_take_all_reads_to_end_of_file(self):
+        with open(LEGACY_FILE) as f:
+            n_samples = sum(1 for line in f if line.strip()) - 1  # minus label row
+        data = extract_data(
+            read_inputs(LEGACY_FILE, sample_rate=80e9, time_to_take="all")
+        )
+        assert len(data) == n_samples
+
+    def test_time_to_take_all_respects_time_to_skip(self):
+        skip = 1e-08
+        full = extract_data(read_inputs(MULTICHANNEL_FILE, time_to_take="all"))
+        skipped = extract_data(
+            read_inputs(MULTICHANNEL_FILE, time_to_take="all", time_to_skip=skip)
+        )
+        np.testing.assert_array_equal(full[int(skip * 128e9) :], skipped)
+
     def test_returns_a_plain_array(self):
         data = extract_data(read_inputs(MULTICHANNEL_FILE))
         assert isinstance(data, np.ndarray)

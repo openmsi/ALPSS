@@ -103,7 +103,11 @@ def extract_data(inputs):
     formats -- header length, column labels, which channel -- stops here.
     """
     t_step = 1 / inputs["sample_rate"]
-    nrows = int(inputs["time_to_take"] / t_step)
+    # time_to_take="all" reads to the end of the file
+    if inputs["time_to_take"] == "all":
+        nrows = None
+    else:
+        nrows = int(inputs["time_to_take"] / t_step)
 
     data_start, labels, n_cols = sniff_header(inputs)
     if "header_lines" in inputs:
