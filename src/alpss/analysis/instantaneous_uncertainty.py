@@ -76,6 +76,8 @@ def hl_envelopes_idx(s, dmin=1, dmax=1, split=False):
 
     return lmin, lmax
 
+from scipy.fft import fft, ifft, fftshift
+
 
 # function to estimate the instantaneous uncertainty for all points in time
 def instantaneous_uncertainty_analysis(sdf_out, vc_out, cen, **inputs):
@@ -86,6 +88,8 @@ def instantaneous_uncertainty_analysis(sdf_out, vc_out, cen, **inputs):
     smoothing_amp = inputs["smoothing_amp"]
     smoothing_sigma = inputs["smoothing_sigma"]
     smoothing_mu = inputs["smoothing_mu"]
+    freq_max = inputs["freq_max"]
+    freq_min = inputs["freq_min"]
     fs = sdf_out["fs"]
     time = sdf_out["time"]
     time_f = vc_out["time_f"]
@@ -105,10 +109,25 @@ def instantaneous_uncertainty_analysis(sdf_out, vc_out, cen, **inputs):
     time_cut = time[0:steps_take]
     voltage_filt_early = voltage_filt[0:steps_take]
 
+    a0 = 1/2 * (voltage_filt_early.max() - voltage_filt_early.min())
+    d0 = np.mean(voltage_filt_early)
+
+    # estimate the phase from the first zero crossing: at a zero crossing
+    # 2*pi*cen*t + c = 0 (rising) or pi (falling), so solve for c
+    zero_cross_idx = np.where(np.diff(np.sign(voltage_filt_early)))[0]
+    if len(zero_cross_idx) > 0:
+        idx0 = zero_cross_idx[0]
+        t_cross = time_cut[idx0]
+        rising = voltage_filt_early[idx0 + 1] > voltage_filt_early[idx0]
+        target = 0 if rising else np.pi
+        c0 = ((target - 2 * np.pi * cen * t_cross + np.pi) % (2 * np.pi)) - np.pi
+    else:
+        c0 = 0
+
     try:
         # fit a sinusoid to the data
         popt, pcov = curve_fit(
-            sin_func, time_cut, voltage_filt_early, p0=[0.1, cen, 0, 0]
+            sin_func, time_cut, voltage_filt_early, p0=[a0, cen, c0, d0]
         )
     except Exception:
         # if sin fitting doesn't work set the fitting parameters to be zeros

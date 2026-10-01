@@ -89,7 +89,7 @@ def carrier_filter(sdf_out, cen, **inputs):
                 p0=[
                     (np.max(time_domain_carrier) - np.min(time_domain_carrier)) / 2,
                     cen,
-                    0,
+                    np.angle(ifft(full_fft)[0]) + np.pi / 2,
                     0,
                 ],
             )
