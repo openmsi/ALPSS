@@ -3,7 +3,7 @@ import cv2 as cv
 from alpss.utils.stft import stft
 import logging
 from scipy import signal
-from scipy.fft import fft, fftshift, ifft 
+from scipy.fft import fft, fftfreq, ifft
 import matplotlib.pyplot as plt
 import os
 
@@ -132,26 +132,53 @@ def spall_doi_finder(data, **inputs):
 
             # Collect necessary parameters
             carrier_band_time = inputs["carrier_band_time"]
-            k=inputs["cusum_offset"]
-            h=inputs["cusum_threshold"]
-            f_min = inputs["freq_min"]
+            k = inputs["cusum_offset"]
+            h = inputs["cusum_threshold"]
             f_max = inputs["freq_max"]
+            freq_offset = inputs["freq_offset"]
 
-            # Apply a bandpass filter to get rid of noise outside of frequency bounds
+            # Estimate the carrier here because start-time detection runs before
+            # the normal carrier_frequency phase.
+            carrier_idx_end = int(round(carrier_band_time * fs))
+            if carrier_idx_end <= 1:
+                raise ValueError(
+                    "carrier_band_time is too short to estimate the carrier "
+                    "for cusum."
+                )
+            carrier_voltage = voltage[:carrier_idx_end]
+            carrier_freq = fftfreq(carrier_voltage.size, 1 / fs)
+            positive_freq_mask = carrier_freq > 0
+            positive_freq = carrier_freq[positive_freq_mask]
+            positive_fft = np.abs(fft(carrier_voltage)[positive_freq_mask])
+            carrier_range_mask = (positive_freq >= inputs["freq_min"]) & (
+                positive_freq <= f_max
+            )
+            if not np.any(carrier_range_mask):
+                raise ValueError(
+                    "No FFT bins found between freq_min and freq_max for "
+                    "cusum carrier estimation."
+                )
+            cen = positive_freq[carrier_range_mask][
+                np.argmax(positive_fft[carrier_range_mask])
+            ]
+
+            # Bandpass above the carrier and use instantaneous magnitude as
+            # the CUSUM metric.
+            f_low = cen + freq_offset
+            if f_low >= f_max:
+                raise ValueError(
+                    "cusum requires cen + freq_offset "
+                    f"({f_low:g} Hz) to be less than freq_max ({f_max:g} Hz)."
+                )
+
             numpts = len(time)
             pad_len = numpts // 2
-            voltage_padded = np.pad(voltage, (pad_len, pad_len), mode='reflect')
-            numpts_padded = len(voltage_padded)
-            freq_padded = fftshift(np.arange((-numpts_padded / 2), (numpts_padded / 2)) * fs / numpts_padded)
-            filt_padded = (freq_padded > f_min) * (freq_padded < f_max)
+            voltage_padded = np.pad(voltage, (pad_len, pad_len), mode="reflect")
+            freq_padded = fftfreq(voltage_padded.size, 1 / fs)
+            filt_padded = (freq_padded > f_low) & (freq_padded < f_max)
             voltage_filt_padded = ifft(fft(voltage_padded) * filt_padded)
             voltage_filt = voltage_filt_padded[pad_len:pad_len + numpts]
-
-            # Unwrap the phase
-            phas = np.unwrap(np.angle(voltage_filt), axis=0)
-
-            # Analyzed signal is equal to the gradient of the phase. Essentially a pseudo-velocity
-            signal = np.gradient(phas)
+            signal = np.abs(voltage_filt)
 
             # Skip leading edge samples to avoid filter artifact spikes
             edge_skip = 100
