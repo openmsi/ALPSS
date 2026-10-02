@@ -28,6 +28,7 @@
         "iq_threshold_factor": 0.4,
         "cusum_offset": 2,
         "cusum_threshold": 100,
+        "freq_offset": 0.25e9,
         "carrier_band_time": 2.5e-07
     },
     "carrier": {
