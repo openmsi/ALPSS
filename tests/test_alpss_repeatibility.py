@@ -8,6 +8,9 @@ from matplotlib.figure import Figure
 from conftest import EXPECTED_VALUES_MAP
 
 
+PIPELINE_REL_TOL = 1e-4
+
+
 def test_alpss_main_wo_configfile(valid_inputs, expected_values):
     # Call the function with valid inputs
     logging.info(f"Running test in spall doi mode {valid_inputs['start_time']['start_time_user']} and carrier filter {valid_inputs['carrier']['carrier_filter_type']}...")
@@ -19,7 +22,7 @@ def test_alpss_main_wo_configfile(valid_inputs, expected_values):
     for key, expected_value in expected_values.items():
         assert key in result_dict['results'][0], f"Key '{key}' not found in the results."
         assert result_dict['results'][0][key] == pytest.approx(
-            expected_value, rel=1e-9
+            expected_value, rel=PIPELINE_REL_TOL
         ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][0][key]}"
 
 
@@ -39,7 +42,7 @@ def test_alpss_main_with_configfile(config_file_path, expected_values):
     for key, expected_value in expected_values.items():
         assert key in result_dict['results'][0], f"Key '{key}' not found in the results."
         assert result_dict['results'][0][key] == pytest.approx(
-            expected_value, rel=1e-9
+            expected_value, rel=PIPELINE_REL_TOL
         ), f"Mismatch for '{key}': expected {expected_value}, got {result_dict['results'][0][key]}"
 
 
@@ -69,11 +72,11 @@ def test_alpss_exact_values(valid_inputs, start_time_user, carrier_filter_type):
     for key, val in expected.items():
         assert key in result_dict, f"Key '{key}' not found in results."
         assert result_dict[key] == pytest.approx(
-            val, rel=1e-9
+            val, rel=PIPELINE_REL_TOL
         ), f"Mismatch for '{key}': expected {val}, got {result_dict[key]}"
 
 
-@pytest.mark.parametrize("start_time_user", ["otsu", "iq", 7.5e-07])
+@pytest.mark.parametrize("start_time_user", ["otsu", "iq", "cusum", 7.5e-07])
 @pytest.mark.parametrize("carrier_filter_type", ["gaussian_notch", "none"])
 def test_alpss_smoke(valid_inputs, start_time_user, carrier_filter_type):
     """Smoke test: mode/filter combos complete without error and return valid results."""

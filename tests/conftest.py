@@ -46,6 +46,7 @@ def valid_inputs():
             "iq_threshold_factor": 0.4,
             "cusum_offset": 5,
             "cusum_threshold": 1000,
+            "freq_offset": 0.5e9,
             "carrier_band_time": 2.5e-07,
         },
         "carrier": {
