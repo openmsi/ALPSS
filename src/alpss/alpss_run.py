@@ -92,6 +92,7 @@ config = {
         "iq_threshold_factor": 0.4,
         "cusum_offset": 5,
         "cusum_threshold": 1000,
+        "freq_offset": 0.5e9,
     },
     "stft": {
         "sample_rate": 128e9,

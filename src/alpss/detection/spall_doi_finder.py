@@ -3,7 +3,7 @@ import cv2 as cv
 from alpss.utils.stft import stft
 import logging
 from scipy import signal
-from scipy.fft import fft, fftfreq
+from scipy.fft import fft, fftfreq, ifft
 import matplotlib.pyplot as plt
 import os
 
@@ -103,6 +103,12 @@ def spall_doi_finder(data, **inputs):
             # find the index in f_doi that is closest in frequency to f_doi_carr_top_avg
             f_doi_carr_top_idx = np.argmin(np.abs(f_doi - f_doi_carr_top_avg))
 
+            if np.all(np.isnan(f_doi_top_line_clean)):
+                raise ValueError(
+                    "Otsu start detection found no thresholded signal in the "
+                    "frequency range of interest."
+                )
+
             # work backwards from the highest point on the signal top line until it matches or dips below f_doi_carr_top_idx.
             # nan-aware: columns with no signal are NaN, and np.argmax would return the first NaN instead of the peak
             highest_idx = np.nanargmax(f_doi_top_line_clean)
@@ -134,29 +140,83 @@ def spall_doi_finder(data, **inputs):
             carrier_band_time = inputs["carrier_band_time"]
             k = inputs["cusum_offset"]
             h = inputs["cusum_threshold"]
+            f_max = inputs["freq_max"]
+            freq_offset = inputs["freq_offset"]
 
-            # Carrier band Frequency
-            carrier_mask = time < carrier_band_time
-            carrier_fft_vals = fft(voltage[carrier_mask])
-            carrier_fft_freqs = fftfreq(voltage[carrier_mask].size, 1 / fs)
-            mask3 = carrier_fft_freqs > 0
-            max_idx = np.argmax(np.abs(carrier_fft_vals * mask3))
-            cen = carrier_fft_freqs[max_idx]
-            idx = np.argmin(np.abs(f - cen))
-            signal = mag[idx, :]
-            mask4 = t < carrier_band_time
-            mask5 = t > (t.max() - carrier_band_time)
-            mu0 = np.mean(signal[mask4])
-            mu1 = 0  # Expected post-change signal level
-            sigma0 = np.var(signal[mask4])
-
-            print("signal shape: ", signal.shape)
-            detection_indices, change_indices, G, s = cusum(
-                signal, mu0, mu1, sigma0, h, k
+            # Estimate the carrier here because start-time detection runs before
+            # the normal carrier_frequency phase.
+            carrier_idx_end = int(round(carrier_band_time * fs))
+            if carrier_idx_end <= 1:
+                raise ValueError(
+                    "carrier_band_time is too short to estimate the carrier "
+                    "for cusum."
+                )
+            carrier_voltage = voltage[:carrier_idx_end]
+            carrier_freq = fftfreq(carrier_voltage.size, 1 / fs)
+            positive_freq_mask = carrier_freq > 0
+            positive_freq = carrier_freq[positive_freq_mask]
+            positive_fft = np.abs(fft(carrier_voltage)[positive_freq_mask])
+            carrier_range_mask = (positive_freq >= inputs["freq_min"]) & (
+                positive_freq <= f_max
             )
+            if not np.any(carrier_range_mask):
+                raise ValueError(
+                    "No FFT bins found between freq_min and freq_max for "
+                    "cusum carrier estimation."
+                )
+            cen = positive_freq[carrier_range_mask][
+                np.argmax(positive_fft[carrier_range_mask])
+            ]
 
-            print("change _indices shape: ", change_indices.shape)
-            detection_time = t[change_indices]
+            # Bandpass above the carrier and use instantaneous magnitude as
+            # the CUSUM metric.
+            f_low = cen + freq_offset
+            if f_low >= f_max:
+                raise ValueError(
+                    "cusum requires cen + freq_offset "
+                    f"({f_low:g} Hz) to be less than freq_max ({f_max:g} Hz)."
+                )
+
+            numpts = len(time)
+            pad_len = numpts // 2
+            voltage_padded = np.pad(voltage, (pad_len, pad_len), mode="reflect")
+            freq_padded = fftfreq(voltage_padded.size, 1 / fs)
+            filt_padded = (freq_padded > f_low) & (freq_padded < f_max)
+            voltage_filt_padded = ifft(fft(voltage_padded) * filt_padded)
+            voltage_filt = voltage_filt_padded[pad_len:pad_len + numpts]
+            signal = np.abs(voltage_filt)
+
+            # Use the initial carrier-band window as the baseline and run
+            # CUSUM after that window to avoid leading filter artifacts.
+            edge_skip = carrier_band_time
+            mask_baseline = time < edge_skip
+            mask_eval = time > edge_skip
+            time_eval = time[mask_eval]
+            signal_eval = signal[mask_eval]
+
+            # Initial mean and standard deviation of the signal. Utilized in cusum
+            baseline_signal = signal[mask_baseline]
+            if baseline_signal.size == 0 or signal_eval.size == 0:
+                raise ValueError(
+                    "carrier_band_time leaves no baseline or evaluation samples "
+                    "for cusum."
+                )
+            mu0 = np.mean(baseline_signal)
+            sigma0 = np.var(baseline_signal)
+            if sigma0 <= 0 or not np.isfinite(sigma0):
+                raise ValueError(
+                    "CUSUM start detection baseline has zero or invalid variance; "
+                    "adjust carrier_band_time, freq_offset, or cusum parameters."
+                )
+
+            detection_indices, change_indices, G, s = cusum(signal_eval, mu0, sigma0, h, k)
+            if detection_indices is None or change_indices is None:
+                raise ValueError(
+                    "CUSUM start detection did not cross the detection threshold. "
+                    "Try lowering cusum_threshold/cusum_offset or adjusting "
+                    "freq_offset."
+                )
+            detection_time = time_eval[change_indices]
 
             # these params become nan because they are only needed if the program
             # is finding the signal start time automatically
@@ -167,9 +227,7 @@ def spall_doi_finder(data, **inputs):
             # use the user input signal start time to define the domain of interest
             t_start_detected = detection_time
         else:
-            raise TypeError(
-                f"invalid mode assigned to variable 'start_time_user': {inputs.get('start_time_user')}"
-            )
+            raise TypeError(f"invalid mode assigned to variable 'start_time_user': {inputs.get('start_time_user')}")
 
     # if using a user input for the signal start time
     else:
@@ -219,25 +277,28 @@ def spall_doi_finder(data, **inputs):
         sdf_out["phase"] = phase
         sdf_out["iq_fig"] = iq_fig
 
+    if inputs.get("start_time_user") == "cusum":
+        sdf_out["cusum_time"] = time_eval
+        sdf_out["cusum_s"] = s
+
     return sdf_out
 
 
-def cusum(signal, mu0, mu1, sigma, h, k):
+def cusum(signal, mu0, sigma, h, k):
     """
-    Detect a single mean shift from mu0 to mu1 using CUSUM.
+    Detect a single mean shift from mu0 using CUSUM.
     Returns:
     - Detection index
     - Estimated change point index
     - Full G[k] array
     """
     # Score for general mean change
-    Z = (signal - mu0) / (np.sqrt(sigma))
-    s = -Z - k
-    # s = ((mu1 - mu0) / sigma) * (signal - mu0) - ((mu0**2 - mu1**2) / (2 * sigma))
+    Z = (signal - mu0)/(np.sqrt(sigma))
+    s = Z - k
     G = np.zeros_like(s)
 
     for k in range(1, len(s)):
-        G[k] = max(G[k - 1] + s[k], 0)
+        G[k] = max(G[k-1] + s[k], 0)
 
         if G[k] > h:
             detect_idx = k
@@ -262,6 +323,11 @@ def iq_analysis(inputs, voltage, fs, time):
     freq_range_mask = (positive_freq >= inputs["freq_min"]) & (
         positive_freq <= inputs["freq_max"]
     )
+    if not np.any(freq_range_mask):
+        raise ValueError(
+            "IQ start detection found no FFT bins between freq_min and freq_max "
+            "for carrier estimation."
+        )
     carrier_idx = np.argmax(positive_fft[freq_range_mask])
     carrier_frequency = positive_freq[freq_range_mask][carrier_idx]
 
@@ -296,7 +362,14 @@ def iq_analysis(inputs, voltage, fs, time):
     threshold = iq_threshold_factor * initial_amplitude
 
     # Detect start time using 50% amplitude drop
-    start_index = np.where(amplitude < threshold)[0][0]
+    threshold_crossings = np.where(amplitude < threshold)[0]
+    if threshold_crossings.size == 0:
+        raise ValueError(
+            "IQ start detection did not find an amplitude drop below the "
+            "threshold. Try increasing iq_threshold_factor or checking the "
+            "signal window."
+        )
+    start_index = threshold_crossings[0]
     t_start_detected_iq = time[start_index]
 
     # After calculating amplitude, adjust time array to match

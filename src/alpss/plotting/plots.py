@@ -129,29 +129,37 @@ def plot_results(
     ax3.set_title("Spectrogram Original Signal")
 
     #################### plotting the thresholded spectrogram on the ROI to show how the signal start time is found
-    ax4.imshow(
-        sdf_out["th3"],
-        aspect="auto",
-        origin="lower",
-        interpolation="none",
-        extent=[
-            sdf_out["t"][0] / 1e-9,
-            sdf_out["t"][-1] / 1e-9,
-            sdf_out["f_doi"][0] / 1e9,
-            sdf_out["f_doi"][-1] / 1e9,
-        ],
-        cmap=inputs["cmap"],
-    )
+    if inputs["start_time_user"] == "cusum":
+        ax4.plot(sdf_out["cusum_time"]*1e9,sdf_out["cusum_s"])
+        ax4.set_title("Cusum Detection")
+        ax4.set_xlabel("Time (ns)")
+        ax4.set_ylim([-inputs["cusum_offset"]-1,100])
+    else:
+        ax4.imshow(
+            sdf_out["th3"],
+            aspect="auto",
+            origin="lower",
+            interpolation="none",
+            extent=[
+                sdf_out["t"][0] / 1e-9,
+                sdf_out["t"][-1] / 1e-9,
+                sdf_out["f_doi"][0] / 1e9,
+                sdf_out["f_doi"][-1] / 1e9,
+            ],
+            cmap=inputs["cmap"],
+        )
+        ax4.set_title("Thresholded Spectrogram")
+        ax4.set_ylim([inputs["freq_min"] / 1e9, inputs["freq_max"] / 1e9])
+        ax4.set_xlabel("Time (ns)")
+        ax4.set_ylabel("Frequency (GHz)")
+        ax4.minorticks_on()
+        ax4.set_title("Thresholded Spectrogram")
+    if inputs["start_time_user"] == "otsu":
+        ax4.axhline(sdf_out["f_doi"][sdf_out["f_doi_carr_top_idx"]] / 1e9, c="r")    
+    ax4.set_xlim([sdf_out["t_doi_start"] / 1e-9, sdf_out["t_doi_end"] / 1e-9])
     ax4.axvline(sdf_out["t_start_detected"] / 1e-9, ls="--", c="r")
     ax4.axvline(sdf_out["t_start_corrected"] / 1e-9, ls="-", c="r")
-    if inputs["start_time_user"] == "otsu":
-        ax4.axhline(sdf_out["f_doi"][sdf_out["f_doi_carr_top_idx"]] / 1e9, c="r")
-    ax4.set_ylim([inputs["freq_min"] / 1e9, inputs["freq_max"] / 1e9])
-    ax4.set_xlim([sdf_out["t_doi_start"] / 1e-9, sdf_out["t_doi_end"] / 1e-9])
-    ax4.set_xlabel("Time (ns)")
-    ax4.set_ylabel("Frequency (GHz)")
-    ax4.minorticks_on()
-    ax4.set_title("Thresholded Spectrogram")
+
 
     #################### plotting the spectrogram of the ROI with the start-time line to see how well it lines up
     plt5 = ax5.imshow(
