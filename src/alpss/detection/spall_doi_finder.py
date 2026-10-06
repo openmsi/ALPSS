@@ -103,6 +103,12 @@ def spall_doi_finder(data, **inputs):
             # find the index in f_doi that is closest in frequency to f_doi_carr_top_avg
             f_doi_carr_top_idx = np.argmin(np.abs(f_doi - f_doi_carr_top_avg))
 
+            if np.all(np.isnan(f_doi_top_line_clean)):
+                raise ValueError(
+                    "Otsu start detection found no thresholded signal in the "
+                    "frequency range of interest."
+                )
+
             # work backwards from the highest point on the signal top line until it matches or dips below f_doi_carr_top_idx.
             # nan-aware: columns with no signal are NaN, and np.argmax would return the first NaN instead of the peak
             highest_idx = np.nanargmax(f_doi_top_line_clean)
@@ -180,17 +186,36 @@ def spall_doi_finder(data, **inputs):
             voltage_filt = voltage_filt_padded[pad_len:pad_len + numpts]
             signal = np.abs(voltage_filt)
 
-            # Skip leading edge samples to avoid filter artifact spikes
-            edge_skip = 100
-            signal_eval = signal[edge_skip:]
-            time_eval = time[edge_skip:]
+            # Use the initial carrier-band window as the baseline and run
+            # CUSUM after that window to avoid leading filter artifacts.
+            edge_skip = carrier_band_time
+            mask_baseline = time < edge_skip
+            mask_eval = time > edge_skip
+            time_eval = time[mask_eval]
+            signal_eval = signal[mask_eval]
 
             # Initial mean and standard deviation of the signal. Utilized in cusum
-            mask = time_eval < carrier_band_time
-            mu0 = np.mean(signal_eval[mask])
-            sigma0 = np.var(signal_eval[mask])
+            baseline_signal = signal[mask_baseline]
+            if baseline_signal.size == 0 or signal_eval.size == 0:
+                raise ValueError(
+                    "carrier_band_time leaves no baseline or evaluation samples "
+                    "for cusum."
+                )
+            mu0 = np.mean(baseline_signal)
+            sigma0 = np.var(baseline_signal)
+            if sigma0 <= 0 or not np.isfinite(sigma0):
+                raise ValueError(
+                    "CUSUM start detection baseline has zero or invalid variance; "
+                    "adjust carrier_band_time, freq_offset, or cusum parameters."
+                )
 
             detection_indices, change_indices, G, s = cusum(signal_eval, mu0, sigma0, h, k)
+            if detection_indices is None or change_indices is None:
+                raise ValueError(
+                    "CUSUM start detection did not cross the detection threshold. "
+                    "Try lowering cusum_threshold/cusum_offset or adjusting "
+                    "freq_offset."
+                )
             detection_time = time_eval[change_indices]
 
             # these params become nan because they are only needed if the program
@@ -298,6 +323,11 @@ def iq_analysis(inputs, voltage, fs, time):
     freq_range_mask = (positive_freq >= inputs["freq_min"]) & (
         positive_freq <= inputs["freq_max"]
     )
+    if not np.any(freq_range_mask):
+        raise ValueError(
+            "IQ start detection found no FFT bins between freq_min and freq_max "
+            "for carrier estimation."
+        )
     carrier_idx = np.argmax(positive_fft[freq_range_mask])
     carrier_frequency = positive_freq[freq_range_mask][carrier_idx]
 
@@ -332,7 +362,14 @@ def iq_analysis(inputs, voltage, fs, time):
     threshold = iq_threshold_factor * initial_amplitude
 
     # Detect start time using 50% amplitude drop
-    start_index = np.where(amplitude < threshold)[0][0]
+    threshold_crossings = np.where(amplitude < threshold)[0]
+    if threshold_crossings.size == 0:
+        raise ValueError(
+            "IQ start detection did not find an amplitude drop below the "
+            "threshold. Try increasing iq_threshold_factor or checking the "
+            "signal window."
+        )
+    start_index = threshold_crossings[0]
     t_start_detected_iq = time[start_index]
 
     # After calculating amplitude, adjust time array to match
