@@ -15,10 +15,11 @@ import os
 import numpy as np
 
 from alpss.simulation import generate_velocity_profile, velocity_to_pdv_voltage
+from alpss.utils.config import flatten_config
 
 from cases import SAMPLE_RATE, get_cases
 from common import (
-    CONFIG_PATH, DATA_DIR, flat, load_config,
+    CONFIG_PATH, DATA_DIR,
     signal_path, truth_path, velocity_true_path,
 )
 from truth import profile_params, synthesis_params, truth_from_case
@@ -78,7 +79,8 @@ def main():
     args = parser.parse_args()
 
     os.makedirs(args.out, exist_ok=True)
-    flat_config = flat(load_config(args.config))
+    with open(args.config) as f:
+        flat_config = flatten_config(json.load(f))
     for case in get_cases(args.only):
         record = generate_case(case, flat_config, args.out)
         print(f"{case['id']}: {case['description']}")
