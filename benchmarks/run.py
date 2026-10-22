@@ -28,7 +28,7 @@ from alpss.commands import alpss_main_with_config  # noqa: E402
 from cases import get_cases  # noqa: E402
 from common import (  # noqa: E402
     CONFIG_PATH, DATA_DIR, REPO_ROOT, RUNS_DIR,
-    load_config, set_key, signal_path, truth_path,
+    set_key, signal_path, truth_path,
 )
 
 
@@ -94,7 +94,8 @@ def main():
     parser.add_argument("--out", default=RUNS_DIR)
     args = parser.parse_args()
 
-    base = load_config(args.config)
+    with open(args.config) as f:
+        base = json.load(f)
     overrides = parse_overrides(args.overrides)
     run_dir = os.path.join(args.out, args.label)
     os.makedirs(run_dir, exist_ok=True)

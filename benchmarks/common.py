@@ -1,4 +1,3 @@
-import json
 import os
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -6,18 +5,6 @@ BENCH_DIR = os.path.join(REPO_ROOT, "benchmarks")
 DATA_DIR = os.path.join(BENCH_DIR, "data")
 RUNS_DIR = os.path.join(BENCH_DIR, "runs")
 CONFIG_PATH = os.path.join(REPO_ROOT, "tests", "input_data", "config.json")
-
-
-def load_config(path=CONFIG_PATH):
-    """Load the nested ALPSS config (sections -> keys)."""
-    with open(path) as f:
-        return json.load(f)
-
-
-def flat(config):
-    from alpss.utils.config import flatten_config
-
-    return flatten_config(config)
 
 
 def set_key(config, key, value):
