@@ -1,8 +1,20 @@
 # Simulated-signal benchmark
 
-A quality check for ALPSS: generate PDV signals from a known velocity history,
-run ALPSS on them, and measure how far each result is from the truth. Use it to
-see whether a change makes ALPSS more or less accurate.
+Checks how accurate ALPSS is on signals where the right answer is known.
+
+```
+cases.py ──generate.py──> data/   synthetic signal + true velocity + expected results
+data/    ──run.py───────> runs/<label>/   ALPSS outputs per case
+runs/    ──summarize.py─> summary.md      error of each result vs. the truth
+```
+
+1. Each case in `cases.py` describes a shot (type, noise level, seed).
+2. `generate.py` builds the velocity history, turns it into a noisy PDV signal,
+   and works out the results ALPSS should report.
+3. `run.py` runs ALPSS on every signal, using the config in
+   `tests/input_data/config.json`.
+4. `summarize.py` compares the outputs with the truth. With `--against`, it also
+   compares two runs, for example `main` and your branch.
 
 Run everything from the repo root.
 
