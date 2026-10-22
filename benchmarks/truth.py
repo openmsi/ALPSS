@@ -14,8 +14,8 @@ def truth_from_case(case, flat_config, velocity):
     """Expected ALPSS results for `case`.
 
     Keys are ALPSS results-CSV column names (see alpss/io/saving.py) so the
-    summary can match them directly. `velocity` is the true velocity array;
-    it is only used for the "velocity" shot type, whose peak is not a parameter.
+    summary can match them directly. `velocity` is the true velocity array,
+    whose maximum is the expected peak velocity.
     """
     p = profile_params(case)
     s = synthesis_params(case)
@@ -29,10 +29,7 @@ def truth_from_case(case, flat_config, velocity):
         "Signal Start Time": -p["t_begin"],
     }
 
-    if shot == "velocity":
-        v_peak = float(velocity.max())
-    else:
-        v_peak = p["V_plat"]
+    v_peak = float(velocity.max())
     truth["Velocity at Max Compression"] = v_peak
     truth["Peak Shock Stress"] = 0.5 * rho * C0 * v_peak
 

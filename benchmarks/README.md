@@ -60,14 +60,14 @@ any step to some cases.
 
 | Result | Truth |
 |---|---|
-| Velocity at Max Compression | `V_plat` (for `velocity`: the profile's maximum) |
+| Velocity at Max Compression | `V_peak`, the maximum of the true velocity history |
 | Velocity at Max Tension | `V_plat − dV_spall` |
 | Time at Max Tension | `t_spall` |
 | Spall Strength | `0.5·ρ·C0·dV_spall` |
 | Strain Rate | `0.5/C0 · dV_spall / (t_spall − t_plat_end)`, the true pullback slope (ALPSS measures from the time of peak velocity) |
 | HEL Free Surface Velocity | `V_HEL` |
 | HEL Strength (GPa) | `0.5·ρ·C_L·V_HEL` |
-| Peak Shock Stress | `0.5·ρ·C0·V_plat` |
+| Peak Shock Stress | `0.5·ρ·C0·V_peak` |
 | Carrier Frequency | `c/λ_ref − c/λ_tar` |
 | Signal Start Time | shock arrival, `−t_begin` |
 
