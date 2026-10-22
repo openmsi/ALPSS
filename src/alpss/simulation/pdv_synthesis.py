@@ -76,7 +76,21 @@ def compute_stft(voltage, fs, window="hann", nperseg=600, noverlap=500, nfft=512
 # Velocity profile generator
 # ---------------------------------------------------------------------------
 
-def generate_velocity_profile(shot_type, sample_rate=128e9, **kwargs):
+PROFILE_PARAMS = {
+    "velocity": ("t_begin", "t_end", "vel_peak", "a", "b"),
+    "HEL": (
+        "t_begin", "t_end", "V0", "V_HEL", "V_plat",
+        "t_rise1", "t_rise2", "t_rise3", "t_return1", "t_return2",
+    ),
+    "HEL-spall": (
+        "t_begin", "t_end", "V0", "V_HEL", "V_plat",
+        "t_hel_start", "t_hel_end", "t_plat_start", "t_plat_end",
+        "t_spall", "t_recover", "dV_spall",
+    ),
+}
+
+
+def generate_velocity_profile(shot_type, sample_rate=128e9, **params):
     """Build a synthetic velocity-time profile for a given shot type.
 
     Parameters
@@ -85,31 +99,32 @@ def generate_velocity_profile(shot_type, sample_rate=128e9, **kwargs):
         One of ``"velocity"``, ``"HEL"``, ``"HEL-spall"``.
     sample_rate : float
         Digitizer sampling rate in Hz (default 128 GHz).
-    **kwargs
-        Override any default parameter for the chosen shot type.
-        See source for available keys per shot type.
+    **params
+        Every parameter listed in ``PROFILE_PARAMS[shot_type]``, and no others.
 
     Returns
     -------
     time : np.ndarray   Time array in seconds.
     velocity : np.ndarray  Velocity array in m/s.
     """
+    if shot_type not in PROFILE_PARAMS:
+        raise ValueError(f"Unknown shot_type '{shot_type}'. Choose from: {list(PROFILE_PARAMS)}.")
+    expected = set(PROFILE_PARAMS[shot_type])
+    missing = expected - set(params)
+    unknown = set(params) - expected
+    if missing or unknown:
+        raise ValueError(
+            f"{shot_type} profile: missing {sorted(missing)}, unknown {sorted(unknown)}"
+        )
+    p = params
+
     if shot_type == "velocity":
-        p = dict(t_begin=-500e-9, t_end=1000e-9, vel_peak=200, a=1, b=0.00001)
-        p.update(kwargs)
         time = np.arange(p["t_begin"], p["t_end"], 1 / sample_rate)
         x = (time > 0) * time
         intercept = p["b"] / p["vel_peak"] / p["a"]
         velocity = (p["vel_peak"] * (x + intercept) * p["a"] - p["b"]) / (x + intercept) * p["a"]
 
     elif shot_type == "HEL":
-        p = dict(
-            t_begin=-3e-6, t_end=3e-6,
-            V0=0, V_HEL=50, V_plat=300,
-            t_rise1=5e-9, t_rise2=10e-9, t_rise3=20e-9,
-            t_return1=50e-9, t_return2=70e-9,
-        )
-        p.update(kwargs)
         time = np.arange(p["t_begin"], p["t_end"], 1 / sample_rate)
         velocity = np.zeros_like(time)
         for i, t in enumerate(time):
@@ -133,15 +148,6 @@ def generate_velocity_profile(shot_type, sample_rate=128e9, **kwargs):
                 velocity[i] = p["V0"]
 
     elif shot_type == "HEL-spall":
-        p = dict(
-            t_begin=-3e-6, t_end=3e-6,
-            V0=0, V_HEL=100, V_plat=300,
-            t_hel_start=3e-9, t_hel_end=7e-9,
-            t_plat_start=15e-9, t_plat_end=25e-9,
-            t_spall=40e-9, t_recover=60e-9,
-            dV_spall=100,
-        )
-        p.update(kwargs)
         time = np.arange(p["t_begin"], p["t_end"], 1 / sample_rate)
         velocity = np.zeros_like(time)
         for i, t in enumerate(time):
@@ -168,9 +174,6 @@ def generate_velocity_profile(shot_type, sample_rate=128e9, **kwargs):
             else:
                 velocity[i] = p["V_plat"]
 
-    else:
-        raise ValueError(f"Unknown shot_type '{shot_type}'. Choose from: 'velocity', 'HEL', 'HEL-spall'.")
-
     return time, velocity
 
 
@@ -181,8 +184,8 @@ def generate_velocity_profile(shot_type, sample_rate=128e9, **kwargs):
 def velocity_to_pdv_voltage(
     time,
     velocity,
-    lambda_ref=1550e-9,
-    lambda_tar=1550.016e-9,
+    lambda_ref,
+    lambda_tar,
     power_ref_dbm=0,
     power_signal_dbm=-1,
     power_tar_dbm=None,
@@ -202,9 +205,9 @@ def velocity_to_pdv_voltage(
     velocity : np.ndarray
         Velocity array in m/s, same length as ``time``.
     lambda_ref : float
-        Reference laser wavelength in meters (default 1550 nm).
+        Reference laser wavelength in meters.
     lambda_tar : float
-        Target laser wavelength in meters (default 1550.016 nm).
+        Target laser wavelength in meters.
     power_ref_dbm : float
         Reference beam power in dBm (default 0 dBm).
     power_signal_dbm : float
