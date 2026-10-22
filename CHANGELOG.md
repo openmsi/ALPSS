@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `time_to_take` accepts `"all"` to read the signal from `time_to_skip` to
   the end of the file. The `t_after` check is skipped in that case, and any
   other string is rejected by validation.
+- `alpss.simulation`: synthetic PDV signal generation from a velocity history
+  (`generate_velocity_profile`, `velocity_to_pdv_voltage`,
+  `velocity_to_multipoint_pdv_voltage`).
+- `benchmarks/`: a quality check that generates simulated signals with known
+  truth, runs ALPSS on them and reports the error of each result, whether the
+  reported uncertainty covers it, and how two runs compare.
 
 ## [1.8.0] - 2026-09-23
 
