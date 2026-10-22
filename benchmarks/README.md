@@ -39,9 +39,9 @@ any step to some cases.
 ## Pieces
 
 - `alpss.simulation.pdv_synthesis` (in the package) synthesizes the signals.
-- `cases.py` lists the cases: shot type, profile parameters (empty means the
-  generator's defaults), noise level, seed, and the config switches the case
-  needs (`spall_enabled`, `hel_enabled`).
+- `cases.py` holds the default profile and synthesis parameters and lists the
+  cases: shot type, overrides of those defaults, noise level, seed, and the
+  config switches the case needs (`spall_enabled`, `hel_enabled`).
 - `truth.py` derives the expected ALPSS results from the profile parameters and
   the material constants in `tests/input_data/config.json`.
 - `generate.py` writes `data/<case>.csv` (the signal), `data/<case>.velocity_true.csv`

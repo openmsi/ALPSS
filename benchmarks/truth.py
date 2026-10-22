@@ -1,45 +1,13 @@
 """Ground truth for each case, derived from the velocity-profile parameters.
 
-PROFILE_DEFAULTS mirrors the defaults inside
-alpss.simulation.pdv_synthesis.generate_velocity_profile. generate.py checks
-that the profile built from these explicit values matches the one built from
-the module's own defaults, so a drift between the two fails loudly.
-
 Times are reported in ALPSS's time base, which starts at 0 at the first sample
 of the file (spall_doi_finder subtracts time[0]); the simulated shock arrives at
 t=0 in the profile's own time, i.e. at -t_begin in ALPSS time.
 """
 
+from cases import profile_params, synthesis_params
+
 C_LIGHT = 3e8  # same constant as pdv_synthesis
-
-PROFILE_DEFAULTS = {
-    "velocity": dict(t_begin=-500e-9, t_end=1000e-9, vel_peak=200, a=1, b=0.00001),
-    "HEL": dict(
-        t_begin=-3e-6, t_end=3e-6,
-        V0=0, V_HEL=50, V_plat=300,
-        t_rise1=5e-9, t_rise2=10e-9, t_rise3=20e-9,
-        t_return1=50e-9, t_return2=70e-9,
-    ),
-    "HEL-spall": dict(
-        t_begin=-3e-6, t_end=3e-6,
-        V0=0, V_HEL=100, V_plat=300,
-        t_hel_start=3e-9, t_hel_end=7e-9,
-        t_plat_start=15e-9, t_plat_end=25e-9,
-        t_spall=40e-9, t_recover=60e-9,
-        dV_spall=100,
-    ),
-}
-
-# velocity_to_pdv_voltage defaults
-SYNTHESIS_DEFAULTS = dict(lambda_ref=1550e-9, lambda_tar=1550.016e-9)
-
-
-def profile_params(case):
-    return {**PROFILE_DEFAULTS[case["shot_type"]], **case["profile"]}
-
-
-def synthesis_params(case):
-    return {**SYNTHESIS_DEFAULTS, **case["synthesis"]}
 
 
 def truth_from_case(case, flat_config, velocity):

@@ -17,12 +17,12 @@ import numpy as np
 from alpss.simulation import generate_velocity_profile, velocity_to_pdv_voltage
 from alpss.utils.config import flatten_config
 
-from cases import SAMPLE_RATE, get_cases
+from cases import SAMPLE_RATE, get_cases, profile_params, synthesis_params
 from common import (
     CONFIG_PATH, DATA_DIR,
     signal_path, truth_path, velocity_true_path,
 )
-from truth import profile_params, synthesis_params, truth_from_case
+from truth import truth_from_case
 
 
 def generate_case(case, flat_config, out_dir):
@@ -30,15 +30,6 @@ def generate_case(case, flat_config, out_dir):
     time, velocity = generate_velocity_profile(
         case["shot_type"], sample_rate=SAMPLE_RATE, **params
     )
-    # truth.py keeps its own copy of the profile defaults; make sure it agrees
-    _, velocity_check = generate_velocity_profile(
-        case["shot_type"], sample_rate=SAMPLE_RATE, **case["profile"]
-    )
-    if not np.array_equal(velocity, velocity_check):
-        raise RuntimeError(
-            f"{case['id']}: truth.PROFILE_DEFAULTS no longer matches "
-            "generate_velocity_profile's defaults"
-        )
 
     # pdv_synthesis draws noise from the global numpy RNG
     np.random.seed(case["seed"])
