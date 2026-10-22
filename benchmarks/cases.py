@@ -2,9 +2,9 @@
 
 Each case is one synthetic signal. ``profile`` overrides PROFILE_DEFAULTS for the
 case's shot type and is passed to ``generate_velocity_profile``; ``synthesis``
-overrides SYNTHESIS_DEFAULTS and is passed to ``velocity_to_pdv_voltage``. Both
-always receive the full merged parameters, so the signal and the truth come from
-the same numbers whatever the generator's own defaults are. ``config`` holds the
+overrides SYNTHESIS_DEFAULTS and is passed to ``velocity_to_pdv_voltage``. These
+are the only defaults: the generator has none, so the signal and the truth
+always come from the same numbers. ``config`` holds the
 ALPSS config keys this case needs changed relative to
 tests/input_data/config.json (beyond the ones run.py always derives from the
 signal).
