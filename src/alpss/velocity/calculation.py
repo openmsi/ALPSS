@@ -65,7 +65,15 @@ def velocity_calculation(
         "time_start_idx": time_start_idx,
         "time_end_idx": time_end_idx,
     }
-    # compute and add velocity peak metrics
-    vc_out.update(compute_velocity_peaks(velocity_f_smooth, time_f))
+    # compute and add velocity peak metrics (compression, tension, recompression)
+    peak_data = compute_velocity_peaks(
+        velocity_f_smooth,
+        time_f,
+        inputs["pb_neighbors"],
+        inputs["pb_idx_correction"],
+        inputs["rc_neighbors"],
+        inputs["rc_idx_correction"],
+    )
+    vc_out.update(peak_data)
 
     return vc_out

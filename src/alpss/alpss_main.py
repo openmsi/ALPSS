@@ -37,6 +37,7 @@ def alpss_main(data, **inputs):
     cf_out = vel["cf_out"]
     vc_out = vel["vc_out"]
     iua_out = vel["iua_out"]
+    vu_out = vel["vu_out"]
     start_time = vel["start_time"]
     end_time = vel["end_time"]
 
@@ -51,7 +52,7 @@ def alpss_main(data, **inputs):
 
     # --- Phase 2b: Spall uncertainty analysis ---
     sua_out, spall_uncertainty_ok, spall_uncertainty_error = run_spall_uncertainty_phase(
-        cen, vc_out, sa_out, iua_out, spall_ok, **inputs
+        cen, vc_out, vu_out, sa_out, iua_out, spall_ok, **inputs
     ) if velocity_ok and spall_ok else (default_spall_uncertainty_output(), False, "spall_uncertainty: skipped due to velocity_ok=false" if not velocity_ok else "spall_uncertainty: skipped due to spall_ok=false")
     if spall_uncertainty_error:
         errors.append(spall_uncertainty_error)
@@ -75,6 +76,7 @@ def alpss_main(data, **inputs):
         cen,
         cf_out,
         vc_out,
+        vu_out,
         sa_out,
         iua_out,
         sua_out,
