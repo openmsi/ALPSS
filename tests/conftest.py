@@ -63,6 +63,8 @@ def valid_inputs():
             "smoothing_mu": 0,
             "lam": 1.547461e-06,
             "theta": 0,
+            "min_velocity_threshold": 25,
+            "max_velocity_uncertainty_threshold": 10,
         },
         "material": {
             "C0": 4540,

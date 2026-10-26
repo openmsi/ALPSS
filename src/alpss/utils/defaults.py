@@ -16,7 +16,7 @@ def default_shock_output() -> dict:
     }
 
 
-def default_uncertainty_output() -> dict:
+def default_spall_uncertainty_output() -> dict:
     return {
         "spall_uncert": np.nan,
         "strain_rate_uncert": np.nan,

@@ -2,6 +2,7 @@ import logging
 import traceback
 from datetime import datetime
 import os
+import numpy as np
 
 from alpss.io.reading import extract_data
 from alpss.io.saving import save
@@ -10,15 +11,16 @@ from alpss.carrier.frequency import carrier_frequency
 from alpss.carrier.filter import carrier_filter
 from alpss.velocity.calculation import velocity_calculation
 from alpss.analysis.instantaneous_uncertainty import instantaneous_uncertainty_analysis
+from alpss.analysis.velocity_uncertainty import velocity_uncertainty_analysis
 from alpss.analysis.spall import spall_analysis
-from alpss.analysis.full_uncertainty import full_uncertainty_analysis
+from alpss.analysis.spall_uncertainty import spall_uncertainty_analysis
 from alpss.analysis.shock import shock_analysis
 from alpss.analysis.hel import hel_detection
 from alpss.plotting.plots import plot_results
 from alpss.plotting.hel import plot_hel_detection
 from alpss.utils.defaults import (
     default_spall_output,
-    default_uncertainty_output,
+    default_spall_uncertainty_output,
     default_shock_output,
     default_hel_output,
 )
@@ -26,49 +28,83 @@ from alpss.utils.defaults import (
 logger = logging.getLogger("alpss")
 
 
-def run_velocity_phase(**inputs) -> dict:
-    """Run Phase 1 (velocity processing). Returns sdf_out, cen, cf_out, vc_out, iua_out, start_time, end_time."""
+def run_velocity_phase(**inputs) -> tuple:
+    """Run Phase 1 (velocity processing). Returns (vel_out, velocity_ok, error_msg)."""
     start_time = datetime.now()
+    velocity_ok = True
+    errors = []
+    vel_out = {}
 
-    data = extract_data(inputs)
-    logger.info("Extracted %d samples", len(data))
+    try:
+        data = extract_data(inputs)
+        logger.info("Extracted %d samples", len(data))
 
-    if inputs.get("multipoint") is not True:
-        data = data
-    else:
-        data = data.iloc[:, [0, 1]] #truncate the data if it is not multipoint
+        if inputs.get("multipoint") is not True:
+            data = data
+        else:
+            data = data.iloc[:, [0, 1]] #truncate the data if it is not multipoint
 
-    sdf_out = spall_doi_finder(data, **inputs)
-    logger.info(
-        "Spall DOI found: start=%.3e s, end=%.3e s",
-        sdf_out["t_doi_start"],
-        sdf_out["t_doi_end"],
-    )
+        sdf_out = spall_doi_finder(data, **inputs)
+        logger.info(
+            "Spall DOI found: start=%.3e s, end=%.3e s",
+            sdf_out["t_doi_start"],
+            sdf_out["t_doi_end"],
+        )
 
-    cen = carrier_frequency(sdf_out, **inputs)
-    logger.info("Carrier frequency: %.6e Hz", cen)
+        cen = carrier_frequency(sdf_out, **inputs)
+        logger.info("Carrier frequency: %.6e Hz", cen)
+        vel_out["cen"] = cen
 
-    cf_out = carrier_filter(sdf_out, cen, **inputs)
-    logger.info("Carrier filter applied")
+        cf_out = carrier_filter(sdf_out, cen, **inputs)
+        logger.info("Carrier filter applied")
+        vel_out["cf_out"] = cf_out
 
-    vc_out = velocity_calculation(sdf_out, cen, cf_out, **inputs)
-    logger.info("Velocity calculated (%d points)", len(vc_out["time_f"]))
+        vc_out = velocity_calculation(sdf_out, cen, cf_out, **inputs)
+        logger.info("Velocity calculated (%d points)", len(vc_out["time_f"]))
+        vel_out["vc_out"] = vc_out
 
-    iua_out = instantaneous_uncertainty_analysis(sdf_out, vc_out, cen, **inputs)
-    logger.info("Instantaneous uncertainty computed")
+        iua_out = instantaneous_uncertainty_analysis(sdf_out, vc_out, cen, **inputs)
+        logger.info("Instantaneous uncertainty computed")
+        vel_out["iua_out"] = iua_out
+
+        vu_out = velocity_uncertainty_analysis(vc_out, iua_out)
+        vc_out.update(vu_out)
+        logger.info("Velocity uncertainties computed")
+
+        logger.info("Velocity processing complete")
+
+        min_velocity = inputs["min_velocity_threshold"]
+        max_uncertainty = inputs["max_velocity_uncertainty_threshold"]
+
+        # min velocity qualifier
+        if vc_out['v_max_comp'] < min_velocity:
+            velocity_ok = False
+            errors.append(f"Velocity {vc_out['v_max_comp']} did not exceed minimum velocity of ({min_velocity})")
+
+        # max uncertainty qualifier
+        if vu_out['peak_velocity_vel_uncert'] > max_uncertainty:
+            velocity_ok = False
+            errors.append(f"Uncertainty of value {vu_out['peak_velocity_vel_uncert']} is too high (>{max_uncertainty})")
+
+    except Exception as e:
+        velocity_ok = False
+        errors.append(str(e))
+        logger.error("Error in velocity processing: %s", str(e))
+        logger.error("Traceback: %s", traceback.format_exc())
+        try:
+            from alpss.plotting.plots import plot_voltage
+
+            plot_voltage(extract_data(inputs), errors=errors, **inputs)
+        except Exception:
+            logger.error("Fallback voltage plot also failed.")
+        # Re-raise to exit pipeline early after fallback plot
+        raise
 
     end_time = datetime.now()
-    logger.info("Velocity processing complete in %s", end_time - start_time)
-
-    return {
-        "sdf_out": sdf_out,
-        "cen": cen,
-        "cf_out": cf_out,
-        "vc_out": vc_out,
-        "iua_out": iua_out,
-        "start_time": start_time,
-        "end_time": end_time,
-    }
+    vel_out["start_time"] = start_time
+    vel_out["end_time"] = end_time
+    error_msg = f"velocity: {'; '.join(errors)}" if errors else None
+    return vel_out, velocity_ok, error_msg
 
 
 def run_spall_phase(vc_out, iua_out, **inputs) -> tuple:
@@ -96,32 +132,31 @@ def run_spall_phase(vc_out, iua_out, **inputs) -> tuple:
     return sa_out, spall_ok, error_msg
 
 
-def run_uncertainty_phase(cen, vc_out, sa_out, iua_out, spall_ok, **inputs) -> tuple:
-    """Phase 2b: Uncertainty analysis. Returns (fua_out, uncertainty_ok, error_msg)."""
-    fua_out = default_uncertainty_output()
-    uncertainty_ok = False
+def run_spall_uncertainty_phase(cen, vc_out, sa_out, iua_out, spall_ok, **inputs) -> tuple:
+    """Phase 2b: Spall uncertainty analysis. Returns (sua_out, spall_uncertainty_ok, error_msg)."""
+    sua_out = default_spall_uncertainty_output()
+    spall_uncertainty_ok = False
     error_msg = None
 
     if not spall_ok:
-        logger.info("Skipping uncertainty analysis: spall analysis did not succeed.")
-        error_msg = "uncertainty: analysis skipped due to spall_ok=false"
-    else:
-        try:
-            logger.info("Running full uncertainty analysis...")
-            fua_out = full_uncertainty_analysis(cen, vc_out, sa_out, iua_out, **inputs)
-            uncertainty_ok = True
-            logger.info(
-                "Uncertainty analysis complete: spall uncertainty=%.4f, strain rate uncertainty=%.4e",
-                fua_out["spall_uncert"],
-                fua_out["strain_rate_uncert"],
-            )
-        except Exception as e:
-            error_msg = f"uncertainty: {e}"
-            logger.error("Error in uncertainty analysis: %s", str(e))
-            logger.error("Traceback: %s", traceback.format_exc())
-            logger.info("Continuing without uncertainty analysis.")
+        error_msg = "spall_uncertainty: skipped due to spall_ok=false"
+        logger.info(error_msg)
+        return sua_out, spall_uncertainty_ok, error_msg
 
-    return fua_out, uncertainty_ok, error_msg
+    try:
+        logger.info("Running spall uncertainty analysis...")
+        sua_out = spall_uncertainty_analysis(cen, vc_out, sa_out, iua_out, **inputs)
+        spall_uncertainty_ok = True
+        logger.info(
+            "Spall uncertainty analysis complete."
+        )
+    except Exception as e:
+        error_msg = f"spall_uncertainty: {e}"
+        logger.error("Error in spall uncertainty analysis: %s", str(e))
+        logger.error("Traceback: %s", traceback.format_exc())
+        logger.info("Continuing without spall uncertainty analysis.")
+
+    return sua_out, spall_uncertainty_ok, error_msg
 
 
 def run_hel_phase(vc_out, iua_out, **inputs) -> tuple:
@@ -191,13 +226,14 @@ def run_output_phase(
     vc_out,
     sa_out,
     iua_out,
-    fua_out,
+    sua_out,
     shock_out,
     hel_out,
     start_time,
     end_time,
+    velocity_ok,
     spall_ok,
-    uncertainty_ok,
+    spall_uncertainty_ok,
     errors,
     **inputs,
 ) -> tuple:
@@ -211,10 +247,14 @@ def run_output_phase(
         vc_out,
         sa_out,
         iua_out,
-        fua_out,
+        sua_out,
         shock_out,
         start_time,
         end_time,
+        velocity_ok,
+        spall_ok,
+        spall_uncertainty_ok,
+        hel_out.ok,
         **inputs,
     )
 
@@ -249,14 +289,14 @@ def run_output_phase(
         vc_out,
         sa_out,
         iua_out,
-        fua_out,
+        sua_out,
         shock_out,
         start_time,
         end_time,
         fig,
-        True,
+        velocity_ok,
         spall_ok,
-        uncertainty_ok,
+        spall_uncertainty_ok,
         iq_fig=sdf_out.get("iq_fig"),
         hel_fig=hel_fig,
         hel_out=hel_out,

@@ -39,6 +39,8 @@ _ALWAYS_REQUIRED = [
     "display_plots",
     "spall_enabled",
     "hel_enabled",
+    "min_velocity_threshold",
+    "max_velocity_uncertainty_threshold",
 ]
 
 # Optional keys — warning is emitted if absent.

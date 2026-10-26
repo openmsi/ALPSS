@@ -44,7 +44,9 @@
         "smoothing_sigma": 1,
         "smoothing_mu": 0,
         "lam": 1.547461e-06,
-        "theta": 0
+        "theta": 0,
+        "min_velocity_threshold": 25,
+        "max_velocity_uncertainty_threshold": 10
     },
     "material": {
         "C0": 4540,
@@ -75,7 +77,7 @@
     },
     "plotting": {
         "cmap": "viridis",
-        "plot_figsize": [80, 40],
+        "plot_figsize": [30, 10],
         "plot_dpi": 300
     }
 }
