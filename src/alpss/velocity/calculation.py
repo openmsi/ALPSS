@@ -19,6 +19,7 @@ def velocity_calculation(
     lam = inputs["lam"]
     t_doi_start = spall_doi_finder_outputs["t_doi_start"]
     t_doi_end = spall_doi_finder_outputs["t_doi_end"]
+    t0 = spall_doi_finder_outputs["t_start_corrected"]
 
     # isolate signal. filter out all frequencies that are outside the range of interest
     numpts = len(time)
@@ -33,10 +34,15 @@ def velocity_calculation(
     time_start_idx = np.argmin(np.abs(time - t_doi_start))
     time_end_idx = np.argmin(np.abs(time - t_doi_end))
 
+    # The corrected start time is time zero in the reported trace.
+    buffer = 10e-9 #buffer time to ensure t0 is not after signal start
+    t0_idx = np.argmin(np.abs(time - t0 - buffer))
+
     # save the displacement for multipoint
     displacement = (phas - 2 * np.pi * cen * time) * lam / 4 / np.pi
-    displacement_f = displacement[time_start_idx:time_end_idx] # crop to signal doi
-    displacement_f = displacement_f - displacement_f[0] # zero the displacement for doi 
+    displacement_f = (displacement - displacement[t0_idx])[
+        time_start_idx:time_end_idx
+    ]
 
     # take the numerical derivative using the certral difference method with a 9-point stencil
     # return the derivative on the domain of interest (dpdt) as well as the padded derivative to be used for smoothing
