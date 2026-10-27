@@ -78,5 +78,4 @@ Times are in ALPSS's time base, which starts at 0 at the first sample of the fil
 - `error` = measured − truth; `rel_error` = error / truth.
 - The velocity trace rows give the RMS and maximum error of the smoothed velocity
   against the true history, over the window ALPSS analysed.
-- With `--against`, each value is marked better / worse / same depending on which
-  run is closer to the truth (relative error, or absolute where the truth is 0).
+- With `--against`, a comparison table lists each value's error in both runs.
