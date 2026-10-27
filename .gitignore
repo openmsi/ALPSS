@@ -1,4 +1,6 @@
 tests/output_data/
+benchmarks/data/
+benchmarks/runs/
 CLAUDE.md
 
 # Compiled source #
