@@ -75,37 +75,14 @@ def summarize_run(run_dir, data_dir):
 
 
 def compare(current, baseline):
-    """Per case/metric |error| in both runs and which one is closer to truth."""
+    """Per case/metric error in both runs, side by side."""
     keys = ["case", "metric"]
-    merged = baseline[keys + ["truth", "error"]].merge(
+    return baseline[keys + ["truth", "error"]].merge(
         current[keys + ["error"]], on=keys, how="outer", suffixes=("_baseline", "_current")
     )
 
-    def score(row, column):
-        # relative error where the truth is non-zero, absolute otherwise
-        err = abs(row[column])
-        return err / abs(row["truth"]) if row["truth"] else err
-
-    verdicts = []
-    for _, row in merged.iterrows():
-        b, c = score(row, "error_baseline"), score(row, "error_current")
-        if np.isnan(b) and np.isnan(c):
-            verdicts.append("both missing")
-        elif np.isnan(c):
-            verdicts.append("lost")
-        elif np.isnan(b):
-            verdicts.append("gained")
-        elif abs(c - b) <= 1e-3 * max(b, 1e-12) + 1e-12:
-            verdicts.append("same")
-        else:
-            verdicts.append("better" if c < b else "worse")
-    merged["verdict"] = verdicts
-    return merged
-
 
 def fmt(value):
-    if isinstance(value, (bool, np.bool_)):
-        return "yes" if value else "no"
     if isinstance(value, (float, np.floating)):
         if np.isnan(value):
             return "-"
@@ -156,13 +133,11 @@ def main():
         comparison = compare(summary, base_summary)
         name = os.path.basename(os.path.normpath(args.against))
         comparison.to_csv(os.path.join(args.run_dir, f"comparison_vs_{name}.csv"), index=False)
-        counts = comparison["verdict"].value_counts().to_dict()
         report += (
             f"\n# Comparison\n\ncurrent: {run_header(run)}\n\n"
             f"baseline: {run_header(base_run)}\n\n"
-            + ", ".join(f"{k}: {v}" for k, v in counts.items()) + "\n\n"
             + to_markdown(comparison, ["case", "metric", "truth", "error_baseline",
-                                       "error_current", "verdict"])
+                                       "error_current"])
             + "\n"
         )
 
