@@ -76,9 +76,6 @@ Times are in ALPSS's time base, which starts at 0 at the first sample of the fil
 ## Summary columns
 
 - `error` = measured − truth; `rel_error` = error / truth.
-- `ok` is the OK flag of the phase that produced the value (Velocity, Spall or HEL).
-- `uncertainty` is the uncertainty ALPSS reports for that value, where it reports one,
-  and `covered` says whether `|error| ≤ uncertainty`.
 - The velocity trace rows give the RMS and maximum error of the smoothed velocity
   against the true history, over the window ALPSS analysed.
 - With `--against`, each value is marked better / worse / same depending on which
