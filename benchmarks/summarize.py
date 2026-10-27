@@ -3,8 +3,7 @@
     poetry run python benchmarks/summarize.py benchmarks/runs/main
     poetry run python benchmarks/summarize.py benchmarks/runs/feature --against benchmarks/runs/main
 
-For each case and truth value: measured, error, relative error, the phase's OK
-flag, ALPSS's reported uncertainty and whether it covers the error. Also the
+For each case and truth value: measured, error and relative error. Also the
 RMS / max error of the smoothed velocity trace against the true history.
 Writes summary.csv and summary.md into the run directory; with --against, also
 writes comparison_vs_<other>.csv/.md there.
@@ -19,22 +18,6 @@ import pandas as pd
 
 from common import DATA_DIR, REPO_ROOT, truth_path, velocity_true_path
 
-# truth key -> (results key of the reported uncertainty, OK flag of its phase)
-UNCERTAINTY = {
-    "Velocity at Max Compression": "Velocity at Max Compression Vel Uncertainty",
-    "Velocity at Max Tension": "Velocity at Max Tension Vel Uncertainty",
-    "Spall Strength": "Spall Strength Uncertainty",
-    "Strain Rate": "Strain Rate Uncertainty",
-    "HEL Strength (GPa)": "HEL Uncertainty (GPa)",
-}
-PHASE_FLAG = {
-    "Velocity at Max Tension": "Spall OK",
-    "Time at Max Tension": "Spall OK",
-    "Spall Strength": "Spall OK",
-    "Strain Rate": "Spall OK",
-    "HEL Free Surface Velocity (m/s)": "HEL OK",
-    "HEL Strength (GPa)": "HEL OK",
-}
 TRACE_METRICS = ("Velocity trace RMS (m/s)", "Velocity trace max (m/s)")
 
 
@@ -73,7 +56,6 @@ def summarize_run(run_dir, data_dir):
         for metric, expected in truth.items():
             measured = results.get(metric, np.nan)
             err = measured - expected
-            unc = results.get(UNCERTAINTY.get(metric), np.nan)
             rows.append({
                 "case": case_id,
                 "metric": metric,
@@ -81,17 +63,12 @@ def summarize_run(run_dir, data_dir):
                 "measured": measured,
                 "error": err,
                 "rel_error": err / expected if expected else np.nan,
-                "ok": results.get(PHASE_FLAG.get(metric, "Velocity OK"), np.nan),
-                "uncertainty": unc,
-                "covered": bool(abs(err) <= unc) if np.isfinite(err) and np.isfinite(unc) else np.nan,
             })
 
         for metric, value in trace_errors(case_dir, case_id, data_dir).items():
             rows.append({
                 "case": case_id, "metric": metric, "truth": 0.0, "measured": value,
                 "error": value, "rel_error": np.nan,
-                "ok": results.get("Velocity OK", np.nan),
-                "uncertainty": np.nan, "covered": np.nan,
             })
 
     return run, pd.DataFrame(rows)
@@ -164,8 +141,7 @@ def main():
     args = parser.parse_args()
 
     run, summary = summarize_run(args.run_dir, args.data)
-    columns = ["case", "metric", "truth", "measured", "error", "rel_error",
-               "ok", "uncertainty", "covered"]
+    columns = ["case", "metric", "truth", "measured", "error", "rel_error"]
     summary.to_csv(os.path.join(args.run_dir, "summary.csv"), index=False)
 
     failed = {c: s["error"] for c, s in run["cases"].items() if s["status"] != "ok"}
