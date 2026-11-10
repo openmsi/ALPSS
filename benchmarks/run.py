@@ -61,12 +61,12 @@ def case_config(base, case, data_dir, out_dir, overrides):
     else:
         with open(truth_path(data_dir, case["id"])) as f:
             record = json.load(f)
-        t0_ns = -record["profile"]["t_begin"] * 1e9  # shock arrival in ALPSS time
+        t0_ns = record["t_arrival"] * 1e9  # shock arrival in ALPSS time
         set_key(config, "filepath", signal_path(data_dir, case["id"]))
         set_key(config, "time_to_skip", 0.0)
         set_key(config, "time_to_take", "all")
         set_key(config, "sample_rate", record["sample_rate"])
-        set_key(config, "lam", record["synthesis"]["lambda_ref"])
+        set_key(config, "lam", record["lam"])
         # the config's HEL window is relative to the shock arrival
         set_key(config, "hel_start_time_ns", t0_ns + base["hel"]["hel_start_time_ns"])
         set_key(config, "hel_end_time_ns", t0_ns + base["hel"]["hel_end_time_ns"])
