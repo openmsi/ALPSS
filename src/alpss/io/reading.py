@@ -14,6 +14,9 @@ _MAX_HEADER_SCAN = 500
 # a file may hold channels 2, 3, 4 in positions 1, 2, 3.
 _CHANNEL_LABEL = re.compile(r"^Channel\s*(\d+)$", re.IGNORECASE)
 
+# Number of leading samples used to measure the sample interval.
+_RATE_PROBE_ROWS = 1000
+
 
 def _is_numeric_data_row(line, min_cols=2):
     """True if `line` looks like a data row: at least min_cols comma-separated
@@ -96,19 +99,19 @@ def channel_columns(labels, n_cols):
     return columns
 
 
+def _source(inputs):
+    """A fresh readable source for pd.read_csv (file path or bytestring)."""
+    if "bytestring" in inputs and isinstance(inputs["bytestring"], bytes):
+        return io.BytesIO(inputs["bytestring"])
+    return inputs["filepath"]
+
+
 def extract_data(inputs):
     """Read one channel of a scope export as an (N, 2) array of [time, voltage].
 
     The analysis works on a plain array; everything that knows about file
     formats -- header length, column labels, which channel -- stops here.
     """
-    t_step = 1 / inputs["sample_rate"]
-    # time_to_take="all" reads to the end of the file
-    if inputs["time_to_take"] == "all":
-        nrows = None
-    else:
-        nrows = int(inputs["time_to_take"] / t_step)
-
     data_start, labels, n_cols = sniff_header(inputs)
     if "header_lines" in inputs:
         logger.warning(
@@ -116,6 +119,36 @@ def extract_data(inputs):
             inputs["header_lines"],
             data_start,
         )
+
+    # the sample interval is measured from the time column, so time_to_skip
+    # and time_to_take convert to the right row counts whatever the scope.
+    # Timestamps are written with limited precision, so individual steps are
+    # quantized; averaging over the whole probe span is exact to ~1e-10.
+    probe = (
+        pd.read_csv(
+            _source(inputs),
+            skiprows=data_start,
+            nrows=_RATE_PROBE_ROWS,
+            header=None,
+            usecols=[0],
+        )
+        .to_numpy(dtype=float)
+        .ravel()
+    )
+    if len(probe) < 2:
+        raise ValueError("Need at least 2 samples to measure the sample rate.")
+    t_step = (probe[-1] - probe[0]) / (len(probe) - 1)
+    if "sample_rate" in inputs:
+        logger.warning(
+            "Ignoring sample_rate=%s; measured %.6g Hz from the time column.",
+            inputs["sample_rate"],
+            1 / t_step,
+        )
+    # time_to_take="all" reads to the end of the file
+    if inputs["time_to_take"] == "all":
+        nrows = None
+    else:
+        nrows = round(inputs["time_to_take"] / t_step)
 
     columns = channel_columns(labels, n_cols)
     channel = inputs.get("channel")
@@ -148,17 +181,12 @@ def extract_data(inputs):
         sorted(columns),
     )
 
-    rows_to_skip = data_start + int(inputs["time_to_skip"] / t_step)
-
-    if "bytestring" in inputs and isinstance(inputs["bytestring"], bytes):
-        source = io.BytesIO(inputs["bytestring"])
-    else:
-        source = inputs["filepath"]
+    rows_to_skip = data_start + round(inputs["time_to_skip"] / t_step)
 
     # header=None because the label row is skipped outright -- letting pandas
     # infer a header here would consume the first data sample.
     data = pd.read_csv(
-        source,
+        _source(inputs),
         skiprows=rows_to_skip,
         nrows=nrows,
         header=None,
@@ -168,7 +196,7 @@ def extract_data(inputs):
     if data.shape[1] < 2:
         raise ValueError(
             f"Expected at least 2 data columns, parsed {data.shape[1]}. "
-            "Check 'sample_rate'/'time_to_skip' or the file format."
+            "Check 'time_to_skip' or the file format."
         )
 
     return data.to_numpy(dtype=float)

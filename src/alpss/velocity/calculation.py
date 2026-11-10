@@ -17,6 +17,9 @@ def velocity_calculation(
     freq_min = inputs["freq_min"]
     freq_max = inputs["freq_max"]
     lam = inputs["lam"]
+    # the smoothing window is given in seconds; the derivative and smoothing
+    # work in samples
+    smoothing_window = window_points(inputs["smoothing_window_time"], fs)
     t_doi_start = spall_doi_finder_outputs["t_doi_start"]
     t_doi_end = spall_doi_finder_outputs["t_doi_end"]
 
@@ -36,7 +39,7 @@ def velocity_calculation(
     # take the numerical derivative using the certral difference method with a 9-point stencil
     # return the derivative on the domain of interest (dpdt) as well as the padded derivative to be used for smoothing
     dpdt, dpdt_pad = num_derivative(
-        phas, inputs["smoothing_window"], time_start_idx, time_end_idx, fs
+        phas, smoothing_window, time_start_idx, time_end_idx, fs
     )
 
     # convert the derivative in to velocity
@@ -45,7 +48,7 @@ def velocity_calculation(
     # smooth the padded velocity signal using a moving average with gaussian weights
     velocity_f_smooth = smoothing(
         velocity_pad=velocity_pad,
-        smoothing_window=inputs["smoothing_window"],
+        smoothing_window=smoothing_window,
         smoothing_wid=inputs["smoothing_wid"],
         smoothing_amp=inputs["smoothing_amp"],
         smoothing_sigma=inputs["smoothing_sigma"],

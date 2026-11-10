@@ -7,9 +7,12 @@ def spall_analysis(vc_out, iua_out, **inputs):
     # unpack dictionary values in to individual variables
     time_f = vc_out["time_f"]
     velocity_f_smooth = vc_out["velocity_f_smooth"]
-    pb_neighbors = inputs["pb_neighbors"]
+    # the neighbor windows are given in seconds so they mean the same thing at
+    # any sample rate; argrelmin/argrelmax need them in samples
+    fs = 1 / np.mean(np.diff(time_f))
+    pb_neighbors = max(1, round(inputs["pb_neighbors_time"] * fs))
     pb_idx_correction = inputs["pb_idx_correction"]
-    rc_neighbors = inputs["rc_neighbors"]
+    rc_neighbors = max(1, round(inputs["rc_neighbors_time"] * fs))
     rc_idx_correction = inputs["rc_idx_correction"]
     C0 = inputs["C0"]
     density = inputs["density"]

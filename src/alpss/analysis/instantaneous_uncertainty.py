@@ -2,6 +2,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 import traceback
 import logging
+from alpss.velocity.smoothing import window_points
 
 
 # gaussian distribution
@@ -81,12 +82,12 @@ def hl_envelopes_idx(s, dmin=1, dmax=1, split=False):
 def instantaneous_uncertainty_analysis(sdf_out, vc_out, cen, **inputs):
     # unpack needed variables
     lam = inputs["lam"]
-    smoothing_window = inputs["smoothing_window"]
     smoothing_wid = inputs["smoothing_wid"]
     smoothing_amp = inputs["smoothing_amp"]
     smoothing_sigma = inputs["smoothing_sigma"]
     smoothing_mu = inputs["smoothing_mu"]
     fs = sdf_out["fs"]
+    smoothing_window = window_points(inputs["smoothing_window_time"], fs)
     time = sdf_out["time"]
     time_f = vc_out["time_f"]
     voltage_filt = vc_out["voltage_filt"]

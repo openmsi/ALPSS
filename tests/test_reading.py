@@ -22,7 +22,6 @@ CHANNEL_CARRIERS_GHZ = {1: 1.848, 2: 8.232, 3: 4.712}
 def read_inputs(filepath, **overrides):
     inputs = {
         "filepath": filepath,
-        "sample_rate": 128e9,
         "time_to_skip": 0.0,
         "time_to_take": 2e-07,
     }
@@ -88,7 +87,7 @@ class TestChannelColumns:
 
 class TestExtractData:
     def test_legacy_file(self):
-        data = extract_data(read_inputs(LEGACY_FILE, sample_rate=80e9))
+        data = extract_data(read_inputs(LEGACY_FILE))
         assert data.shape[1] == 2
         # the row count covers time_to_take (exact count depends on how the
         # float division truncates)
@@ -99,7 +98,7 @@ class TestExtractData:
         with open(LEGACY_FILE) as f:
             f.readline()  # label row
             first = float(f.readline().split(",")[0])
-        data = extract_data(read_inputs(LEGACY_FILE, sample_rate=80e9))
+        data = extract_data(read_inputs(LEGACY_FILE))
         assert data[0, 0] == pytest.approx(first, rel=1e-12)
 
     def test_multichannel_defaults_to_first_channel(self):
@@ -148,7 +147,7 @@ class TestExtractData:
         with open(LEGACY_FILE) as f:
             n_samples = sum(1 for line in f if line.strip()) - 1  # minus label row
         data = extract_data(
-            read_inputs(LEGACY_FILE, sample_rate=80e9, time_to_take="all")
+            read_inputs(LEGACY_FILE, time_to_take="all")
         )
         assert len(data) == n_samples
 
@@ -159,6 +158,20 @@ class TestExtractData:
             read_inputs(MULTICHANNEL_FILE, time_to_take="all", time_to_skip=skip)
         )
         np.testing.assert_array_equal(full[int(skip * 128e9) :], skipped)
+
+    @pytest.mark.parametrize(
+        "filepath,rate", [(LEGACY_FILE, 80e9), (MULTICHANNEL_FILE, 128e9)]
+    )
+    def test_sample_rate_is_measured(self, filepath, rate):
+        """time_to_take converts to rows using the rate in the file itself."""
+        data = extract_data(read_inputs(filepath))
+        assert len(data) == pytest.approx(2e-07 * rate, abs=1)
+        assert 1 / np.mean(np.diff(data[:, 0])) == pytest.approx(rate, rel=1e-6)
+
+    def test_sample_rate_input_is_ignored(self):
+        measured = extract_data(read_inputs(MULTICHANNEL_FILE))
+        stale = extract_data(read_inputs(MULTICHANNEL_FILE, sample_rate=80e9))
+        np.testing.assert_array_equal(measured, stale)
 
     def test_returns_a_plain_array(self):
         data = extract_data(read_inputs(MULTICHANNEL_FILE))

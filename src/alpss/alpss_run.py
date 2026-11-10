@@ -22,7 +22,7 @@ t_after:                    float; amount of time after the signal start time to
 start_time_correction:      float; amount of time to adjust the signal start time by
 freq_min:                   float; minimum frequency for the region of interest
 freq_max:                   float; maximum frequency for the region of interest
-smoothing_window:           int; number of points to use for the smoothing window. must be an odd number
+smoothing_window_time:      float; length of the smoothing window in seconds; converted to an odd number of samples
 smoothing_wid:              float; half the width of the normal distribution used
                                    to calculate the smoothing weights (recommend 3)
 smoothing_amp:              float; amplitude of the normal distribution used to calculate
@@ -113,7 +113,7 @@ config = {
         "t_fit_end": 300,
     },
     "velocity": {
-        "smoothing_window": 1001,
+        "smoothing_window_time": 1001 / 128e9,
         "smoothing_wid": 3,
         "smoothing_amp": 1,
         "smoothing_sigma": 1,
