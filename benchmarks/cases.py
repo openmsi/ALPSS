@@ -39,21 +39,42 @@ PROFILE_DEFAULTS = {
 SYNTHESIS_DEFAULTS = dict(lambda_ref=1550e-9, lambda_tar=1550.016e-9, power_tar_dbm=-15)
 
 # Twins: rebuilt from a real case (``twin["source"]``) by twins.py, with the
-# knobs of twins.synthesize changing one ingredient at a time. Same
-# config_edits as the source, so a twin runs like its real file.
-_twin = dict(source="example_file")
-CASES = [
-    dict(id="twin_example", description="twin of example_file, as measured",
-         twin=_twin, seed=1, config_edits={}),
-    dict(id="twin_no_fade", description="twin without the carrier fade before the shock",
-         twin=dict(_twin, carrier_fade=False), seed=1, config_edits={}),
-    dict(id="twin_noisy", description="twin with 5x the noise",
-         twin=dict(_twin, noise_scale=5), seed=1, config_edits={}),
-    dict(id="twin_weak_return", description="twin with 1/4 of the Doppler amplitude",
-         twin=dict(_twin, doppler_scale=0.25), seed=1, config_edits={}),
-    dict(id="twin_slow", description="twin at 1/5 of the velocity (peak ~160 m/s)",
-         twin=dict(_twin, velocity_scale=0.2), seed=1, config_edits={}),
+# knobs of twins.synthesize changing one ingredient at a time. A twin runs
+# with its source's config_edits (see config_edits()), like its real file.
+def _twins(source, variants):
+    """The as-measured twin of `source` plus one case per variant, named after it."""
+    base = dict(id=f"{source}_twin", description=f"twin of {source}, as measured",
+                twin=dict(source=source), seed=1, config_edits={})
+    return [base] + [
+        dict(base, id=f"{source}_{name}", description=f"twin of {source}, {desc}",
+             twin=dict(source=source, **knobs))
+        for name, desc, knobs in variants
+    ]
+
+
+_VARIANTS = [
+    ("noisy", "3x the noise", dict(noise_scale=3)),
+    ("weak_return", "1/4 of the Doppler amplitude", dict(doppler_scale=0.25)),
+    ("slow", "1/2 of the velocity", dict(velocity_scale=0.5)),
 ]
+
+CASES = (
+    _twins("example_file", _VARIANTS + [
+        ("no_fade", "no carrier fade before the shock", dict(carrier_fade=False)),
+    ])
+    + _twins("JHAMAL00016-035_shot02", _VARIANTS)
+    + _twins("JHAMAL00016-082_shot08", _VARIANTS)
+    + _twins("JHAMAL00018-051_shot01", _VARIANTS)
+    + _twins("JHAMAL00018-058_shot01", _VARIANTS)
+    + _twins("JHAMAB00022-01_shot01", _VARIANTS)
+)
+
+# the lab pipeline's (alpss-dagster) settings, for files from Girder
+_PIPELINE = dict(
+    time_to_skip=0.0, time_to_take="all", lam=1.55e-6,
+    freq_min=1.8e9, freq_max=2.8e9, t_before=25e-9, t_after=100e-9,
+    smoothing_window=1801, blur_kernel=[15, 5],
+)
 
 REAL_CASES = [
     dict(
@@ -62,6 +83,41 @@ REAL_CASES = [
         file="tests/input_data/example_file.csv",
         config_edits={},
         reference={"Signal Start Time": 614.08e-9},
+    ),
+    dict(
+        id="JHAMAL00016-035_shot02",
+        description="spall shot (610 m/s), LeCroy 40 GS/s, 2026-07-14",
+        file="benchmarks/data/real/JHAMAL00016-035_shot02.csv",  # from Girder, not committed
+        config_edits=dict(_PIPELINE, sample_rate=40e9),
+        reference={"Signal Start Time": 1223.80e-9},  # alpss-dagster's Otsu result
+    ),
+    dict(
+        id="JHAMAL00016-082_shot08",
+        description="spall shot (539 m/s), LeCroy 40 GS/s, 2026-08-12",
+        file="benchmarks/data/real/JHAMAL00016-082_shot08.csv",  # from Girder, not committed
+        config_edits=dict(_PIPELINE, sample_rate=40e9),
+        reference={"Signal Start Time": 1483.78e-9},  # alpss-dagster's Otsu result
+    ),
+    dict(
+        id="JHAMAL00018-051_shot01",
+        description="spall shot (515 m/s), LeCroy 40 GS/s, 2026-07-29",
+        file="benchmarks/data/real/JHAMAL00018-051_shot01.csv",  # from Girder, not committed
+        config_edits=dict(_PIPELINE, sample_rate=40e9),
+        reference={"Signal Start Time": 1402.28e-9},  # alpss-dagster's Otsu result
+    ),
+    dict(
+        id="JHAMAL00018-058_shot01",
+        description="spall shot (559 m/s), LeCroy 40 GS/s, 2026-08-12",
+        file="benchmarks/data/real/JHAMAL00018-058_shot01.csv",  # from Girder, not committed
+        config_edits=dict(_PIPELINE, sample_rate=40e9),
+        reference={"Signal Start Time": 1239.48e-9},  # alpss-dagster's Otsu result
+    ),
+    dict(
+        id="JHAMAB00022-01_shot01",
+        description="spall shot (415 m/s), sharp rise, Keysight 128 GS/s, 2025-11-06",
+        file="benchmarks/data/real/JHAMAB00022-01_shot01.csv",  # from Girder, not committed
+        config_edits=dict(_PIPELINE, sample_rate=128e9),
+        reference={"Signal Start Time": 2292.45e-9},  # alpss-dagster's Otsu result
     ),
 ]
 
@@ -72,6 +128,15 @@ def profile_params(case):
 
 def synthesis_params(case):
     return {**SYNTHESIS_DEFAULTS, **case["synthesis"]}
+
+
+def config_edits(case):
+    """The case's config_edits; a twin starts from its source's."""
+    edits = case["config_edits"]
+    if "twin" in case:
+        source = next(c for c in REAL_CASES if c["id"] == case["twin"]["source"])
+        edits = {**source["config_edits"], **edits}
+    return edits
 
 
 def get_cases(only=None, include_real=False):
