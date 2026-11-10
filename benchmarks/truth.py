@@ -46,3 +46,14 @@ def truth_from_case(case, flat_config, velocity):
         truth["Strain Rate"] = 0.5 / C0 * dV / (p["t_spall"] - p["t_plat_end"])
 
     return truth
+
+
+def truth_from_twin(m, flat_config, velocity):
+    """Expected ALPSS results for a twin: measure()'s ingredients and its true velocity."""
+    v_peak = float(velocity.max())
+    return {
+        "Carrier Frequency": m["fc"],
+        "Signal Start Time": m["arrival"],
+        "Velocity at Max Compression": v_peak,
+        "Peak Shock Stress": 0.5 * flat_config["density"] * flat_config["C0"] * v_peak,
+    }

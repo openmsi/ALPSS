@@ -5,7 +5,7 @@ PROFILE_DEFAULTS for the case's shot type and is passed to
 ``generate_velocity_profile``; ``synthesis`` overrides SYNTHESIS_DEFAULTS and is
 passed to ``velocity_to_pdv_voltage``. These are the only defaults: the
 generator has none, so the signal and the truth always come from the same
-numbers.
+numbers. A twin case instead rebuilds a real case's signal (see twins.py).
 
 Each real case is a recorded file (``file``, relative to the repo root) with
 ``reference`` values that stand in for the truth.
@@ -38,36 +38,21 @@ PROFILE_DEFAULTS = {
 # power_tar_dbm matches run_pdv_synthesis.py in PDV_simulated_data
 SYNTHESIS_DEFAULTS = dict(lambda_ref=1550e-9, lambda_tar=1550.016e-9, power_tar_dbm=-15)
 
+# Twins: rebuilt from a real case (``twin["source"]``) by twins.py, with the
+# knobs of twins.synthesize changing one ingredient at a time. Same
+# config_edits as the source, so a twin runs like its real file.
+_twin = dict(source="example_file")
 CASES = [
-    # Bad: a single 5 ns step to 100 m/s. The branch's CUSUM only sees energy
-    # above carrier + freq_offset (250 MHz, about 194 m/s at 1550 nm).
-    dict(
-        id="sim_low_velocity",
-        description="step to 100 m/s, low noise",
-        shot_type="HEL",
-        profile=dict(V_HEL=100, V_plat=100),
-        synthesis=dict(noise_sd=0.01),
-        seed=6,
-        config_edits=dict(spall_enabled=False, hel_enabled=False),
-    ),
-    # Good: shaped like tests/input_data/example_file.csv (1.5 us record, shock
-    # at 614 ns, peak ~830 m/s, pullback to ~464 m/s, 2.23 GHz carrier).
-    dict(
-        id="sim_like_example",
-        description="spall shot shaped like example_file.csv",
-        shot_type="HEL-spall",
-        profile=dict(
-            t_begin=-614e-9, t_end=886e-9,
-            V0=0, V_HEL=50, V_plat=830,
-            t_hel_start=3e-9, t_hel_end=5e-9,
-            t_plat_start=15e-9, t_plat_end=17e-9,
-            t_spall=34e-9, t_recover=42e-9,
-            dV_spall=366,
-        ),
-        synthesis=dict(noise_sd=0.02, lambda_tar=1550.01788e-9),
-        seed=21,
-        config_edits=dict(spall_enabled=True, hel_enabled=False),
-    ),
+    dict(id="twin_example", description="twin of example_file, as measured",
+         twin=_twin, seed=1, config_edits={}),
+    dict(id="twin_no_fade", description="twin without the carrier fade before the shock",
+         twin=dict(_twin, carrier_fade=False), seed=1, config_edits={}),
+    dict(id="twin_noisy", description="twin with 5x the noise",
+         twin=dict(_twin, noise_scale=5), seed=1, config_edits={}),
+    dict(id="twin_weak_return", description="twin with 1/4 of the Doppler amplitude",
+         twin=dict(_twin, doppler_scale=0.25), seed=1, config_edits={}),
+    dict(id="twin_slow", description="twin at 1/5 of the velocity (peak ~160 m/s)",
+         twin=dict(_twin, velocity_scale=0.2), seed=1, config_edits={}),
 ]
 
 REAL_CASES = [

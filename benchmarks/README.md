@@ -2,15 +2,21 @@
 
 Checks how accurate ALPSS is on signals where the right answer is known.
 
+**Scope: start time only for now.** The cases are twins of real files (see
+below), whose truth covers the start time, carrier frequency and peak velocity.
+They give no truth for spall or HEL yet, so the benchmark can't judge those.
+
 ```
 cases.py ──generate.py──> data/   synthetic signal + true velocity + expected results
 data/    ──run.py───────> runs/<label>/   ALPSS outputs per case
 runs/    ──summarize.py─> summary.md      error of each result vs. the truth
 ```
 
-1. Each case in `cases.py` describes a shot (type, noise level, seed).
-2. `generate.py` builds the velocity history, turns it into a noisy PDV signal,
-   and works out the results ALPSS should report.
+1. Each case in `cases.py` is a twin of a real file (`REAL_CASES`), with one
+   ingredient changed (noise, Doppler amplitude, velocity, carrier fade).
+2. `generate.py` measures the real file, rebuilds it with a known velocity, and
+   works out the results ALPSS should report. Real files also run as cases, with
+   a reference value standing in for the truth.
 3. `run.py` runs ALPSS on every signal, using the config in
    `tests/input_data/config.json`.
 4. `summarize.py` compares the outputs with the truth. With `--against`, it also
@@ -38,7 +44,11 @@ any step to some cases.
 
 ## Pieces
 
-- `alpss.simulation.pdv_synthesis` (in the package) synthesizes the signals.
+- `twins.py` measures a real file (carrier, carrier and Doppler amplitudes over
+  time, velocity, shock arrival, noise) and rebuilds it; the velocity is zero
+  before the arrival, so the twin's start time is exact.
+- `alpss.simulation.pdv_synthesis` (in the package) synthesizes parametric
+  signals; no case uses it at the moment.
 - `cases.py` holds the default profile and synthesis parameters and lists the
   cases: shot type, overrides of those defaults, noise level, seed, and the
   config switches the case needs (`spall_enabled`, `hel_enabled`).
@@ -70,6 +80,9 @@ any step to some cases.
 | Peak Shock Stress | `0.5·ρ·C0·V_peak` |
 | Carrier Frequency | `c/λ_ref − c/λ_tar` |
 | Signal Start Time | shock arrival, `−t_begin` |
+
+For twins: Carrier Frequency, Signal Start Time (the measured arrival),
+Velocity at Max Compression and Peak Shock Stress only.
 
 Times are in ALPSS's time base, which starts at 0 at the first sample of the file.
 
