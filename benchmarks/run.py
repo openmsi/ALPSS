@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 from alpss.commands import alpss_main_with_config  # noqa: E402
 
-from cases import get_cases  # noqa: E402
+from cases import config_edits, get_cases  # noqa: E402
 from common import (  # noqa: E402
     CONFIG_PATH, DATA_DIR, REPO_ROOT, RUNS_DIR,
     set_key, signal_path, truth_path,
@@ -71,7 +71,7 @@ def case_config(base, case, data_dir, out_dir, overrides):
         set_key(config, "hel_start_time_ns", t0_ns + base["hel"]["hel_start_time_ns"])
         set_key(config, "hel_end_time_ns", t0_ns + base["hel"]["hel_end_time_ns"])
 
-    for key, value in {**case["config_edits"], **overrides}.items():
+    for key, value in {**config_edits(case), **overrides}.items():
         set_key(config, key, value)
     return config
 
