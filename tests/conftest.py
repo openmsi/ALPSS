@@ -44,9 +44,10 @@ def valid_inputs():
             "t_before": 5e-09,
             "t_after": 5e-08,
             "iq_threshold_factor": 0.4,
-            "cusum_offset": 5,
-            "cusum_threshold": 1000,
-            "freq_offset": 0.5e9,
+            "cusum_offset": 16,
+            "cusum_threshold": 300,
+            "freq_offset": 7.5e7,
+            "cusum_bin_time": 2.0e-09,
             "carrier_band_time": 2.5e-07,
         },
         "carrier": {

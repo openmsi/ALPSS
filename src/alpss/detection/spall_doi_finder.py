@@ -196,6 +196,18 @@ def spall_doi_finder(data, **inputs):
 
             # Initial mean and standard deviation of the signal. Utilized in cusum
             baseline_signal = signal[mask_baseline]
+
+            # Run the CUSUM on fixed time bins so cusum_offset/cusum_threshold
+            # mean the same at any sample rate.
+            n_bin = max(1, round(inputs["cusum_bin_time"] * fs))
+
+            def binned(x):
+                n = x.size // n_bin * n_bin
+                return x[:n].reshape(-1, n_bin).mean(axis=1)
+
+            baseline_signal = binned(baseline_signal)
+            time_eval = time_eval[: time_eval.size // n_bin * n_bin : n_bin]
+            signal_eval = binned(signal_eval)
             if baseline_signal.size == 0 or signal_eval.size == 0:
                 raise ValueError(
                     "carrier_band_time leaves no baseline or evaluation samples "
