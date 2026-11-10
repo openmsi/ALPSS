@@ -49,23 +49,29 @@ def parse_overrides(pairs):
     return overrides
 
 
-def case_config(base, record, data_dir, out_dir, overrides):
+def case_config(base, case, data_dir, out_dir, overrides):
     config = copy.deepcopy(base)
-    t0_ns = -record["profile"]["t_begin"] * 1e9  # shock arrival in ALPSS time
-
-    set_key(config, "filepath", signal_path(data_dir, record["id"]))
     set_key(config, "out_files_dir", out_dir)
     set_key(config, "save_data", True)
     set_key(config, "display_plots", False)
-    set_key(config, "time_to_skip", 0.0)
-    set_key(config, "time_to_take", "all")
-    set_key(config, "sample_rate", record["sample_rate"])
-    set_key(config, "lam", record["synthesis"]["lambda_ref"])
-    # the config's HEL window is relative to the shock arrival
-    set_key(config, "hel_start_time_ns", t0_ns + base["hel"]["hel_start_time_ns"])
-    set_key(config, "hel_end_time_ns", t0_ns + base["hel"]["hel_end_time_ns"])
 
-    for key, value in {**record["config"], **overrides}.items():
+    if "file" in case:
+        # real file: the base config plus the case's own edits
+        set_key(config, "filepath", os.path.join(REPO_ROOT, case["file"]))
+    else:
+        with open(truth_path(data_dir, case["id"])) as f:
+            record = json.load(f)
+        t0_ns = -record["profile"]["t_begin"] * 1e9  # shock arrival in ALPSS time
+        set_key(config, "filepath", signal_path(data_dir, case["id"]))
+        set_key(config, "time_to_skip", 0.0)
+        set_key(config, "time_to_take", "all")
+        set_key(config, "sample_rate", record["sample_rate"])
+        set_key(config, "lam", record["synthesis"]["lambda_ref"])
+        # the config's HEL window is relative to the shock arrival
+        set_key(config, "hel_start_time_ns", t0_ns + base["hel"]["hel_start_time_ns"])
+        set_key(config, "hel_end_time_ns", t0_ns + base["hel"]["hel_end_time_ns"])
+
+    for key, value in {**case["config_edits"], **overrides}.items():
         set_key(config, key, value)
     return config
 
@@ -111,12 +117,10 @@ def main():
         "cases": {},
     }
 
-    for case in get_cases(args.only):
-        with open(truth_path(args.data, case["id"])) as f:
-            record = json.load(f)
+    for case in get_cases(args.only, include_real=True):
         out_dir = os.path.join(run_dir, case["id"])
         os.makedirs(out_dir, exist_ok=True)
-        config = case_config(base, record, args.data, out_dir, overrides)
+        config = case_config(base, case, args.data, out_dir, overrides)
 
         print(f"{case['id']}: {case['description']} ...", flush=True)
         start = time.perf_counter()

@@ -53,7 +53,6 @@ def generate_case(case, flat_config, out_dir):
         "sample_rate": SAMPLE_RATE,
         "profile": params,
         "synthesis": synthesis_params(case),
-        "config": case["config"],
         "truth": truth_from_case(case, flat_config, velocity),
     }
     with open(truth_path(out_dir, case["id"]), "w") as f:

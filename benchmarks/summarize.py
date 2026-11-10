@@ -16,6 +16,7 @@ import os
 import numpy as np
 import pandas as pd
 
+from cases import REAL_CASES
 from common import DATA_DIR, REPO_ROOT, truth_path, velocity_true_path
 
 TRACE_METRICS = ("Velocity trace RMS (m/s)", "Velocity trace max (m/s)")
@@ -41,10 +42,14 @@ def summarize_run(run_dir, data_dir):
     with open(os.path.join(run_dir, "run.json")) as f:
         run = json.load(f)
 
+    references = {c["id"]: c["reference"] for c in REAL_CASES}
     rows = []
     for case_id, status in run["cases"].items():
-        with open(truth_path(data_dir, case_id)) as f:
-            truth = json.load(f)["truth"]
+        if case_id in references:
+            truth = references[case_id]
+        else:
+            with open(truth_path(data_dir, case_id)) as f:
+                truth = json.load(f)["truth"]
         case_dir = os.path.join(run_dir, case_id)
         results_csv = os.path.join(case_dir, f"{case_id}-results.csv")
         results = (
@@ -65,6 +70,8 @@ def summarize_run(run_dir, data_dir):
                 "rel_error": err / expected if expected else np.nan,
             })
 
+        if case_id in references:
+            continue  # no true velocity history for a real file
         for metric, value in trace_errors(case_dir, case_id, data_dir).items():
             rows.append({
                 "case": case_id, "metric": metric, "truth": 0.0, "measured": value,
