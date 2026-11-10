@@ -55,7 +55,7 @@ def valid_inputs():
             "t_fit_end": 300,
         },
         "velocity": {
-            "smoothing_window": 601,
+            "smoothing_window_time": 7.5125e-09,
             "smoothing_wid": 3,
             "smoothing_amp": 1,
             "smoothing_sigma": 1,

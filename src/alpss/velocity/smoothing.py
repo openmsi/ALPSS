@@ -7,6 +7,12 @@ def gauss(x, amp, sigma, mu):
     return f
 
 
+def window_points(smoothing_window_time, fs):
+    """Odd number of samples spanning `smoothing_window_time` seconds at `fs`."""
+    n = max(1, round(smoothing_window_time * fs))
+    return n if n % 2 == 1 else n + 1
+
+
 # function for smoothing the padded velocity data; padded data is used so the program can return
 # a smooth velocity over the full domain of interest without running in to issues with the boundaries
 def smoothing(velocity_pad, smoothing_window, smoothing_wid, smoothing_amp, smoothing_sigma, smoothing_mu):
@@ -15,7 +21,7 @@ def smoothing(velocity_pad, smoothing_window, smoothing_wid, smoothing_amp, smoo
         raise Exception(f'length of velocity pad is {len(velocity_pad)}')
     # if the smoothing window is not an odd integer exit the program
     if (smoothing_window % 2 != 1) or (smoothing_window >= len(velocity_pad) / 2):
-        raise Exception(f'Input variable "smoothing_window" ({smoothing_window}) must be an odd integer and less than half the length of the velocity signal ({len(velocity_pad) / 2})')
+        raise Exception(f'The smoothing window ({smoothing_window} samples, from "smoothing_window_time") must be an odd number of samples less than half the length of the velocity signal ({len(velocity_pad) / 2})')
 
     # number of points to either side of the point of interest
     half_space = int(np.floor(smoothing_window / 2))

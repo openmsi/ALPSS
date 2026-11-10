@@ -22,7 +22,7 @@ _ALWAYS_REQUIRED = [
     "blur_sigy",
     "carrier_filter_type",
     "carrier_band_time",
-    "smoothing_window",
+    "smoothing_window_time",
     "smoothing_wid",
     "smoothing_amp",
     "smoothing_sigma",
@@ -115,12 +115,14 @@ def validate_inputs(inputs):
             f"Invalid carrier_filter_type='{cft}'. Must be one of {_CARRIER_FILTER_TYPES}."
         )
 
+    time_keys = ["smoothing_window_time"]
     if inputs["spall_enabled"]:
-        for key in ("pb_neighbors_time", "rc_neighbors_time"):
-            if not (isinstance(inputs[key], (int, float)) and inputs[key] > 0):
-                raise ValueError(
-                    f"'{key}' must be a positive time in seconds, got {inputs[key]!r}."
-                )
+        time_keys += ["pb_neighbors_time", "rc_neighbors_time"]
+    for key in time_keys:
+        if not (isinstance(inputs[key], (int, float)) and inputs[key] > 0):
+            raise ValueError(
+                f"'{key}' must be a positive time in seconds, got {inputs[key]!r}."
+            )
 
     ttt = inputs["time_to_take"]
     if not (isinstance(ttt, (int, float)) or ttt == "all"):

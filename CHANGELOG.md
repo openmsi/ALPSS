@@ -7,16 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-**Breaking:** `pb_neighbors` and `rc_neighbors` are replaced by
-`pb_neighbors_time` and `rc_neighbors_time`, in seconds. Configs using the
-old keys are rejected. To convert, divide the old value by the sample rate,
-e.g. 400 samples at 80 GHz is `5e-09`.
+**Breaking:** `pb_neighbors`, `rc_neighbors` and `smoothing_window` are
+replaced by `pb_neighbors_time`, `rc_neighbors_time` and
+`smoothing_window_time`, in seconds. Configs using the old keys are rejected.
+To convert, divide the old value by the sample rate, e.g. 400 samples at
+80 GHz is `5e-09` and a 601-sample smoothing window at 80 GHz is
+`7.5125e-09`.
 
 ### Changed
 - The pullback and recompression search windows are now given in time, so
   they cover the same span of signal at any sample rate. They were sample
   counts, so the same config searched 5 ns of signal on an 80 GHz scope but
   only 3.1 ns on a 128 GHz one.
+- The velocity smoothing window is likewise given in time. It is converted
+  to an odd number of samples at the measured sample rate.
 - The sample rate is measured from the time column instead of taken from
   `sample_rate`. The key is still accepted so existing configs keep loading,
   but its value is ignored and a warning is logged.
