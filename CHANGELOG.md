@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `time_to_take` accepts `"all"` to read the signal from `time_to_skip` to
   the end of the file. The `t_after` check is skipped in that case, and any
   other string is rejected by validation.
+- `alpss.simulation`: synthetic PDV signal generation from a velocity history
+  (`generate_velocity_profile`, `velocity_to_pdv_voltage`,
+  `velocity_to_multipoint_pdv_voltage`).
+- `benchmarks/`: an accuracy check for start-time detection. It measures real
+  files (carrier, velocity, shock arrival, noise), rebuilds each one with
+  `velocity_to_pdv_voltage` so the true start time is known ("twins"), runs
+  ALPSS on the twins and the real files, and reports each result's error and
+  how two runs compare.
 
 ## [1.8.0] - 2026-09-23
 

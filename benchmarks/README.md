@@ -1,0 +1,97 @@
+# Simulated-signal benchmark
+
+Checks how accurate ALPSS is on signals where the right answer is known.
+
+**Scope: start time only for now.** The cases are twins of real files (see
+below), whose truth covers the start time, carrier frequency and peak velocity.
+They give no truth for spall or HEL yet, so the benchmark can't judge those.
+
+```
+cases.py ──generate.py──> data/   synthetic signal + true velocity + expected results
+data/    ──run.py───────> runs/<label>/   ALPSS outputs per case
+runs/    ──summarize.py─> summary.md      error of each result vs. the truth
+```
+
+1. Each case in `cases.py` is a twin of a real file (`REAL_CASES`), with one
+   ingredient changed (noise, Doppler amplitude, velocity).
+2. `generate.py` measures the real file, rebuilds it with a known velocity using
+   the original simulation code (`alpss.simulation.velocity_to_pdv_voltage`), and
+   works out the results ALPSS should report. Real files also run as cases, with
+   a reference value standing in for the truth.
+3. `run.py` runs ALPSS on every signal, using the config in
+   `tests/input_data/config.json`.
+4. `summarize.py` compares the outputs with the truth. With `--against`, it also
+   compares two runs, for example `main` and your branch.
+
+Run everything from the repo root.
+
+```bash
+poetry run python benchmarks/generate.py                       # once, or after editing cases
+poetry run python benchmarks/run.py --label main               # ALPSS as currently checked out
+poetry run python benchmarks/summarize.py benchmarks/runs/main
+```
+
+To evaluate a change, run the cases on each version under its own label and compare:
+
+```bash
+git switch main          && poetry run python benchmarks/run.py --label main
+git switch my-feature    && poetry run python benchmarks/run.py --label my-feature
+poetry run python benchmarks/summarize.py benchmarks/runs/my-feature --against benchmarks/runs/main
+```
+
+`--set key=value` on `run.py` overrides any config key for every case
+(for example `--set smoothing_window=101`), and `--only case_02 case_03` limits
+any step to some cases.
+
+## Pieces
+
+- `twins.py` measures a real file (carrier, carrier and Doppler amplitudes over
+  time, velocity, shock arrival, noise) and passes it to
+  `alpss.simulation.velocity_to_pdv_voltage`, unchanged. The velocity is zero
+  before the arrival, so the twin's start time is exact. That code has constant
+  light powers and white noise, so a twin keeps the real file's average
+  proportions but not how they change over time (e.g. a carrier fade before the
+  shock).
+- `cases.py` holds the default profile and synthesis parameters and lists the
+  cases: shot type, overrides of those defaults, noise level, seed, and the
+  config switches the case needs (`spall_enabled`, `hel_enabled`).
+- `truth.py` derives the expected ALPSS results from the profile parameters and
+  the material constants in `tests/input_data/config.json`.
+- `generate.py` writes `data/<case>.csv` (the signal), `data/<case>.velocity_true.csv`
+  and `data/<case>.truth.json`. Noise is seeded, so the files are reproducible.
+- `run.py` runs `alpss_main_with_config` on each case with
+  `tests/input_data/config.json`, changing only what the signal dictates: file
+  paths, `sample_rate`, `lam` (= the reference wavelength), the read window
+  (whole file), the HEL window (the config's window, shifted to the shock
+  arrival) and the case's enabled phases. Outputs go to `runs/<label>/<case>/`
+  with a `run.json` recording the git state and overrides.
+- `summarize.py` writes `summary.md` / `summary.csv` into the run directory.
+
+`data/` and `runs/` are gitignored.
+
+## Truth
+
+| Result | Truth |
+|---|---|
+| Velocity at Max Compression | `V_peak`, the maximum of the true velocity history |
+| Velocity at Max Tension | `V_plat − dV_spall` |
+| Time at Max Tension | `t_spall` |
+| Spall Strength | `0.5·ρ·C0·dV_spall` |
+| Strain Rate | `0.5/C0 · dV_spall / (t_spall − t_plat_end)`, the true pullback slope (ALPSS measures from the time of peak velocity) |
+| HEL Free Surface Velocity | `V_HEL` |
+| HEL Strength (GPa) | `0.5·ρ·C_L·V_HEL` |
+| Peak Shock Stress | `0.5·ρ·C0·V_peak` |
+| Carrier Frequency | `c/λ_ref − c/λ_tar` |
+| Signal Start Time | shock arrival, `−t_begin` |
+
+For twins: Carrier Frequency, Signal Start Time (the measured arrival),
+Velocity at Max Compression and Peak Shock Stress only.
+
+Times are in ALPSS's time base, which starts at 0 at the first sample of the file.
+
+## Summary columns
+
+- `error` = measured − truth; `rel_error` = error / truth.
+- The velocity trace rows give the RMS and maximum error of the smoothed velocity
+  against the true history, over the window ALPSS analysed.
+- With `--against`, a comparison table lists each value's error in both runs.

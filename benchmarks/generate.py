@@ -1,0 +1,132 @@
+"""Generate the simulated signals and their ground truth.
+
+    poetry run python benchmarks/generate.py [--only case_01 ...] [--out DIR]
+
+Writes, per case, into benchmarks/data/:
+    <case>.csv                 [time, voltage] signal ALPSS will read
+    <case>.velocity_true.csv   [time, velocity] true history, in ALPSS's time base
+    <case>.truth.json          expected ALPSS results + the parameters used
+"""
+
+import argparse
+import copy
+import json
+import os
+
+import numpy as np
+
+from alpss.io.reading import extract_data
+from alpss.simulation import generate_velocity_profile, velocity_to_pdv_voltage
+from alpss.utils.config import flatten_config
+
+from cases import REAL_CASES, SAMPLE_RATE, get_cases, profile_params, synthesis_params
+from common import (
+    CONFIG_PATH, DATA_DIR, REPO_ROOT,
+    set_key, signal_path, truth_path, velocity_true_path,
+)
+from truth import truth_from_case, truth_from_twin
+from twins import measure, synthesize
+
+
+def save_velocity_true(out_dir, case_id, time, velocity):
+    np.savetxt(
+        velocity_true_path(out_dir, case_id),
+        np.column_stack((time - time[0], velocity)),
+        delimiter=",",
+        fmt=("%.9e", "%.6f"),
+    )
+
+
+def generate_case(case, flat_config, out_dir):
+    params = profile_params(case)
+    time, velocity = generate_velocity_profile(
+        case["shot_type"], sample_rate=SAMPLE_RATE, **params
+    )
+
+    # pdv_synthesis draws noise from the global numpy RNG
+    np.random.seed(case["seed"])
+    velocity_to_pdv_voltage(
+        time, velocity, output_csv=signal_path(out_dir, case["id"]),
+        **synthesis_params(case),
+    )
+
+    save_velocity_true(out_dir, case["id"], time, velocity)
+
+    record = {
+        "id": case["id"],
+        "description": case["description"],
+        "shot_type": case["shot_type"],
+        "seed": case["seed"],
+        "sample_rate": SAMPLE_RATE,
+        "lam": synthesis_params(case)["lambda_ref"],
+        "t_arrival": -params["t_begin"],
+        "profile": params,
+        "synthesis": synthesis_params(case),
+        "truth": truth_from_case(case, flat_config, velocity),
+    }
+    with open(truth_path(out_dir, case["id"]), "w") as f:
+        json.dump(record, f, indent=2)
+    return record
+
+
+def generate_twin(case, base, out_dir):
+    """Measure the source real file, then rebuild it with the case's knobs."""
+    source = next(c for c in REAL_CASES if c["id"] == case["twin"]["source"])
+    config = copy.deepcopy(base)
+    set_key(config, "filepath", os.path.join(REPO_ROOT, source["file"]))
+    for key, value in source["config_edits"].items():
+        set_key(config, key, value)
+    flat = flatten_config(config)
+
+    data = extract_data(flat)
+    m = measure(data[:, 0], data[:, 1], flat["sample_rate"], flat["lam"],
+                flat["carrier_band_time"])
+    knobs = {k: v for k, v in case["twin"].items() if k != "source"}
+    time, voltage, velocity, params = synthesize(m, case["seed"], **knobs)
+
+    with open(signal_path(out_dir, case["id"]), "w") as f:
+        for t, v in zip(time, voltage):
+            f.write(f"{t:.9E},{v:.7E}\n")
+    save_velocity_true(out_dir, case["id"], time, velocity)
+
+    record = {
+        "id": case["id"],
+        "description": case["description"],
+        "twin": case["twin"],
+        "seed": case["seed"],
+        "sample_rate": m["sample_rate"],
+        "lam": m["lam"],
+        "t_arrival": m["arrival"],
+        "measured": {k: m[k] for k in ("fc", "arrival", "noise_sd", "noise_bw")},
+        "synthesis": params,
+        "truth": truth_from_twin(m, flat, velocity),
+    }
+    with open(truth_path(out_dir, case["id"]), "w") as f:
+        json.dump(record, f, indent=2)
+    return record
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--only", nargs="+", help="case ids to generate")
+    parser.add_argument("--out", default=DATA_DIR)
+    parser.add_argument("--config", default=CONFIG_PATH,
+                        help="config providing the material constants for the truth")
+    args = parser.parse_args()
+
+    os.makedirs(args.out, exist_ok=True)
+    with open(args.config) as f:
+        base = json.load(f)
+    flat_config = flatten_config(base)
+    for case in get_cases(args.only):
+        if "twin" in case:
+            record = generate_twin(case, base, args.out)
+        else:
+            record = generate_case(case, flat_config, args.out)
+        print(f"{case['id']}: {case['description']}")
+        for key, value in record["truth"].items():
+            print(f"    {key:<34} {value:.6g}")
+
+
+if __name__ == "__main__":
+    main()
