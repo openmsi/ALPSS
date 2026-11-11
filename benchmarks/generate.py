@@ -82,7 +82,7 @@ def generate_twin(case, base, out_dir):
     m = measure(data[:, 0], data[:, 1], flat["sample_rate"], flat["lam"],
                 flat["carrier_band_time"])
     knobs = {k: v for k, v in case["twin"].items() if k != "source"}
-    time, voltage, velocity = synthesize(m, case["seed"], **knobs)
+    time, voltage, velocity, params = synthesize(m, case["seed"], **knobs)
 
     with open(signal_path(out_dir, case["id"]), "w") as f:
         for t, v in zip(time, voltage):
@@ -98,6 +98,7 @@ def generate_twin(case, base, out_dir):
         "lam": m["lam"],
         "t_arrival": m["arrival"],
         "measured": {k: m[k] for k in ("fc", "arrival", "noise_sd", "noise_bw")},
+        "synthesis": params,
         "truth": truth_from_twin(m, flat, velocity),
     }
     with open(truth_path(out_dir, case["id"]), "w") as f:

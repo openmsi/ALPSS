@@ -14,9 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `alpss.simulation`: synthetic PDV signal generation from a velocity history
   (`generate_velocity_profile`, `velocity_to_pdv_voltage`,
   `velocity_to_multipoint_pdv_voltage`).
-- `benchmarks/`: a quality check that generates simulated signals with known
-  truth, runs ALPSS on them and reports the error of each result, whether the
-  reported uncertainty covers it, and how two runs compare.
+- `benchmarks/`: an accuracy check for start-time detection. It measures real
+  files (carrier, velocity, shock arrival, noise), rebuilds each one with
+  `velocity_to_pdv_voltage` so the true start time is known ("twins"), runs
+  ALPSS on the twins and the real files, and reports each result's error and
+  how two runs compare.
 
 ## [1.8.0] - 2026-09-23
 
