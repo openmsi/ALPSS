@@ -2,9 +2,11 @@
 
 measure() reads what a real shot is made of: the carrier frequency, the
 carrier and Doppler amplitudes over time, the velocity, the shock arrival and
-the noise. synthesize() rebuilds a voltage from those with a velocity that is
-zero before the arrival, so the twin's start time is known exactly. Its knobs
-change one ingredient at a time.
+the noise. synthesize() feeds those to the original simulation code,
+alpss.simulation.velocity_to_pdv_voltage, unchanged: the velocity is zero
+before the arrival, so the twin's start time is known exactly, and the light
+powers and noise level are set so the carrier, Doppler return and noise have
+the real file's proportions. Its knobs change one ingredient at a time.
 
 The carrier is tracked by demodulating at its frequency with a narrow low-pass
 (CARRIER_BW) and subtracted; what is left above it is the Doppler return,
@@ -14,11 +16,15 @@ whose phase gives the velocity.
 import numpy as np
 from scipy import signal
 
+from alpss.simulation import velocity_to_pdv_voltage
+
 CARRIER_BW = 20e6  # carrier amplitude changes slower than this; ~30 m/s at 1550 nm
 DOPPLER_BW = 3e9  # widest Doppler shift kept, ~2300 m/s
 GRID = 0.25e-9  # time step of the measured ingredients
-SMOOTH = 2e-9
-ARRIVAL_SHIFT = 50e6  # ~40 m/s; slower carrier changes (fades) are not an arrival  # smoothing of the Doppler amplitude and velocity
+SMOOTH = 2e-9  # smoothing of the Doppler amplitude and velocity
+ARRIVAL_SHIFT = 50e6  # ~40 m/s; slower carrier changes (fades) are not an arrival
+C_LIGHT = 3e8  # same constant as pdv_synthesis
+POWER_SIGNAL_DBM = -1  # velocity_to_pdv_voltage's default return power
 
 
 def _peak_freq(x, fs):
@@ -94,34 +100,37 @@ def measure(time, voltage, sample_rate, lam, carrier_band_time):
     )
 
 
-def synthesize(m, seed, velocity_scale=1.0, doppler_scale=1.0, noise_scale=1.0,
-               carrier_fade=True):
-    """Rebuild a shot from measure()'s ingredients; returns (time, voltage, velocity).
+def synthesize(m, seed, velocity_scale=1.0, doppler_scale=1.0, noise_scale=1.0):
+    """Rebuild a shot with velocity_to_pdv_voltage; returns (time, voltage, velocity, params).
 
-    carrier_fade=False holds the carrier at its lead-in level until the arrival.
+    The simulation has constant light powers, so the twin keeps the real
+    file's average proportions, not how they change over time: the moving
+    return (Doppler) and the stationary reflection (the carrier left after the
+    arrival) are set from their medians after the arrival, and noise_sd gives
+    the same noise-to-Doppler ratio as the real file.
     """
     fs = m["sample_rate"]
     t = np.arange(m["n"]) / fs
-    after = t >= m["arrival"]
-
-    velocity = np.where(after, np.clip(np.interp(t, m["tc"], m["velocity"]), 0, None), 0)
+    velocity = np.where(t >= m["arrival"],
+                        np.clip(np.interp(t, m["tc"], m["velocity"]), 0, None), 0)
     velocity = velocity * velocity_scale
 
-    carrier_amp = np.interp(t, m["tc"], m["carrier_amp"])
-    if not carrier_fade:
-        lead = np.median(m["carrier_amp"][m["tc"] < m["carrier_band_time"]])
-        carrier_amp[~after] = lead
-    doppler_amp = np.where(after, np.interp(t, m["tc"], m["doppler_amp"]), 0) * doppler_scale
-
-    rng = np.random.default_rng(seed)
-    phase = 4 * np.pi * np.cumsum(velocity) / fs / m["lam"]
-    carrier = 2 * np.pi * m["fc"] * t
-    voltage = (carrier_amp * np.cos(carrier)
-               + doppler_amp * np.cos(carrier + phase + rng.uniform(0, 2 * np.pi)))
-
-    noise = signal.sosfiltfilt(
-        signal.butter(8, min(m["noise_bw"], 0.45 * fs), fs=fs, output="sos"),
-        rng.normal(size=t.size),
+    tc, after = m["tc"], m["tc"] >= m["arrival"]
+    doppler = np.median(m["doppler_amp"][after & (tc < m["arrival"] + 50e-9)])
+    carrier = np.median(m["carrier_amp"][tc >= m["arrival"] + 20e-9])
+    e_signal = 10 ** (POWER_SIGNAL_DBM / 20) * doppler_scale
+    e_target = 10 ** (POWER_SIGNAL_DBM / 20) * carrier / doppler
+    params = dict(
+        lambda_ref=m["lam"],
+        lambda_tar=C_LIGHT / (C_LIGHT / m["lam"] - m["fc"]),  # carrier at fc
+        power_signal_dbm=20 * np.log10(e_signal),
+        power_tar_dbm=20 * np.log10(e_target),
     )
-    voltage += noise / noise.std() * m["noise_sd"] * noise_scale
-    return t, voltage, velocity
+    # velocity_to_pdv_voltage scales noise by the signal's maximum
+    peak = velocity_to_pdv_voltage(t, velocity, noise_sd=0.0, **params).max()
+    params["noise_sd"] = (m["noise_sd"] * noise_scale / doppler
+                          * 10 ** (POWER_SIGNAL_DBM / 20) / peak)
+
+    np.random.seed(seed)  # pdv_synthesis draws noise from the global RNG
+    voltage = velocity_to_pdv_voltage(t, velocity, **params)
+    return t, voltage, velocity, params
