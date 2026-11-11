@@ -9,7 +9,7 @@ Workflow:
 """
 
 import numpy as np
-from scipy.signal import ShortTimeFFT
+from scipy.signal import ShortTimeFFT, butter, sosfiltfilt
 
 C_LIGHT = 3e8  # m/s
 
@@ -191,6 +191,10 @@ def velocity_to_pdv_voltage(
     power_tar_dbm=None,
     noise_sd=0.1,
     output_csv=None,
+    beat_only=False,
+    signal_envelope=None,
+    target_envelope=None,
+    noise_bandwidth=None,
 ):
     """Convert a velocity-time history to a synthetic single-point PDV voltage signal.
 
@@ -219,6 +223,17 @@ def velocity_to_pdv_voltage(
         Standard deviation of multiplicative Gaussian noise (default 0.1).
     output_csv : str or None
         If given, save ``(time, voltage)`` to this CSV path.
+    beat_only : bool
+        Keep only the difference-frequency (beat) terms of each field product,
+        as a photodetector does. The sum-frequency terms oscillate at ~2x the
+        optical frequency, which ``time`` cannot sample, so they alias into a
+        spurious tone. Default False keeps the full products.
+    signal_envelope, target_envelope : np.ndarray or None
+        Optional time-varying multipliers of the return-signal and target
+        field amplitudes, same length as ``time``. Default: constant.
+    noise_bandwidth : float or None
+        If given, low-pass the noise at this frequency (Hz), keeping its
+        standard deviation. Default: white noise up to the Nyquist frequency.
 
     Returns
     -------
@@ -235,16 +250,34 @@ def velocity_to_pdv_voltage(
     E_ref0 = 10 ** (power_ref_dbm / 20)
     E_tar0 = 10 ** (power_tar_dbm / 20)
     E_s0   = 10 ** (power_signal_dbm / 20)
+    if target_envelope is not None:
+        E_tar0 = E_tar0 * np.asarray(target_envelope)
+    if signal_envelope is not None:
+        E_s0 = E_s0 * np.asarray(signal_envelope)
 
     position = np.cumsum(velocity / sample_rate)
     phase = 4 * np.pi * position / lambda_ref
 
-    E_ref = E_ref0 * np.cos(2 * np.pi * f_ref * time)
-    E_tar = E_tar0 * np.cos(2 * np.pi * f_tar * time)
-    E_s   = E_s0   * np.cos(2 * np.pi * f_tar * time - phase)
+    if beat_only:
+        # cos(a)cos(b) = [cos(a - b) + cos(a + b)] / 2; keep the a - b terms
+        beat = 2 * np.pi * (f_ref - f_tar) * time
+        voltage = 0.5 * (E_ref0 * E_s0 * np.cos(beat + phase)
+                         + E_ref0 * E_tar0 * np.cos(beat)
+                         + E_tar0 * E_s0 * np.cos(phase))
+    else:
+        E_ref = E_ref0 * np.cos(2 * np.pi * f_ref * time)
+        E_tar = E_tar0 * np.cos(2 * np.pi * f_tar * time)
+        E_s   = E_s0   * np.cos(2 * np.pi * f_tar * time - phase)
 
-    voltage = E_ref * E_s + E_ref * E_tar + E_tar * E_s
-    voltage += voltage.max() * np.random.normal(0, noise_sd, voltage.size)
+        voltage = E_ref * E_s + E_ref * E_tar + E_tar * E_s
+
+    if noise_bandwidth is None:
+        noise = np.random.normal(0, noise_sd, voltage.size)
+    else:
+        sos = butter(8, noise_bandwidth, fs=sample_rate, output="sos")
+        noise = sosfiltfilt(sos, np.random.normal(0, 1, voltage.size))
+        noise *= noise_sd / noise.std()
+    voltage += voltage.max() * noise
 
     if output_csv is not None:
         _save_waveform_csv(time, voltage, output_csv)

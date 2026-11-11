@@ -59,7 +59,9 @@ _VARIANTS = [
 ]
 
 CASES = (
-    _twins("example_file", _VARIANTS)
+    _twins("example_file", _VARIANTS + [
+        ("no_fade", "no carrier fade before the shock", dict(carrier_fade=False)),
+    ])
     + _twins("JHAMAL00016-035_shot02", _VARIANTS)
     + _twins("JHAMAL00016-082_shot08", _VARIANTS)
     + _twins("JHAMAL00018-051_shot01", _VARIANTS)

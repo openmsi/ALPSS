@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `alpss.simulation`: synthetic PDV signal generation from a velocity history
   (`generate_velocity_profile`, `velocity_to_pdv_voltage`,
   `velocity_to_multipoint_pdv_voltage`).
+- `velocity_to_pdv_voltage` options, all off by default so existing output is
+  unchanged: `beat_only` keeps only the photodetector's difference-frequency
+  terms (the sum-frequency terms alias into a spurious tone at GHz sampling),
+  `signal_envelope`/`target_envelope` vary the field amplitudes over time, and
+  `noise_bandwidth` low-passes the noise.
 - `benchmarks/`: an accuracy check for start-time detection. It measures real
   files (carrier, velocity, shock arrival, noise), rebuilds each one with
   `velocity_to_pdv_voltage` so the true start time is known ("twins"), runs
