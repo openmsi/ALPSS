@@ -54,11 +54,15 @@ def test_iq_requires_key(flat_inputs, missing_key):
 
 
 @pytest.mark.parametrize(
-    "missing_key", ["cusum_offset", "cusum_threshold"]
+    "missing_key", ["cusum_offset", "cusum_threshold", "freq_offset", "cusum_bin_time"]
 )
 def test_cusum_requires_key(flat_inputs, missing_key):
     inputs = copy.deepcopy(flat_inputs)
     inputs["start_time_user"] = "cusum"
+    inputs.setdefault("cusum_offset", 5)
+    inputs.setdefault("cusum_threshold", 1000)
+    inputs.setdefault("freq_offset", 0.5e9)
+    inputs.setdefault("cusum_bin_time", 2e-9)
     del inputs[missing_key]
     with pytest.raises(ValueError, match="start_time_user='cusum'"):
         validate_inputs(inputs)
@@ -225,6 +229,8 @@ def test_valid_start_time_modes(flat_inputs, mode):
     if mode == "cusum":
         inputs.setdefault("cusum_offset", 5)
         inputs.setdefault("cusum_threshold", 1000)
+        inputs.setdefault("freq_offset", 0.5e9)
+        inputs.setdefault("cusum_bin_time", 2e-9)
     validate_inputs(inputs)
 
 
