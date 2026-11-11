@@ -13,7 +13,7 @@ runs/    ──summarize.py─> summary.md      error of each result vs. the tru
 ```
 
 1. Each case in `cases.py` is a twin of a real file (`REAL_CASES`), with one
-   ingredient changed (noise, Doppler amplitude, velocity).
+   ingredient changed (noise, Doppler amplitude, velocity, carrier fade).
 2. `generate.py` measures the real file, rebuilds it with a known velocity using
    the original simulation code (`alpss.simulation.velocity_to_pdv_voltage`), and
    works out the results ALPSS should report. Real files also run as cases, with
@@ -47,11 +47,10 @@ any step to some cases.
 
 - `twins.py` measures a real file (carrier, carrier and Doppler amplitudes over
   time, velocity, shock arrival, noise) and passes it to
-  `alpss.simulation.velocity_to_pdv_voltage`, unchanged. The velocity is zero
-  before the arrival, so the twin's start time is exact. That code has constant
-  light powers and white noise, so a twin keeps the real file's average
-  proportions but not how they change over time (e.g. a carrier fade before the
-  shock).
+  `alpss.simulation.velocity_to_pdv_voltage` with `beat_only=True`, the measured
+  carrier and Doppler amplitudes as field envelopes, and noise band-limited like
+  the real scope's. The velocity is zero before the arrival, so the twin's start
+  time is exact.
 - `cases.py` holds the default profile and synthesis parameters and lists the
   cases: shot type, overrides of those defaults, noise level, seed, and the
   config switches the case needs (`spall_enabled`, `hel_enabled`).
