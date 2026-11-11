@@ -96,7 +96,7 @@ def test_alpss_smoke(valid_inputs, start_time_user, carrier_filter_type):
     assert not np.isnan(result_dict["Carrier Frequency"])
 
 
-@pytest.mark.parametrize("cusum_bin_time", [1e-12, 2e-9])
+@pytest.mark.parametrize("cusum_bin_time", [1e-12, 2.5e-10])
 def test_cusum_start_time_matches_otsu(valid_inputs, cusum_bin_time):
     """CUSUM finds the same shock arrival as Otsu on the example file, both per
     sample (a bin shorter than one sample) and on time bins."""

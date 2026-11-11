@@ -26,8 +26,8 @@ retuning, since the detection metric changed.
   magnitude. Its baseline is the first `carrier_band_time` of the record.
 - When CUSUM is selected, the results figure shows the CUSUM statistic in
   place of the Otsu-thresholded spectrogram.
-- The example config uses `cusum_offset=16`, `cusum_threshold=300`,
-  `freq_offset=7.5e7` and `cusum_bin_time=2e-9`, tuned on the simulated
+- The example config uses `cusum_offset=8`, `cusum_threshold=3`,
+  `freq_offset=7.5e7` and `cusum_bin_time=2.5e-10`, tuned on the simulated
   benchmark (#82).
 
 ### Fixed

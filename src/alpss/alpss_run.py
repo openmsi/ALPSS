@@ -93,7 +93,7 @@ config = {
         "cusum_offset": 5,
         "cusum_threshold": 1000,
         "freq_offset": 0.5e9,
-        "cusum_bin_time": 2e-9,
+        "cusum_bin_time": 2.5e-10,
     },
     "stft": {
         "sample_rate": 128e9,
