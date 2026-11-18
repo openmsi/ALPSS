@@ -7,10 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+**Breaking:** `start_time_user="cusum"` now requires `freq_offset` and
+`cusum_bin_time`. Existing `cusum_offset`/`cusum_threshold` values need
+retuning, since the detection metric changed.
+
 ### Added
 - `time_to_take` accepts `"all"` to read the signal from `time_to_skip` to
   the end of the file. The `t_after` check is skipped in that case, and any
   other string is rejected by validation.
+- `freq_offset`: the CUSUM watches the band from carrier + `freq_offset` to
+  `freq_max`.
+- `cusum_bin_time`: the CUSUM runs on bins of this length (seconds), so
+  `cusum_offset` and `cusum_threshold` mean the same at any sample rate.
+
+### Changed
+- CUSUM start detection tracks the amplitude of the signal above the carrier
+  and looks for a rise, instead of a drop in the carrier's spectrogram
+  magnitude. Its baseline is the first `carrier_band_time` of the record.
+- When CUSUM is selected, the results figure shows the CUSUM statistic in
+  place of the Otsu-thresholded spectrogram.
+- The example config uses `cusum_offset=8`, `cusum_threshold=3`,
+  `freq_offset=7.5e7` and `cusum_bin_time=2.5e-10`, tuned on the simulated
+  benchmark (#82).
+
+### Fixed
+- `t_fit_begin` and `t_fit_end` in the example config are in seconds
+  (`2e-08`, `3e-07`); they were written as `20` and `300`.
 
 ## [1.8.0] - 2026-09-23
 

@@ -73,7 +73,7 @@ def test_alpss_exact_values(valid_inputs, start_time_user, carrier_filter_type):
         ), f"Mismatch for '{key}': expected {val}, got {result_dict[key]}"
 
 
-@pytest.mark.parametrize("start_time_user", ["otsu", "iq", 7.5e-07])
+@pytest.mark.parametrize("start_time_user", ["otsu", "iq", "cusum", 7.5e-07])
 @pytest.mark.parametrize("carrier_filter_type", ["gaussian_notch", "none"])
 def test_alpss_smoke(valid_inputs, start_time_user, carrier_filter_type):
     """Smoke test: mode/filter combos complete without error and return valid results."""
@@ -91,3 +91,16 @@ def test_alpss_smoke(valid_inputs, start_time_user, carrier_filter_type):
     result_dict = results[1]["results"][0]
     # Carrier frequency should always be a valid number
     assert not np.isnan(result_dict["Carrier Frequency"])
+
+
+@pytest.mark.parametrize("cusum_bin_time", [1e-12, 2.5e-10])
+def test_cusum_start_time_matches_otsu(valid_inputs, cusum_bin_time):
+    """CUSUM finds the same shock arrival as Otsu on the example file, both per
+    sample (a bin shorter than one sample) and on time bins."""
+    starts = {}
+    for mode in ("otsu", "cusum"):
+        inputs = copy.deepcopy(valid_inputs)
+        inputs["start_time"]["start_time_user"] = mode
+        inputs["start_time"]["cusum_bin_time"] = cusum_bin_time
+        starts[mode] = alpss_main_with_config(inputs)[1]["results"][0]["Signal Start Time"]
+    assert starts["cusum"] == pytest.approx(starts["otsu"], abs=15e-9)
