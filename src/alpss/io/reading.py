@@ -112,6 +112,29 @@ def extract_data(inputs):
     The analysis works on a plain array; everything that knows about file
     formats -- header length, column labels, which channel -- stops here.
     """
+
+    def measure_time_step():
+        """Sample interval from the time column, so time_to_skip and
+        time_to_take convert to the right row counts whatever the scope.
+
+        Timestamps are written with limited precision, so individual steps are
+        quantized; averaging over the whole probe span is exact to ~1e-10.
+        """
+        probe = (
+            pd.read_csv(
+                _source(inputs),
+                skiprows=data_start,
+                nrows=_RATE_PROBE_ROWS,
+                header=None,
+                usecols=[0],
+            )
+            .to_numpy(dtype=float)
+            .ravel()
+        )
+        if len(probe) < 2:
+            raise ValueError("Need at least 2 samples to measure the sample rate.")
+        return (probe[-1] - probe[0]) / (len(probe) - 1)
+
     data_start, labels, n_cols = sniff_header(inputs)
     if "header_lines" in inputs:
         logger.warning(
@@ -120,24 +143,7 @@ def extract_data(inputs):
             data_start,
         )
 
-    # the sample interval is measured from the time column, so time_to_skip
-    # and time_to_take convert to the right row counts whatever the scope.
-    # Timestamps are written with limited precision, so individual steps are
-    # quantized; averaging over the whole probe span is exact to ~1e-10.
-    probe = (
-        pd.read_csv(
-            _source(inputs),
-            skiprows=data_start,
-            nrows=_RATE_PROBE_ROWS,
-            header=None,
-            usecols=[0],
-        )
-        .to_numpy(dtype=float)
-        .ravel()
-    )
-    if len(probe) < 2:
-        raise ValueError("Need at least 2 samples to measure the sample rate.")
-    t_step = (probe[-1] - probe[0]) / (len(probe) - 1)
+    t_step = measure_time_step()
     # time_to_take="all" reads to the end of the file
     if inputs["time_to_take"] == "all":
         nrows = None
