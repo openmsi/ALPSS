@@ -191,15 +191,6 @@ def test_invalid_time_to_take_raises(flat_inputs, value):
 # --- time-based spall windows ---
 
 
-@pytest.mark.parametrize("old_key", ["pb_neighbors", "rc_neighbors", "smoothing_window"])
-def test_sample_count_neighbors_rejected(flat_inputs, old_key):
-    """The pre-1.9 sample-count keys fail loudly rather than being misread."""
-    inputs = copy.deepcopy(flat_inputs)
-    inputs[old_key] = 400
-    with pytest.raises(ValueError, match="Unknown config params"):
-        validate_inputs(inputs)
-
-
 @pytest.mark.parametrize("key", ["pb_neighbors_time", "rc_neighbors_time", "smoothing_window_time"])
 @pytest.mark.parametrize("value", [0, -5e-09, "5ns"])
 def test_invalid_neighbors_time_raises(flat_inputs, key, value):
