@@ -11,7 +11,6 @@ _ALWAYS_REQUIRED = [
     "t_after",
     "start_time_user",
     "start_time_correction",
-    "sample_rate",
     "nperseg",
     "noverlap",
     "nfft",
@@ -23,7 +22,7 @@ _ALWAYS_REQUIRED = [
     "blur_sigy",
     "carrier_filter_type",
     "carrier_band_time",
-    "smoothing_window",
+    "smoothing_window_time",
     "smoothing_wid",
     "smoothing_amp",
     "smoothing_sigma",
@@ -57,7 +56,7 @@ _REQUIRED_BY_MODE = {
     "start_time_user=cusum": ["cusum_offset", "cusum_threshold"],
     "carrier_filter_type=gaussian_notch": ["order", "wid"],
     "carrier_filter_type=sin_fit_subtract": ["wid", "t_fit_begin", "t_fit_end"],
-    "spall_enabled=True": ["pb_neighbors", "pb_idx_correction", "rc_neighbors", "rc_idx_correction", "C0", "density", "delta_rho", "delta_C0", "delta_lam", "delta_theta"],
+    "spall_enabled=True": ["pb_neighbors_time", "pb_idx_correction", "rc_neighbors_time", "rc_idx_correction", "C0", "density", "delta_rho", "delta_C0", "delta_lam", "delta_theta"],
     "hel_enabled=True": ["hel_start_time_ns", "hel_end_time_ns", "hel_angle_threshold_deg", "hel_detection_min_points", "minimum_HEL_velocity_expected", "density", "C_L"],
 }
 
@@ -114,6 +113,15 @@ def validate_inputs(inputs):
         raise ValueError(
             f"Invalid carrier_filter_type='{cft}'. Must be one of {_CARRIER_FILTER_TYPES}."
         )
+
+    time_keys = ["smoothing_window_time"]
+    if inputs["spall_enabled"]:
+        time_keys += ["pb_neighbors_time", "rc_neighbors_time"]
+    for key in time_keys:
+        if not (isinstance(inputs[key], (int, float)) and inputs[key] > 0):
+            raise ValueError(
+                f"'{key}' must be a positive time in seconds, got {inputs[key]!r}."
+            )
 
     ttt = inputs["time_to_take"]
     if not (isinstance(ttt, (int, float)) or ttt == "all"):

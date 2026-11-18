@@ -15,6 +15,9 @@ def test_alpss_main_wo_configfile(valid_inputs, expected_values):
     # Extract the results dictionary (results[1] should be the output dictionary)
     result_dict = results[1]
 
+    # the sample rate is measured from the data and reported with the results
+    assert result_dict['results'][0]["Sample Rate"] == pytest.approx(80e9, rel=1e-6)
+
     # Iterate over the expected values and assert that the results match
     for key, expected_value in expected_values.items():
         assert key in result_dict['results'][0], f"Key '{key}' not found in the results."
