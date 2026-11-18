@@ -209,14 +209,6 @@ def test_invalid_neighbors_time_raises(flat_inputs, key, value):
         validate_inputs(inputs)
 
 
-def test_sample_rate_is_accepted_but_not_required(flat_inputs):
-    inputs = copy.deepcopy(flat_inputs)
-    inputs.pop("sample_rate", None)
-    validate_inputs(inputs)
-    inputs["sample_rate"] = 80e9
-    validate_inputs(inputs)
-
-
 # --- unknown params ---
 
 

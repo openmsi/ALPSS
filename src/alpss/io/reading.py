@@ -138,12 +138,6 @@ def extract_data(inputs):
     if len(probe) < 2:
         raise ValueError("Need at least 2 samples to measure the sample rate.")
     t_step = (probe[-1] - probe[0]) / (len(probe) - 1)
-    if "sample_rate" in inputs:
-        logger.warning(
-            "Ignoring sample_rate=%s; measured %.6g Hz from the time column.",
-            inputs["sample_rate"],
-            1 / t_step,
-        )
     # time_to_take="all" reads to the end of the file
     if inputs["time_to_take"] == "all":
         nrows = None

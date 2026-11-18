@@ -168,11 +168,6 @@ class TestExtractData:
         assert len(data) == pytest.approx(2e-07 * rate, abs=1)
         assert 1 / np.mean(np.diff(data[:, 0])) == pytest.approx(rate, rel=1e-6)
 
-    def test_sample_rate_input_is_ignored(self):
-        measured = extract_data(read_inputs(MULTICHANNEL_FILE))
-        stale = extract_data(read_inputs(MULTICHANNEL_FILE, sample_rate=80e9))
-        np.testing.assert_array_equal(measured, stale)
-
     def test_returns_a_plain_array(self):
         data = extract_data(read_inputs(MULTICHANNEL_FILE))
         assert isinstance(data, np.ndarray)

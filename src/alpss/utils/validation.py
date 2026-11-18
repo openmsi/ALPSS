@@ -48,8 +48,7 @@ _OPTIONAL = ["bytestring"]
 # `channel` selects one voltage column of a multi-channel export; without it
 # the first channel is read. `header_lines` is accepted so existing configs
 # keep loading, but the data start is auto-detected and the value is ignored.
-# `sample_rate` is likewise ignored: it is measured from the time column.
-_ACCEPTED = ["channel", "header_lines", "sample_rate"]
+_ACCEPTED = ["channel", "header_lines"]
 
 _REQUIRED_BY_MODE = {
     "start_time_user=otsu": [],
