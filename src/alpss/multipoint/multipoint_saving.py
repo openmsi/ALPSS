@@ -1,11 +1,14 @@
 import os
+import logging
 import numpy as np
 import pandas as pd
 
+logger = logging.getLogger("alpss")
+
 _SERIES = [
+    ("displacement",    1, "{base}-displacement.csv"),
     ("velocity",        1, "{base}-velocity.csv"),
     ("smooth_velocity", 1, "{base}-velocity--smooth.csv"),
-    ("displacement",    1, "{base}-displacement.csv"),
     ("noise",           1, "{base}-noisefrac.csv"),
     ("vel_uncert",      1, "{base}-veluncert.csv"),
 ]
@@ -17,7 +20,7 @@ def _interp_to_reference(ref_time, probe_time, probe_values):
     return np.interp(ref_time, probe_time, probe_values, left=np.nan, right=np.nan)
 
 
-def save_combined_series(results, probe_numbers, filepath, out_files_dir):
+def save_combined_series(results, probe_numbers, filepath, out_files_dir, optical_delay=None):
     """Merge per-probe arrays into wide-format CSVs on a single shared time axis.
 
     One CSV per data type; columns are [time, probe_N, probe_M, ...]. The
@@ -27,6 +30,27 @@ def save_combined_series(results, probe_numbers, filepath, out_files_dir):
     """
     base = os.path.splitext(os.path.basename(filepath))[0]
     base_path = os.path.join(out_files_dir, base)
+    optical_delay = optical_delay or {}
+    successful_probes = {probe for probe, result in zip(probe_numbers, results)
+                         if result is not None}
+    if not successful_probes:
+        logger.warning("No successful probes for %s; keeping existing outputs", base)
+        return
+    inputs_path = f"{base_path}-inputs.csv"
+    if os.path.isfile(inputs_path):
+        previous_probes = set(pd.read_csv(inputs_path, usecols=["probe_number"])["probe_number"])
+        if not previous_probes.issubset(successful_probes):
+            logger.warning("Keeping existing outputs for %s: rerun lost probes %s",
+                           base, sorted(previous_probes - successful_probes))
+            return
+
+    probe_10 = next((result for probe, result in zip(probe_numbers, results)
+                     if probe == 10), None)
+    if probe_10 is None:
+        raise ValueError("Cannot zero displacement without probe 10")
+    zero_time = float(probe_10[1]["results"][0]["Signal Start Time"])
+    if not np.isfinite(zero_time):
+        raise ValueError("Probe 10 has no finite signal start time")
 
     for items_key, col_idx, path_template in _SERIES:
         ref_time = None
@@ -46,6 +70,14 @@ def save_combined_series(results, probe_numbers, filepath, out_files_dir):
         if ref_time is None:
             continue
         merged = pd.DataFrame({"time": ref_time, **columns})
+        if items_key == "displacement":
+            if not ref_time[0] <= zero_time <= ref_time[-1]:
+                raise ValueError("Probe 10 start is outside the displacement time range")
+            zero_idx = np.abs(ref_time - zero_time).argmin()
+            offsets = merged.iloc[zero_idx, 1:]
+            if offsets.isna().any():
+                raise ValueError("A probe has no displacement at probe 10 start")
+            merged.iloc[:, 1:] = merged.iloc[:, 1:].sub(offsets, axis="columns")
         merged.to_csv(path_template.format(base=base_path), index=False)
 
     # voltage has two data columns per probe (real and imaginary)
@@ -79,6 +111,7 @@ def save_combined_series(results, probe_numbers, filepath, out_files_dir):
         _, items = result
         df = items["inputs"][0].copy()
         df.insert(0, "probe_number", probe_num)
+        df.insert(1, "optical_delay", optical_delay.get(probe_num, 0.0))
         inputs_frames.append(df)
     if inputs_frames:
         pd.concat(inputs_frames, ignore_index=True).to_csv(
@@ -93,6 +126,7 @@ def save_combined_series(results, probe_numbers, filepath, out_files_dir):
         _, items = result
         df = pd.DataFrame([items["results"][0]])
         df.insert(0, "probe_number", probe_num)
+        df.insert(1, "Displacement Zero Time", zero_time)
         results_frames.append(df)
     if results_frames:
         pd.concat(results_frames, ignore_index=True).to_csv(
