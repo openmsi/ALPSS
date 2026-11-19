@@ -45,6 +45,7 @@ def run_velocity_phase(**inputs) -> tuple:
             data = data.iloc[:, [0, 1]] #truncate the data if it is not multipoint
 
         sdf_out = spall_doi_finder(data, **inputs)
+        vel_out["sdf_out"] = sdf_out
         logger.info(
             "Spall DOI found: start=%.3e s, end=%.3e s",
             sdf_out["t_doi_start"],

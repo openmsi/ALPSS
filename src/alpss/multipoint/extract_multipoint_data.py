@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger("alpss")
 
 
-def extract_multipoint_data(inputs, multipoint_metadata=None, file_input_type="single", probe_index=0):
+def extract_multipoint_data(inputs, multipoint_metadata=None, file_input_type="single", probe_index=0, optical_delay=0.0):
     """Extract the [time, voltage] pair for one probe.
 
     multipoint_metadata: pandas DataFrame mirroring the config's flat metadata
@@ -51,5 +51,8 @@ def extract_multipoint_data(inputs, multipoint_metadata=None, file_input_type="s
         nrows=int(nrows),
         usecols=columns,
     )
+
+    # Remove the probe's optical transit delay before signal processing.
+    data.iloc[:, 0] = data.iloc[:, 0] - optical_delay
 
     return data

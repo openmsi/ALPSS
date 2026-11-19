@@ -28,7 +28,8 @@ def alpss_multipoint(inputs):
         must include "metadata" (a list of per-probe records with at least
         "osc_channel", "probe_number", "tar_lam", and "expected_upshift" —
         see extract_multipoint_data for the columns each file_input_type
-        needs) and may include "file_input_type" (default "single"),
+        needs). Each record may also specify "optical_delay" in seconds.
+        The section may include "file_input_type" (default "single"),
         "freq_lower"/"freq_upper" (Hz half-widths around the expected
         upshift, default 1 GHz), and "freq_refine_lower"/"freq_refine_upper"
         to enable carrier refinement (find_carrier() locates the carrier
@@ -45,6 +46,10 @@ def alpss_multipoint(inputs):
     flat = flatten_config(inputs)
 
     multipoint_metadata = pd.DataFrame(inputs["multipoint"]["metadata"])
+    optical_delay = {
+        int(row["probe_number"]): float(row.get("optical_delay", 0.0))
+        for _, row in multipoint_metadata.iterrows()
+    }
     file_input_type = inputs["multipoint"].get("file_input_type", "single")
     freq_lower = inputs["multipoint"].get("freq_lower", 1e9)
     freq_upper = inputs["multipoint"].get("freq_upper", 1e9)
@@ -79,6 +84,7 @@ def alpss_multipoint(inputs):
             multipoint_metadata=multipoint_metadata,
             file_input_type=file_input_type,
             probe_index=probe_index,
+            optical_delay=optical_delay[probe_number],
         )
 
         logger.info(
@@ -146,6 +152,6 @@ def alpss_multipoint(inputs):
         probe_numbers.append(probe_number)
 
     if flat.get("save_data"):
-        save_combined_series(results, probe_numbers, filepath, flat["out_files_dir"])
+        save_combined_series(results, probe_numbers, filepath, flat["out_files_dir"], optical_delay)
 
     return results

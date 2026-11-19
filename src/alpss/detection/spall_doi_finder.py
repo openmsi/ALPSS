@@ -149,6 +149,8 @@ def spall_doi_finder(data, **inputs):
             sigma0 = np.var(signal_eval[mask])
 
             detection_indices, change_indices, G, s = cusum(signal_eval, mu0, sigma0, h, k)
+            if change_indices is None:
+                raise ValueError("CUSUM did not detect a signal start")
             detection_time = time_eval[change_indices]
 
             # these params become nan because they are only needed if the program
