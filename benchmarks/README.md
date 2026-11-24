@@ -65,7 +65,7 @@ any step to some cases.
   (whole file), the HEL window (the config's window, shifted to the shock
   arrival) and the case's enabled phases. Outputs go to `runs/<label>/<case>/`
   with a `run.json` recording the git state and overrides.
-- `summarize.py` writes `summary.md` / `summary.csv` into the run directory.
+- `summarize.py` writes `summary.md`, `summary.csv` and `stats.csv` into the run directory.
 
 `data/` and `runs/` are gitignored.
 
@@ -92,6 +92,9 @@ Times are in ALPSS's time base, which starts at 0 at the first sample of the fil
 ## Summary columns
 
 - `error` = measured − truth; `rel_error` = error / truth.
+- The stats table comes first: per metric, `n` cases with a measured value and
+  the `mean`, `std`, `mean_abs` and `max_abs` of their errors. Failed cases are
+  left out of it.
 - The velocity trace rows give the RMS and maximum error of the smoothed velocity
   against the true history, over the window ALPSS analysed.
 - With `--against`, a comparison table lists each value's error in both runs.

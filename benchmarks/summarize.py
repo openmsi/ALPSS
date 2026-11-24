@@ -4,9 +4,10 @@
     poetry run python benchmarks/summarize.py benchmarks/runs/feature --against benchmarks/runs/main
 
 For each case and truth value: measured, error and relative error. Also the
-RMS / max error of the smoothed velocity trace against the true history.
-Writes summary.csv and summary.md into the run directory; with --against, also
-writes comparison_vs_<other>.csv/.md there.
+RMS / max error of the smoothed velocity trace against the true history, and
+per metric the mean, std, mean |error| and max |error| over all cases.
+Writes summary.csv, stats.csv and summary.md into the run directory; with
+--against, also writes comparison_vs_<other>.csv/.md there.
 """
 
 import argparse
@@ -81,6 +82,18 @@ def summarize_run(run_dir, data_dir):
     return run, pd.DataFrame(rows)
 
 
+def stats(summary):
+    """Per metric: how many cases measured it, and the spread of their errors."""
+    err = summary.dropna(subset=["error"]).groupby("metric", sort=False)["error"]
+    return pd.DataFrame({
+        "n": err.size(),
+        "mean": err.mean(),
+        "std": err.std(),
+        "mean_abs": err.apply(lambda e: e.abs().mean()),
+        "max_abs": err.apply(lambda e: e.abs().max()),
+    }).reset_index()
+
+
 def compare(current, baseline):
     """Per case/metric error in both runs, side by side."""
     keys = ["case", "metric"]
@@ -127,12 +140,15 @@ def main():
     run, summary = summarize_run(args.run_dir, args.data)
     columns = ["case", "metric", "truth", "measured", "error", "rel_error"]
     summary.to_csv(os.path.join(args.run_dir, "summary.csv"), index=False)
+    metric_stats = stats(summary)
+    metric_stats.to_csv(os.path.join(args.run_dir, "stats.csv"), index=False)
 
     failed = {c: s["error"] for c, s in run["cases"].items() if s["status"] != "ok"}
     body = [f"# Benchmark summary\n\n{run_header(run)}\n"]
     if failed:
         body.append("Failed cases:\n" + "\n".join(f"- {c}: {e}" for c, e in failed.items()) + "\n")
-    body.append(to_markdown(summary, columns))
+    body.append(to_markdown(metric_stats, ["metric", "n", "mean", "std", "mean_abs", "max_abs"]))
+    body.append("\n" + to_markdown(summary, columns))
     report = "\n".join(body) + "\n"
 
     if args.against:
