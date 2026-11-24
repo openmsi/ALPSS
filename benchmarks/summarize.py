@@ -6,19 +6,24 @@
 For each case and truth value: measured, error and relative error. Also the
 RMS / max error of the smoothed velocity trace against the true history, and
 per metric the mean, std, mean |error| and max |error| over all cases.
-Writes summary.csv, stats.csv and summary.md into the run directory; with
---against, also writes comparison_vs_<other>.csv/.md there.
+Writes summary.csv, stats.csv, errors.png (a histogram of errors per metric)
+and summary.md into the run directory; with --against, also writes
+comparison_vs_<other>.csv/.md there.
 """
 
 import argparse
 import json
 import os
 
-import numpy as np
-import pandas as pd
+import matplotlib
 
-from cases import REAL_CASES
-from common import DATA_DIR, REPO_ROOT, truth_path, velocity_true_path
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+
+from cases import real_cases  # noqa: E402
+from common import DATA_DIR, REPO_ROOT, real_dir, truth_path, velocity_true_path  # noqa: E402
 
 TRACE_METRICS = ("Velocity trace RMS (m/s)", "Velocity trace max (m/s)")
 
@@ -43,7 +48,7 @@ def summarize_run(run_dir, data_dir):
     with open(os.path.join(run_dir, "run.json")) as f:
         run = json.load(f)
 
-    references = {c["id"]: c["reference"] for c in REAL_CASES}
+    references = {c["id"]: c["reference"] for c in real_cases(real_dir(data_dir))}
     rows = []
     for case_id, status in run["cases"].items():
         if case_id in references:
@@ -94,6 +99,29 @@ def stats(summary):
     }).reset_index()
 
 
+def plot_errors(summary, path):
+    """One histogram of errors per metric, with the mean and std in its title."""
+    errors = summary.dropna(subset=["error"])
+    metrics = list(dict.fromkeys(errors["metric"]))
+    if not metrics:
+        return
+    cols = min(3, len(metrics))
+    rows = -(-len(metrics) // cols)
+    fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 3.5 * rows), squeeze=False)
+    for ax, metric in zip(axes.flat, metrics):
+        err = errors.loc[errors["metric"] == metric, "error"]
+        ax.hist(err, bins=min(20, max(5, err.size)))
+        ax.axvline(0, color="k", lw=0.8)
+        ax.set_title(f"{metric}\nmean {fmt(err.mean())}, std {fmt(err.std())}, n={err.size}",
+                     fontsize=9)
+        ax.set_xlabel("measured − truth")
+    for ax in axes.flat[len(metrics):]:
+        ax.axis("off")
+    fig.tight_layout()
+    fig.savefig(path, dpi=120)
+    plt.close(fig)
+
+
 def compare(current, baseline):
     """Per case/metric error in both runs, side by side."""
     keys = ["case", "metric"]
@@ -142,6 +170,7 @@ def main():
     summary.to_csv(os.path.join(args.run_dir, "summary.csv"), index=False)
     metric_stats = stats(summary)
     metric_stats.to_csv(os.path.join(args.run_dir, "stats.csv"), index=False)
+    plot_errors(summary, os.path.join(args.run_dir, "errors.png"))
 
     failed = {c: s["error"] for c, s in run["cases"].items() if s["status"] != "ok"}
     body = [f"# Benchmark summary\n\n{run_header(run)}\n"]

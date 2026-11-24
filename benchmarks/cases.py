@@ -1,4 +1,4 @@
-"""Benchmark cases: simulated (CASES) and real files (REAL_CASES).
+"""Benchmark cases: simulated (CASES) and real files (real_cases()).
 
 Each simulated case is one synthetic signal. ``profile`` overrides
 PROFILE_DEFAULTS for the case's shot type and is passed to
@@ -7,13 +7,18 @@ passed to ``velocity_to_pdv_voltage``. These are the only defaults: the
 generator has none, so the signal and the truth always come from the same
 numbers. A twin case instead rebuilds a real case's signal (see twins.py).
 
-Each real case is a recorded file (``file``, relative to the repo root) with
-``reference`` values that stand in for the truth.
+Real cases are not listed here: every ``<id>.csv`` in the real-data folder
+with an ``<id>-results.csv`` beside it is one, and the results file holds the
+reference values that stand in for the truth (see real_cases()).
 
-``config_edits`` holds the ALPSS config keys a case changes relative to
-tests/input_data/config.json. For simulated cases, run.py also sets what the
-signal dictates (file, sample rate, wavelength, read window, HEL window).
+``config_edits`` holds the ALPSS config keys a simulated case changes relative
+to the benchmark config. run.py also sets what the signal dictates (file,
+wavelength, read window, HEL window).
 """
+
+import os
+
+import pandas as pd
 
 SAMPLE_RATE = 128e9
 
@@ -39,8 +44,8 @@ PROFILE_DEFAULTS = {
 SYNTHESIS_DEFAULTS = dict(lambda_ref=1550e-9, lambda_tar=1550.016e-9, power_tar_dbm=-15)
 
 # Twins: rebuilt from a real case (``twin["source"]``) by twins.py, with the
-# knobs of twins.synthesize changing one ingredient at a time. A twin runs
-# with its source's config_edits (see config_edits()), like its real file.
+# knobs of twins.synthesize changing one ingredient at a time. A twin runs with
+# the benchmark config, like its real file.
 def _twins(source, variants):
     """The as-measured twin of `source` plus one case per variant, named after it."""
     base = dict(id=f"{source}_twin", description=f"twin of {source}, as measured",
@@ -67,57 +72,38 @@ CASES = (
     + _twins("JHAMAB00022-01_shot01", _VARIANTS)
 )
 
-# the lab pipeline's (alpss-dagster) settings, for files from Girder
-_PIPELINE = dict(
-    time_to_skip=0.0, time_to_take="all", lam=1.55e-6,
-    freq_min=1.8e9, freq_max=2.8e9, t_before=25e-9, t_after=100e-9,
-    smoothing_window=1801, blur_kernel=[15, 5],
-)
-
-REAL_CASES = [
-    dict(
-        id="example_file",  # matches the file name, which ALPSS names its outputs after
-        description="example_file.csv, reference = main's Otsu start time",
-        file="tests/input_data/example_file.csv",
-        config_edits={},
-        reference={"Signal Start Time": 614.08e-9},
-    ),
-    dict(
-        id="JHAMAL00016-035_shot02",
-        description="spall shot (610 m/s), LeCroy 40 GS/s, 2026-07-14",
-        file="benchmarks/data/real/JHAMAL00016-035_shot02.csv",  # from Girder, not committed
-        config_edits=dict(_PIPELINE, sample_rate=40e9),
-        reference={"Signal Start Time": 1223.80e-9},  # alpss-dagster's Otsu result
-    ),
-    dict(
-        id="JHAMAL00016-082_shot08",
-        description="spall shot (539 m/s), LeCroy 40 GS/s, 2026-08-12",
-        file="benchmarks/data/real/JHAMAL00016-082_shot08.csv",  # from Girder, not committed
-        config_edits=dict(_PIPELINE, sample_rate=40e9),
-        reference={"Signal Start Time": 1483.78e-9},  # alpss-dagster's Otsu result
-    ),
-    dict(
-        id="JHAMAL00018-051_shot01",
-        description="spall shot (515 m/s), LeCroy 40 GS/s, 2026-07-29",
-        file="benchmarks/data/real/JHAMAL00018-051_shot01.csv",  # from Girder, not committed
-        config_edits=dict(_PIPELINE, sample_rate=40e9),
-        reference={"Signal Start Time": 1402.28e-9},  # alpss-dagster's Otsu result
-    ),
-    dict(
-        id="JHAMAL00018-058_shot01",
-        description="spall shot (559 m/s), LeCroy 40 GS/s, 2026-08-12",
-        file="benchmarks/data/real/JHAMAL00018-058_shot01.csv",  # from Girder, not committed
-        config_edits=dict(_PIPELINE, sample_rate=40e9),
-        reference={"Signal Start Time": 1239.48e-9},  # alpss-dagster's Otsu result
-    ),
-    dict(
-        id="JHAMAB00022-01_shot01",
-        description="spall shot (415 m/s), sharp rise, Keysight 128 GS/s, 2025-11-06",
-        file="benchmarks/data/real/JHAMAB00022-01_shot01.csv",  # from Girder, not committed
-        config_edits=dict(_PIPELINE, sample_rate=128e9),
-        reference={"Signal Start Time": 2292.45e-9},  # alpss-dagster's Otsu result
-    ),
+# results the summary compares against a real file's results file
+REFERENCE_METRICS = [
+    "Velocity at Max Compression",
+    "Time at Max Compression",
+    "Carrier Frequency",
+    "Signal Start Time",
+    "Velocity at Max Tension",
+    "Time at Max Tension",
+    "HEL Free Surface Velocity (m/s)",
+    "HEL Time Detection (ns)",
 ]
+
+
+def real_cases(real_dir):
+    """One case per ``<id>.csv`` in `real_dir` with an ``<id>-results.csv`` beside it."""
+    if not os.path.isdir(real_dir):
+        return []
+    cases = []
+    for name in sorted(os.listdir(real_dir)):
+        case_id, ext = os.path.splitext(name)
+        results = os.path.join(real_dir, f"{case_id}-results.csv")
+        if ext != ".csv" or case_id.endswith("-results") or not os.path.exists(results):
+            continue
+        row = pd.read_csv(results).iloc[0]
+        cases.append(dict(
+            id=case_id,  # ALPSS names its outputs after the file
+            description=f"{name}, reference = {os.path.basename(results)}",
+            file=os.path.join(real_dir, name),
+            reference={m: float(row[m]) for m in REFERENCE_METRICS
+                       if m in row and pd.notna(row[m])},
+        ))
+    return cases
 
 
 def profile_params(case):
@@ -128,17 +114,9 @@ def synthesis_params(case):
     return {**SYNTHESIS_DEFAULTS, **case["synthesis"]}
 
 
-def config_edits(case):
-    """The case's config_edits; a twin starts from its source's."""
-    edits = case["config_edits"]
-    if "twin" in case:
-        source = next(c for c in REAL_CASES if c["id"] == case["twin"]["source"])
-        edits = {**source["config_edits"], **edits}
-    return edits
-
-
-def get_cases(only=None, include_real=False):
-    pool = CASES + REAL_CASES if include_real else CASES
+def get_cases(only=None, real_dir=None):
+    """The simulated cases, or with `real_dir` the real files found there."""
+    pool = real_cases(real_dir) if real_dir else CASES
     if not only:
         return list(pool)
     unknown = set(only) - {c["id"] for c in pool}

@@ -47,9 +47,11 @@ def _smooth(x, n):
     return np.convolve(x, np.ones(n) / n, mode="same")
 
 
-def measure(time, voltage, sample_rate, lam, carrier_band_time):
+def measure(time, voltage, lam, carrier_band_time):
     """Ingredients of a real shot; `carrier_band_time` is the shot-free lead-in."""
-    fs = sample_rate
+    # mean step, as alpss.io.reading measures it: single steps are quantized
+    n = min(time.size, 1000)
+    fs = (n - 1) / (time[n - 1] - time[0])
     t = time - time[0]
     pre = t < carrier_band_time
     fc = _peak_freq(voltage[pre], fs)

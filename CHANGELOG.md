@@ -33,11 +33,13 @@ To convert, divide the old value by the sample rate, e.g. 400 samples at
 - `alpss.simulation`: synthetic PDV signal generation from a velocity history
   (`generate_velocity_profile`, `velocity_to_pdv_voltage`,
   `velocity_to_multipoint_pdv_voltage`).
-- `benchmarks/`: an accuracy check for start-time detection. It measures real
-  files (carrier, velocity, shock arrival, noise), rebuilds each one with
-  `velocity_to_pdv_voltage` so the true start time is known ("twins"), runs
-  ALPSS on the twins and the real files, and reports each result's error and
-  how two runs compare.
+- `benchmarks/`: an accuracy check that runs one config on every file and
+  reports each result's error, per-metric mean and std, error histograms and
+  how two runs compare. Real files are pairs of a trace and a reference
+  results file, kept in a Girder collection and fetched by
+  `benchmarks/benchmark.ipynb`; any pair in `benchmarks/data/real/` is a case.
+  Simulated "twins" rebuild each real file with `velocity_to_pdv_voltage` so
+  the true start time is known.
 
 ## [1.8.0] - 2026-09-23
 

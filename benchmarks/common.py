@@ -4,7 +4,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BENCH_DIR = os.path.join(REPO_ROOT, "benchmarks")
 DATA_DIR = os.path.join(BENCH_DIR, "data")
 RUNS_DIR = os.path.join(BENCH_DIR, "runs")
-CONFIG_PATH = os.path.join(REPO_ROOT, "tests", "input_data", "config.json")
+CONFIG_PATH = os.path.join(BENCH_DIR, "benchmark_config.json")
 
 
 def set_key(config, key, value):
@@ -14,6 +14,11 @@ def set_key(config, key, value):
             section[key] = value
             return
     raise KeyError(f"{key!r} is not in any section of the config")
+
+
+def real_dir(data_dir):
+    """Where the real files and their results files sit (fetched from Girder)."""
+    return os.path.join(data_dir, "real")
 
 
 def signal_path(data_dir, case_id):

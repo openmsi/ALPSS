@@ -1,11 +1,14 @@
-"""Run ALPSS over the generated cases.
+"""Run ALPSS over the real files or the generated cases.
 
-    poetry run python benchmarks/run.py --label main [--set key=value ...] [--only case_01 ...]
+    poetry run python benchmarks/run.py --real --label main [--config ...] [--set key=value ...]
+    poetry run python benchmarks/run.py --label main [--only case_01 ...]
 
-Uses tests/input_data/config.json, changing only what each simulated signal
-requires (file, sample rate, wavelength, read window, HEL window, enabled
-phases) plus any --set overrides. Writes ALPSS's usual outputs into
-benchmarks/runs/<label>/<case>/ and a run.json describing the run.
+Uses benchmarks/benchmark_config.json (or --config) for every case. With
+--real, it runs each real file in benchmarks/data/real/ as is; otherwise the
+generated cases, changing only what each simulated signal requires (file,
+wavelength, read window, HEL window, enabled phases). --set overrides apply to
+every case. Writes ALPSS's usual outputs into benchmarks/runs/<label>/<case>/
+and a run.json describing the run.
 """
 
 import argparse
@@ -25,10 +28,10 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 from alpss.commands import alpss_main_with_config  # noqa: E402
 
-from cases import config_edits, get_cases  # noqa: E402
+from cases import get_cases  # noqa: E402
 from common import (  # noqa: E402
     CONFIG_PATH, DATA_DIR, REPO_ROOT, RUNS_DIR,
-    set_key, signal_path, truth_path,
+    real_dir, set_key, signal_path, truth_path,
 )
 
 
@@ -56,8 +59,8 @@ def case_config(base, case, data_dir, out_dir, overrides):
     set_key(config, "display_plots", False)
 
     if "file" in case:
-        # real file: the base config plus the case's own edits
-        set_key(config, "filepath", os.path.join(REPO_ROOT, case["file"]))
+        # real file: the config as is
+        set_key(config, "filepath", case["file"])
     else:
         with open(truth_path(data_dir, case["id"])) as f:
             record = json.load(f)
@@ -65,13 +68,12 @@ def case_config(base, case, data_dir, out_dir, overrides):
         set_key(config, "filepath", signal_path(data_dir, case["id"]))
         set_key(config, "time_to_skip", 0.0)
         set_key(config, "time_to_take", "all")
-        set_key(config, "sample_rate", record["sample_rate"])
         set_key(config, "lam", record["lam"])
         # the config's HEL window is relative to the shock arrival
         set_key(config, "hel_start_time_ns", t0_ns + base["hel"]["hel_start_time_ns"])
         set_key(config, "hel_end_time_ns", t0_ns + base["hel"]["hel_end_time_ns"])
 
-    for key, value in {**config_edits(case), **overrides}.items():
+    for key, value in {**case.get("config_edits", {}), **overrides}.items():
         set_key(config, key, value)
     return config
 
@@ -95,6 +97,8 @@ def main():
     parser.add_argument("--set", nargs="+", metavar="KEY=VALUE", dest="overrides",
                         help="override config keys for every case")
     parser.add_argument("--only", nargs="+", help="case ids to run")
+    parser.add_argument("--real", action="store_true",
+                        help="run the real files in <data>/real/ instead of the generated cases")
     parser.add_argument("--config", default=CONFIG_PATH)
     parser.add_argument("--data", default=DATA_DIR)
     parser.add_argument("--out", default=RUNS_DIR)
@@ -114,10 +118,14 @@ def main():
         "config": os.path.relpath(args.config, REPO_ROOT),
         "overrides": overrides,
         "data": os.path.relpath(args.data, REPO_ROOT),
+        "real": args.real,
         "cases": {},
     }
 
-    for case in get_cases(args.only, include_real=True):
+    cases = get_cases(args.only, real_dir(args.data) if args.real else None)
+    if not cases:
+        raise SystemExit(f"no cases found{' in ' + real_dir(args.data) if args.real else ''}")
+    for case in cases:
         out_dir = os.path.join(run_dir, case["id"])
         os.makedirs(out_dir, exist_ok=True)
         config = case_config(base, case, args.data, out_dir, overrides)

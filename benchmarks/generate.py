@@ -19,10 +19,10 @@ from alpss.io.reading import extract_data
 from alpss.simulation import generate_velocity_profile, velocity_to_pdv_voltage
 from alpss.utils.config import flatten_config
 
-from cases import REAL_CASES, SAMPLE_RATE, get_cases, profile_params, synthesis_params
+from cases import SAMPLE_RATE, get_cases, profile_params, synthesis_params
 from common import (
-    CONFIG_PATH, DATA_DIR, REPO_ROOT,
-    set_key, signal_path, truth_path, velocity_true_path,
+    CONFIG_PATH, DATA_DIR,
+    real_dir, set_key, signal_path, truth_path, velocity_true_path,
 )
 from truth import truth_from_case, truth_from_twin
 from twins import measure, synthesize
@@ -57,7 +57,6 @@ def generate_case(case, flat_config, out_dir):
         "description": case["description"],
         "shot_type": case["shot_type"],
         "seed": case["seed"],
-        "sample_rate": SAMPLE_RATE,
         "lam": synthesis_params(case)["lambda_ref"],
         "t_arrival": -params["t_begin"],
         "profile": params,
@@ -71,16 +70,12 @@ def generate_case(case, flat_config, out_dir):
 
 def generate_twin(case, base, out_dir):
     """Measure the source real file, then rebuild it with the case's knobs."""
-    source = next(c for c in REAL_CASES if c["id"] == case["twin"]["source"])
     config = copy.deepcopy(base)
-    set_key(config, "filepath", os.path.join(REPO_ROOT, source["file"]))
-    for key, value in source["config_edits"].items():
-        set_key(config, key, value)
+    set_key(config, "filepath", signal_path(real_dir(out_dir), case["twin"]["source"]))
     flat = flatten_config(config)
 
     data = extract_data(flat)
-    m = measure(data[:, 0], data[:, 1], flat["sample_rate"], flat["lam"],
-                flat["carrier_band_time"])
+    m = measure(data[:, 0], data[:, 1], flat["lam"], flat["carrier_band_time"])
     knobs = {k: v for k, v in case["twin"].items() if k != "source"}
     time, voltage, velocity, params = synthesize(m, case["seed"], **knobs)
 
@@ -94,7 +89,6 @@ def generate_twin(case, base, out_dir):
         "description": case["description"],
         "twin": case["twin"],
         "seed": case["seed"],
-        "sample_rate": m["sample_rate"],
         "lam": m["lam"],
         "t_arrival": m["arrival"],
         "measured": {k: m[k] for k in ("fc", "arrival", "noise_sd", "noise_bw")},
