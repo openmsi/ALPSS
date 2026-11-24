@@ -20,8 +20,6 @@ import os
 
 import pandas as pd
 
-SAMPLE_RATE = 128e9  # time grid of the simulated cases' velocity profiles
-
 PROFILE_DEFAULTS = {
     "velocity": dict(t_begin=-500e-9, t_end=1000e-9, vel_peak=200, a=1, b=0.00001),
     "HEL": dict(

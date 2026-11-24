@@ -95,7 +95,7 @@ def measure(time, voltage, lam, carrier_band_time):
 
     step = max(1, int(fs * GRID))
     return dict(
-        sample_rate=fs, lam=lam, carrier_band_time=carrier_band_time, n=t.size,
+        fs=fs, lam=lam, carrier_band_time=carrier_band_time, n=t.size,
         fc=fc, arrival=arrival, noise_sd=float(resid[lead].std()), noise_bw=noise_bw,
         tc=t[::step], carrier_amp=carrier_amp[::step], doppler_amp=doppler_amp[::step],
         velocity=signal.medfilt(vel[::step], 9),
@@ -111,7 +111,7 @@ def synthesize(m, seed, velocity_scale=1.0, doppler_scale=1.0, noise_scale=1.0):
     arrival) are set from their medians after the arrival, and noise_sd gives
     the same noise-to-Doppler ratio as the real file.
     """
-    fs = m["sample_rate"]
+    fs = m["fs"]
     t = np.arange(m["n"]) / fs
     velocity = np.where(t >= m["arrival"],
                         np.clip(np.interp(t, m["tc"], m["velocity"]), 0, None), 0)
