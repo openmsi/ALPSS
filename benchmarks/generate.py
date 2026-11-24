@@ -19,7 +19,7 @@ from alpss.io.reading import extract_data
 from alpss.simulation import generate_velocity_profile, velocity_to_pdv_voltage
 from alpss.utils.config import flatten_config
 
-from cases import get_cases, profile_params, synthesis_params
+from cases import SAMPLE_RATE, get_cases, profile_params, synthesis_params
 from common import (
     CONFIG_PATH, DATA_DIR,
     real_dir, set_key, signal_path, truth_path, velocity_true_path,
@@ -39,7 +39,9 @@ def save_velocity_true(out_dir, case_id, time, velocity):
 
 def generate_case(case, flat_config, out_dir):
     params = profile_params(case)
-    time, velocity = generate_velocity_profile(case["shot_type"], **params)
+    time, velocity = generate_velocity_profile(
+        case["shot_type"], sample_rate=SAMPLE_RATE, **params
+    )
 
     # pdv_synthesis draws noise from the global numpy RNG
     np.random.seed(case["seed"])
