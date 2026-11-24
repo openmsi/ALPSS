@@ -30,6 +30,16 @@ To convert, divide the old value by the sample rate, e.g. 400 samples at
 - `time_to_take` accepts `"all"` to read the signal from `time_to_skip` to
   the end of the file. The `t_after` check is skipped in that case, and any
   other string is rejected by validation.
+- `alpss.simulation`: synthetic PDV signal generation from a velocity history
+  (`generate_velocity_profile`, `velocity_to_pdv_voltage`,
+  `velocity_to_multipoint_pdv_voltage`).
+- `benchmarks/`: an accuracy check that runs one config on every file and
+  reports each result's error, per-metric mean and std, error histograms and
+  how two runs compare. Real files are pairs of a trace and a reference
+  results file, kept in a Girder collection and fetched by
+  `benchmarks/benchmark.ipynb`; any pair in `benchmarks/data/real/` is a case.
+  Simulated "twins" rebuild each real file with `velocity_to_pdv_voltage` so
+  the true start time is known.
 
 ## [1.8.0] - 2026-09-23
 

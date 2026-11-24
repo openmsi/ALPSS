@@ -1,0 +1,155 @@
+"""Run ALPSS over the real files or the generated cases.
+
+    poetry run python benchmarks/run.py --real --label main [--config ...] [--set key=value ...]
+    poetry run python benchmarks/run.py --label main [--only case_01 ...]
+
+Uses benchmarks/benchmark_config.json (or --config) for every case. With
+--real, it runs each real file in benchmarks/data/real/ as is; otherwise the
+generated cases, changing only what each simulated signal requires (file,
+wavelength, read window, HEL window, enabled phases). --set overrides apply to
+every case. Writes ALPSS's usual outputs into benchmarks/runs/<label>/<case>/
+and a run.json describing the run.
+"""
+
+import argparse
+import copy
+import datetime
+import importlib.metadata
+import json
+import os
+import subprocess
+import time
+import traceback
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+
+from alpss.commands import alpss_main_with_config  # noqa: E402
+
+from cases import get_cases  # noqa: E402
+from common import (  # noqa: E402
+    CONFIG_PATH, DATA_DIR, REPO_ROOT, RUNS_DIR,
+    real_dir, set_key, signal_path, truth_path,
+)
+
+
+def parse_value(text):
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        return text
+
+
+def parse_overrides(pairs):
+    overrides = {}
+    for pair in pairs or []:
+        key, sep, value = pair.partition("=")
+        if not sep:
+            raise ValueError(f"--set expects key=value, got {pair!r}")
+        overrides[key] = parse_value(value)
+    return overrides
+
+
+def case_config(base, case, data_dir, out_dir, overrides):
+    config = copy.deepcopy(base)
+    set_key(config, "out_files_dir", out_dir)
+    set_key(config, "save_data", True)
+    set_key(config, "display_plots", False)
+
+    if "file" in case:
+        # real file: the config as is
+        set_key(config, "filepath", case["file"])
+    else:
+        with open(truth_path(data_dir, case["id"])) as f:
+            record = json.load(f)
+        t0_ns = record["t_arrival"] * 1e9  # shock arrival in ALPSS time
+        set_key(config, "filepath", signal_path(data_dir, case["id"]))
+        set_key(config, "time_to_skip", 0.0)
+        set_key(config, "time_to_take", "all")
+        set_key(config, "lam", record["lam"])
+        # the config's HEL window is relative to the shock arrival
+        set_key(config, "hel_start_time_ns", t0_ns + base["hel"]["hel_start_time_ns"])
+        set_key(config, "hel_end_time_ns", t0_ns + base["hel"]["hel_end_time_ns"])
+
+    for key, value in {**case.get("config_edits", {}), **overrides}.items():
+        set_key(config, key, value)
+    return config
+
+
+def git_state():
+    def git(*args):
+        return subprocess.run(
+            ["git", *args], cwd=REPO_ROOT, capture_output=True, text=True
+        ).stdout.strip()
+
+    return {
+        "sha": git("rev-parse", "HEAD"),
+        "branch": git("rev-parse", "--abbrev-ref", "HEAD"),
+        "dirty": bool(git("status", "--porcelain", "--untracked-files=no")),
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--label", required=True, help="name of this run")
+    parser.add_argument("--set", nargs="+", metavar="KEY=VALUE", dest="overrides",
+                        help="override config keys for every case")
+    parser.add_argument("--only", nargs="+", help="case ids to run")
+    parser.add_argument("--real", action="store_true",
+                        help="run the real files in <data>/real/ instead of the generated cases")
+    parser.add_argument("--config", default=CONFIG_PATH)
+    parser.add_argument("--data", default=DATA_DIR)
+    parser.add_argument("--out", default=RUNS_DIR)
+    args = parser.parse_args()
+
+    with open(args.config) as f:
+        base = json.load(f)
+    overrides = parse_overrides(args.overrides)
+    run_dir = os.path.join(args.out, args.label)
+    os.makedirs(run_dir, exist_ok=True)
+
+    run = {
+        "label": args.label,
+        "started": datetime.datetime.now().isoformat(timespec="seconds"),
+        "alpss_version": importlib.metadata.version("alpss"),
+        "git": git_state(),
+        "config": os.path.relpath(args.config, REPO_ROOT),
+        "overrides": overrides,
+        "data": os.path.relpath(args.data, REPO_ROOT),
+        "real": args.real,
+        "cases": {},
+    }
+
+    cases = get_cases(args.only, real_dir(args.data) if args.real else None)
+    if not cases:
+        raise SystemExit(f"no cases found{' in ' + real_dir(args.data) if args.real else ''}")
+    for case in cases:
+        out_dir = os.path.join(run_dir, case["id"])
+        os.makedirs(out_dir, exist_ok=True)
+        config = case_config(base, case, args.data, out_dir, overrides)
+
+        print(f"{case['id']}: {case['description']} ...", flush=True)
+        start = time.perf_counter()
+        try:
+            alpss_main_with_config(config)
+            status, error = "ok", None
+        except Exception as e:
+            status, error = "failed", f"{type(e).__name__}: {e}"
+            traceback.print_exc()
+        finally:
+            plt.close("all")
+        elapsed = time.perf_counter() - start
+        print(f"    {status} in {elapsed:.1f} s" + (f" ({error})" if error else ""))
+        run["cases"][case["id"]] = {
+            "status": status, "error": error, "seconds": round(elapsed, 2)
+        }
+
+    with open(os.path.join(run_dir, "run.json"), "w") as f:
+        json.dump(run, f, indent=2)
+    print(f"wrote {run_dir}")
+
+
+if __name__ == "__main__":
+    main()

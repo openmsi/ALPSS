@@ -1,0 +1,203 @@
+"""Compare a run's results against the ground truth.
+
+    poetry run python benchmarks/summarize.py benchmarks/runs/main
+    poetry run python benchmarks/summarize.py benchmarks/runs/feature --against benchmarks/runs/main
+
+For each case and truth value: measured, error and relative error. Also the
+RMS / max error of the smoothed velocity trace against the true history, and
+per metric the mean, std, mean |error| and max |error| over all cases.
+Writes summary.csv, stats.csv, errors.png (a histogram of errors per metric)
+and summary.md into the run directory; with --against, also writes
+comparison_vs_<other>.csv/.md there.
+"""
+
+import argparse
+import json
+import os
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+
+from cases import real_cases  # noqa: E402
+from common import DATA_DIR, REPO_ROOT, real_dir, truth_path, velocity_true_path  # noqa: E402
+
+TRACE_METRICS = ("Velocity trace RMS (m/s)", "Velocity trace max (m/s)")
+
+
+def trace_errors(run_case_dir, case_id, data_dir):
+    smooth = os.path.join(run_case_dir, f"{case_id}-velocity--smooth.csv")
+    if not os.path.exists(smooth):
+        return {}
+    measured = np.loadtxt(smooth, delimiter=",")
+    true = np.loadtxt(velocity_true_path(data_dir, case_id), delimiter=",")
+    err = measured[:, 1] - np.interp(measured[:, 0], true[:, 0], true[:, 1])
+    err = err[np.isfinite(err)]
+    if err.size == 0:
+        return {}
+    return {
+        TRACE_METRICS[0]: float(np.sqrt(np.mean(err**2))),
+        TRACE_METRICS[1]: float(np.max(np.abs(err))),
+    }
+
+
+def summarize_run(run_dir, data_dir):
+    with open(os.path.join(run_dir, "run.json")) as f:
+        run = json.load(f)
+
+    references = {c["id"]: c["reference"] for c in real_cases(real_dir(data_dir))}
+    rows = []
+    for case_id, status in run["cases"].items():
+        if case_id in references:
+            truth = references[case_id]
+        else:
+            with open(truth_path(data_dir, case_id)) as f:
+                truth = json.load(f)["truth"]
+        case_dir = os.path.join(run_dir, case_id)
+        results_csv = os.path.join(case_dir, f"{case_id}-results.csv")
+        results = (
+            pd.read_csv(results_csv).iloc[0].to_dict()
+            if status["status"] == "ok" and os.path.exists(results_csv)
+            else {}
+        )
+
+        for metric, expected in truth.items():
+            measured = results.get(metric, np.nan)
+            err = measured - expected
+            rows.append({
+                "case": case_id,
+                "metric": metric,
+                "truth": expected,
+                "measured": measured,
+                "error": err,
+                "rel_error": err / expected if expected else np.nan,
+            })
+
+        if case_id in references:
+            continue  # no true velocity history for a real file
+        for metric, value in trace_errors(case_dir, case_id, data_dir).items():
+            rows.append({
+                "case": case_id, "metric": metric, "truth": 0.0, "measured": value,
+                "error": value, "rel_error": np.nan,
+            })
+
+    return run, pd.DataFrame(rows)
+
+
+def stats(summary):
+    """Per metric: how many cases measured it, and the spread of their errors."""
+    err = summary.dropna(subset=["error"]).groupby("metric", sort=False)["error"]
+    return pd.DataFrame({
+        "n": err.size(),
+        "mean": err.mean(),
+        "std": err.std(),
+        "mean_abs": err.apply(lambda e: e.abs().mean()),
+        "max_abs": err.apply(lambda e: e.abs().max()),
+    }).reset_index()
+
+
+def plot_errors(summary, path):
+    """One histogram of errors per metric, with the mean and std in its title."""
+    errors = summary.dropna(subset=["error"])
+    metrics = list(dict.fromkeys(errors["metric"]))
+    if not metrics:
+        return
+    cols = min(3, len(metrics))
+    rows = -(-len(metrics) // cols)
+    fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 3.5 * rows), squeeze=False)
+    for ax, metric in zip(axes.flat, metrics):
+        err = errors.loc[errors["metric"] == metric, "error"]
+        ax.hist(err, bins=min(20, max(5, err.size)))
+        ax.axvline(0, color="k", lw=0.8)
+        ax.set_title(f"{metric}\nmean {fmt(err.mean())}, std {fmt(err.std())}, n={err.size}",
+                     fontsize=9)
+        ax.set_xlabel("measured − truth")
+    for ax in axes.flat[len(metrics):]:
+        ax.axis("off")
+    fig.tight_layout()
+    fig.savefig(path, dpi=120)
+    plt.close(fig)
+
+
+def compare(current, baseline):
+    """Per case/metric error in both runs, side by side."""
+    keys = ["case", "metric"]
+    return baseline[keys + ["truth", "error"]].merge(
+        current[keys + ["error"]], on=keys, how="outer", suffixes=("_baseline", "_current")
+    )
+
+
+def fmt(value):
+    if isinstance(value, (float, np.floating)):
+        if np.isnan(value):
+            return "-"
+        return f"{value:.4g}"
+    return str(value)
+
+
+def to_markdown(df, columns):
+    lines = [
+        "| " + " | ".join(columns) + " |",
+        "|" + "|".join("---" for _ in columns) + "|",
+    ]
+    for _, row in df.iterrows():
+        lines.append("| " + " | ".join(fmt(row[c]) for c in columns) + " |")
+    return "\n".join(lines)
+
+
+def run_header(run):
+    git = run["git"]
+    overrides = ", ".join(f"{k}={v}" for k, v in run["overrides"].items()) or "none"
+    return (
+        f"**{run['label']}**: alpss {run['alpss_version']}, "
+        f"{git['branch']} @ {git['sha'][:8]}{' (dirty)' if git['dirty'] else ''}, "
+        f"overrides: {overrides}, run {run['started']}"
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("run_dir")
+    parser.add_argument("--against", help="baseline run directory to compare with")
+    parser.add_argument("--data", default=DATA_DIR)
+    args = parser.parse_args()
+
+    run, summary = summarize_run(args.run_dir, args.data)
+    columns = ["case", "metric", "truth", "measured", "error", "rel_error"]
+    summary.to_csv(os.path.join(args.run_dir, "summary.csv"), index=False)
+    metric_stats = stats(summary)
+    metric_stats.to_csv(os.path.join(args.run_dir, "stats.csv"), index=False)
+    plot_errors(summary, os.path.join(args.run_dir, "errors.png"))
+
+    failed = {c: s["error"] for c, s in run["cases"].items() if s["status"] != "ok"}
+    body = [f"# Benchmark summary\n\n{run_header(run)}\n"]
+    if failed:
+        body.append("Failed cases:\n" + "\n".join(f"- {c}: {e}" for c, e in failed.items()) + "\n")
+    body.append(to_markdown(metric_stats, ["metric", "n", "mean", "std", "mean_abs", "max_abs"]))
+    body.append("\n" + to_markdown(summary, columns))
+    report = "\n".join(body) + "\n"
+
+    if args.against:
+        base_run, base_summary = summarize_run(args.against, args.data)
+        comparison = compare(summary, base_summary)
+        name = os.path.basename(os.path.normpath(args.against))
+        comparison.to_csv(os.path.join(args.run_dir, f"comparison_vs_{name}.csv"), index=False)
+        report += (
+            f"\n# Comparison\n\ncurrent: {run_header(run)}\n\n"
+            f"baseline: {run_header(base_run)}\n\n"
+            + to_markdown(comparison, ["case", "metric", "truth", "error_baseline",
+                                       "error_current"])
+            + "\n"
+        )
+
+    with open(os.path.join(args.run_dir, "summary.md"), "w") as f:
+        f.write(report)
+    print(report)
+    print(f"wrote {os.path.relpath(os.path.join(args.run_dir, 'summary.md'), REPO_ROOT)}")
+
+
+if __name__ == "__main__":
+    main()

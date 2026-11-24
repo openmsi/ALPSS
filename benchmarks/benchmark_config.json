@@ -1,0 +1,81 @@
+{
+    "io": {
+        "filepath": "tests/input_data/example_file.csv",
+        "out_files_dir": "benchmarks/runs/",
+        "time_to_skip": 0.0,
+        "time_to_take": "all",
+        "save_data": true,
+        "display_plots": false
+    },
+    "stft": {
+        "nperseg": 512,
+        "noverlap": 435,
+        "nfft": 5120,
+        "window": "hann",
+        "freq_min": 1800000000.0,
+        "freq_max": 2800000000.0,
+        "blur_kernel": [15, 5],
+        "blur_sigx": 0,
+        "blur_sigy": 0
+    },
+    "start_time": {
+        "start_time_user": "otsu",
+        "start_time_correction": 0.0,
+        "t_before": 2.5e-08,
+        "t_after": 1e-07,
+        "iq_threshold_factor": 0.4,
+        "cusum_offset": 5,
+        "cusum_threshold": 1000,
+        "carrier_band_time": 2.5e-07
+    },
+    "carrier": {
+        "carrier_filter_type": "gaussian_notch",
+        "order": 6,
+        "wid": 50000000.0,
+        "t_fit_begin": 20,
+        "t_fit_end": 300
+    },
+    "velocity": {
+        "smoothing_window_time": 4.5025e-08,
+        "smoothing_wid": 3,
+        "smoothing_amp": 1,
+        "smoothing_sigma": 1,
+        "smoothing_mu": 0,
+        "lam": 1.55e-06,
+        "theta": 0,
+        "min_velocity_threshold": 25,
+        "max_velocity_uncertainty_threshold": 10
+    },
+    "material": {
+        "C0": 4540,
+        "C_L": 4540,
+        "density": 1730,
+        "delta_rho": 9,
+        "delta_C0": 23,
+        "delta_lam": 8.0e-18,
+        "delta_theta": 5
+    },
+    "spall": {
+        "spall_enabled": true,
+        "pb_neighbors_time": 5e-09,
+        "pb_idx_correction": 0,
+        "rc_neighbors_time": 5e-09,
+        "rc_idx_correction": 0
+    },
+    "hel": {
+        "hel_enabled": true,
+        "hel_start_time_ns": 0.0,
+        "hel_end_time_ns": 30.0,
+        "hel_angle_threshold_deg": 45.0,
+        "hel_detection_min_points": 3,
+        "minimum_HEL_velocity_expected": 10.0
+    },
+    "uncertainty": {
+        "uncert_mult": 100
+    },
+    "plotting": {
+        "cmap": "viridis",
+        "plot_figsize": [30, 10],
+        "plot_dpi": 300
+    }
+}
