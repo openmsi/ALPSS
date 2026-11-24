@@ -1,6 +1,6 @@
-"""Benchmark cases: simulated (CASES) and real files (real_cases()).
+"""Benchmark cases: simulated and twin (CASES) and real files (real_cases()).
 
-Each simulated case is one synthetic signal. ``profile`` overrides
+Each simulated case is one synthetic signal built from a velocity profile. ``profile`` overrides
 PROFILE_DEFAULTS for the case's shot type and is passed to
 ``generate_velocity_profile``; ``synthesis`` overrides SYNTHESIS_DEFAULTS and is
 passed to ``velocity_to_pdv_voltage``. These are the only defaults: the
@@ -20,7 +20,7 @@ import os
 
 import pandas as pd
 
-SAMPLE_RATE = 128e9
+SAMPLE_RATE = 128e9  # time grid of the simulated cases' velocity profiles
 
 PROFILE_DEFAULTS = {
     "velocity": dict(t_begin=-500e-9, t_end=1000e-9, vel_peak=200, a=1, b=0.00001),
@@ -43,6 +43,10 @@ PROFILE_DEFAULTS = {
 # power_tar_dbm matches run_pdv_synthesis.py in PDV_simulated_data
 SYNTHESIS_DEFAULTS = dict(lambda_ref=1550e-9, lambda_tar=1550.016e-9, power_tar_dbm=-15)
 
+# Simulated: one dict per case with ``shot_type``, ``profile``, ``synthesis``,
+# ``seed`` and ``config_edits``. None for now.
+SIMULATED_CASES = []
+
 # Twins: rebuilt from a real case (``twin["source"]``) by twins.py, with the
 # knobs of twins.synthesize changing one ingredient at a time. A twin runs with
 # the benchmark config, like its real file.
@@ -63,7 +67,7 @@ _VARIANTS = [
     ("slow", "1/2 of the velocity", dict(velocity_scale=0.5)),
 ]
 
-CASES = (
+TWIN_CASES = (
     _twins("example_file", _VARIANTS)
     + _twins("JHAMAL00016-035_shot02", _VARIANTS)
     + _twins("JHAMAL00016-082_shot08", _VARIANTS)
@@ -71,6 +75,8 @@ CASES = (
     + _twins("JHAMAL00018-058_shot01", _VARIANTS)
     + _twins("JHAMAB00022-01_shot01", _VARIANTS)
 )
+
+CASES = SIMULATED_CASES + TWIN_CASES
 
 # results the summary compares against a real file's results file
 REFERENCE_METRICS = [
