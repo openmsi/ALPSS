@@ -44,8 +44,20 @@ PROFILE_DEFAULTS = {
 SYNTHESIS_DEFAULTS = dict(lambda_ref=1550e-9, lambda_tar=1550.016e-9, power_tar_dbm=-15)
 
 # Simulated: one dict per case with ``shot_type``, ``profile``, ``synthesis``,
-# ``seed`` and ``config_edits``. None for now.
-SIMULATED_CASES = []
+# ``seed`` and ``config_edits``.
+SIMULATED_CASES = [
+    # an illustration: the default HEL-spall profile (HEL at 100 m/s, plateau
+    # at 300 m/s, 100 m/s pullback) on a ~2 GHz carrier with light noise
+    dict(
+        id="sim_hel_spall",
+        description="default HEL-spall profile, light noise",
+        shot_type="HEL-spall",
+        profile={},
+        synthesis=dict(noise_sd=0.02),
+        seed=1,
+        config_edits=dict(spall_enabled=True, hel_enabled=True),
+    ),
+]
 
 # Twins: rebuilt from a real case (``twin["source"]``) by twins.py, with the
 # knobs of twins.synthesize changing one ingredient at a time. A twin runs with
